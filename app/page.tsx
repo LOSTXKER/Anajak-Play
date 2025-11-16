@@ -1,0 +1,275 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Sidebar from '@/components/Sidebar';
+import BottomNav from '@/components/BottomNav';
+import Navbar from '@/components/Navbar';
+import GameSelector from '@/components/GameSelector';
+import HeroAction from '@/components/HeroAction';
+import LobbyCard from '@/components/LobbyCard';
+import TinderMode from '@/components/TinderMode';
+import NotificationDropdown from '@/components/NotificationDropdown';
+import UserProfileModal from '@/components/UserProfileModal';
+import CreatePartyModal from '@/components/CreatePartyModal';
+import ChatSidebarOverlay from '@/components/ChatSidebarOverlay';
+import { partiesData, notificationsData } from '@/lib/mockData';
+import { Party } from '@/lib/types';
+import { useParty } from '@/lib/PartyContext';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Plus, Shield, Users, Zap } from 'lucide-react';
+
+export default function Home() {
+  const router = useRouter();
+  const { activeParty, joinParty, requestToJoinGame } = useParty();
+  const [parties, setParties] = useState<Party[]>(partiesData);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showTinderMode, setShowTinderMode] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showCreateParty, setShowCreateParty] = useState(false);
+  const [showChatSidebar, setShowChatSidebar] = useState(false);
+  const [notifications] = useState(notificationsData);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect to party room if already in a party
+  useEffect(() => {
+    if (activeParty) {
+      router.push('/party');
+    }
+  }, [activeParty, router]);
+
+  const handleJoinClick = (party: Party) => {
+    // เข้าห้องแบบ Spectator (ดูก่อน)
+    joinParty(party);
+    // จะ redirect ไป /party อัตโนมัติผ่าน useEffect
+  };
+
+  const handleQuickJoin = (party: Party, role: string) => {
+    // Quick Join: เข้าห้อง + ขอเล่นทันที
+    joinParty(party);
+    requestToJoinGame(role);
+    // จะ redirect ไป /party อัตโนมัติ
+  };
+
+  const handleCreateParty = () => {
+    setShowCreateParty(true);
+  };
+
+  const handleCreatePartyConfirm = (newParty: Party) => {
+    setParties([newParty, ...parties]);
+    setShowCreateParty(false);
+    joinParty(newParty);
+  };
+
+  const handleTinderMode = () => {
+    setShowTinderMode(true);
+  };
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  return (
+    <div className="min-h-screen w-full bg-[#05050a] text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden">
+      <Sidebar />
+      <BottomNav />
+      
+      <div className="lg:ml-20 pb-16 lg:pb-0">
+        {showTinderMode && <TinderMode onExit={() => setShowTinderMode(false)} />}
+        {showCreateParty && (
+          <CreatePartyModal 
+            onClose={() => setShowCreateParty(false)}
+            onCreate={handleCreatePartyConfirm}
+          />
+        )}
+        
+        <ChatSidebarOverlay 
+          isOpen={showChatSidebar}
+          onClose={() => setShowChatSidebar(false)}
+        />
+        
+        <Navbar 
+        onOpenProfile={() => setShowProfileModal(true)}
+        onToggleNoti={() => setShowNotifications(!showNotifications)}
+        onToggleChat={() => setShowChatSidebar(!showChatSidebar)}
+        notiOpen={showNotifications}
+        unreadCount={unreadCount}
+      />
+
+      <NotificationDropdown 
+        isOpen={showNotifications}
+        notifications={notifications}
+        onClose={() => setShowNotifications(false)}
+      />
+
+      {showProfileModal && (
+        <UserProfileModal onClose={() => setShowProfileModal(false)} />
+      )}
+
+      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-8">
+            <HeroAction 
+              onCreateClick={handleCreateParty}
+              onTinderClick={handleTinderMode}
+            />
+
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Main Content */}
+              <div className="flex-1">
+                <GameSelector />
+                
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    <span className="w-2 h-6 bg-cyan-500 rounded-full"></span>
+                    ห้องที่กำลังหาคน (Live)
+                  </h3>
+                  <div className="flex gap-2">
+                    <button className="px-3 py-1.5 text-sm bg-white/10 rounded-lg hover:bg-white/20 transition">
+                      กรอง
+                    </button>
+                    <button className="px-3 py-1.5 text-sm bg-white/10 rounded-lg hover:bg-white/20 transition">
+                      รีเฟรช
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+                  {isLoading ? (
+                    // Loading Skeleton
+                    <>
+                      {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="bg-[#13132b] rounded-2xl border border-white/10 p-5 animate-pulse">
+                          <div className="h-5 bg-white/10 rounded w-3/4 mb-4"></div>
+                          <div className="flex gap-2 mb-4">
+                            <div className="h-6 w-16 bg-white/10 rounded"></div>
+                            <div className="h-6 w-20 bg-white/10 rounded"></div>
+                          </div>
+                          <div className="grid grid-cols-5 gap-2 mb-4">
+                            {[1,2,3,4,5].map(j => (
+                              <div key={j} className="h-12 bg-white/10 rounded"></div>
+                            ))}
+                          </div>
+                          <div className="h-10 bg-white/10 rounded"></div>
+                        </div>
+                      ))}
+                    </>
+                  ) : parties.length === 0 ? (
+                    // Empty State
+                    <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+                      <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6">
+                        <Users className="w-12 h-12 text-gray-500" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-white mb-2">ไม่มีห้องที่เปิดรับ</h3>
+                      <p className="text-gray-400 mb-6 max-w-md">
+                        ตอนนี้ยังไม่มีปาร์ตี้ที่เปิดรับสมาชิก<br/>
+                        ลองสร้างปาร์ตี้ของคุณเองเพื่อเริ่มเล่นกัน!
+                      </p>
+                      <button 
+                        onClick={handleCreateParty}
+                        className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl font-bold hover:opacity-90 transition flex items-center gap-2"
+                      >
+                        <Plus size={20} /> สร้างปาร์ตี้ใหม่
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      {parties.map(party => (
+                        <LobbyCard 
+                          key={party.id} 
+                          party={party} 
+                          onJoin={handleJoinClick}
+                          onQuickJoin={handleQuickJoin}
+                        />
+                      ))}
+                      
+                      {/* Mock Loading/More Card */}
+                      <div className="border-2 border-dashed border-white/10 rounded-2xl p-5 flex flex-col items-center justify-center text-gray-500 hover:border-white/20 hover:bg-white/5 transition-all cursor-pointer min-h-[250px]">
+                        <Plus className="w-8 h-8 mb-2 opacity-50" />
+                        <span className="font-semibold">ดูห้องเพิ่มเติม...</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Sidebar (Right) */}
+              <div className="hidden lg:block w-80 space-y-6">
+                {/* Reputation Teaser */}
+                <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] rounded-2xl p-5 border border-white/10 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-3 opacity-10">
+                    <Shield className="w-24 h-24 text-white" />
+                  </div>
+                  <h4 className="font-bold text-white mb-2">ระบบชื่อเสียง</h4>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="text-3xl font-bold text-yellow-400">4.8</div>
+                    <div className="text-xs text-gray-400">
+                      คะแนนของคุณ <br/> ระดับ: <span className="text-cyan-400">Pro Player</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-400 mb-3">รักษาเครดิตดี หางานง่าย หาตี้ไว</p>
+                  <div className="w-full bg-gray-700 h-1.5 rounded-full overflow-hidden">
+                    <div className="bg-yellow-400 w-[85%] h-full"></div>
+                  </div>
+                </div>
+
+                {/* Marketplace Teaser */}
+                <div className="bg-[#0f0f1a] rounded-2xl p-5 border border-white/5 opacity-75 hover:opacity-100 transition-opacity">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="font-bold text-white">Anajak Market</h4>
+                    <Link 
+                      href="/market"
+                      className="text-xs text-cyan-400 hover:underline"
+                    >
+                      ดูทั้งหมด
+                    </Link>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 p-2 rounded bg-white/5 hover:bg-white/10 cursor-pointer transition">
+                      <div className="w-8 h-8 bg-blue-500/20 rounded flex items-center justify-center text-blue-400">
+                        <Users size={16}/>
+                      </div>
+                      <div className="text-sm text-gray-300">Hire to Play (จ้างเล่น)</div>
+                    </div>
+                    <div className="flex items-center gap-3 p-2 rounded bg-white/5 hover:bg-white/10 cursor-pointer transition">
+                      <div className="w-8 h-8 bg-green-500/20 rounded flex items-center justify-center text-green-400">
+                        <Zap size={16}/>
+                      </div>
+                      <div className="text-sm text-gray-300">Coaching (จ้างโค้ช)</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Online Friends */}
+                <div className="bg-[#0f0f1a] rounded-2xl p-5 border border-white/5">
+                  <h4 className="font-bold text-white mb-4 flex justify-between items-center">
+                    เพื่อนที่ออนไลน์ 
+                    <span className="text-xs text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full">4</span>
+                  </h4>
+                  <ul className="space-y-3">
+                    {[1,2,3,4].map((i) => (
+                      <li key={i} className="flex items-center gap-3 group cursor-pointer">
+                        <div className="relative">
+                          <div className="w-8 h-8 rounded-full bg-gray-700 overflow-hidden">
+                            <img 
+                              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i*32}`} 
+                              alt="friend"
+                            />
+                          </div>
+                          <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-[#0f0f1a] rounded-full"></div>
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-sm text-gray-300 group-hover:text-white">Gamer_{i}99</div>
+                          <div className="text-[10px] text-gray-500">กำลังเล่น RoV</div>
+                        </div>
+                        <button className="opacity-0 group-hover:opacity-100 p-1.5 bg-white/10 rounded hover:bg-purple-500 transition-all">
+                          <Plus size={12} className="text-white"/>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+      </main>
+      </div>
+    </div>
+  );
+}
