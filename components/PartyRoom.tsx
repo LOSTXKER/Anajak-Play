@@ -15,13 +15,13 @@ import {
   Star,
   Plus,
   Volume2,
-  Eye,
-  UserPlus,
-  ExternalLink
+   ExternalLink,
+   Clock3,
+   ThumbsUp,
+   AlertTriangle
 } from 'lucide-react';
 import { Party } from '@/lib/types';
 import { useParty } from '@/lib/PartyContext';
-import Image from 'next/image';
 
 interface PartyRoomProps {
   party: Party;
@@ -45,16 +45,13 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(mockChatMessages);
   const [inputMsg, setInputMsg] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
+   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
-  const { 
-    activeParty, 
-    isSpectator, 
-    myRole,
-    approvePlayer, 
-    kickPlayer, 
-    toggleReady,
-    requestToJoinGame
-  } = useParty();
+   const { 
+      activeParty, 
+      myRole,
+      toggleReady
+   } = useParty();
 
   // ใช้ activeParty จาก context แทน prop (เพื่อ real-time update)
   const currentParty = activeParty || party;
@@ -72,6 +69,23 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
 
   useEffect(scrollToBottom, [messages]);
 
+   useEffect(() => {
+      const timer = setInterval(() => {
+         setElapsedSeconds((prev) => prev + 1);
+      }, 1000);
+      return () => clearInterval(timer);
+   }, []);
+
+   const formatDuration = (seconds: number) => {
+      const mins = Math.floor(seconds / 60)
+         .toString()
+         .padStart(2, '0');
+      const secs = Math.floor(seconds % 60)
+         .toString()
+         .padStart(2, '0');
+      return `${mins}:${secs}`;
+   };
+
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputMsg.trim()) return;
@@ -84,9 +98,6 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
     }]);
     setInputMsg("");
   };
-
-  // Use slots directly from party object
-  const slots = party.requiredRoles;
 
   return (
     <div className="animate-in fade-in zoom-in duration-300">
@@ -102,6 +113,10 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
                    <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded border border-cyan-500/30 uppercase">{currentParty.game}</span>
                 </h2>
                 <p className="text-sm text-gray-400">Room ID: #AJ-{currentParty.id} • {currentParty.mode} • {currentParty.rank}</p>
+                <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                  <Clock3 className="w-3 h-3" />
+                  แมตช์เปิดมาแล้ว {formatDuration(elapsedSeconds)}
+                </div>
              </div>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -233,9 +248,9 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
                       </div>
                       
                       {/* Kick Button (Leader Only) */}
+                      {/* Leader can kick other players */}
                       {isLeader && slot.status === 'filled' && !slot.isMe && (
                           <button 
-                            onClick={() => kickPlayer(slot.role)}
                             className="absolute top-2 right-2 text-gray-600 hover:text-red-500 transition"
                           >
                             <X size={14}/>
@@ -245,111 +260,26 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
                 ))}
              </div>
 
-             {/* Spectators Section */}
-             {currentParty.spectators && currentParty.spectators.length > 0 && (
-               <div className="border-t border-white/10 pt-4 mb-4 relative z-10">
-                 <h4 className="font-bold text-sm text-gray-300 mb-3 flex items-center gap-2">
-                   <Eye className="w-4 h-4 text-gray-400" />
-                   ผู้ชม (Spectators) - {currentParty.spectators.length} คน
-                 </h4>
-                 <div className="space-y-2">
-                   {currentParty.spectators.map((spectator) => (
-                     <div 
-                       key={spectator.id} 
-                       className="flex items-center justify-between bg-black/20 rounded-lg p-3 border border-white/5"
-                     >
-                       <div className="flex items-center gap-3">
-                         <img 
-                           src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${spectator.avatar}`}
-                           alt={spectator.name}
-                           className="w-8 h-8 rounded-full bg-gray-800"
-                         />
-                         <div>
-                           <div className="text-sm font-medium text-white">{spectator.name}</div>
-                           <div className="text-xs text-gray-400 flex items-center gap-1">
-                             {spectator.status === 'waiting-to-play' ? (
-                               <>
-                                 <UserPlus className="w-3 h-3 text-yellow-400" />
-                                 <span className="text-yellow-400">รอเข้าเล่น ({spectator.requestedRole})</span>
-                               </>
-                             ) : (
-                               <>
-                                 <Eye className="w-3 h-3 text-gray-500" />
-                                 <span>ดูอย่างเดียว</span>
-                               </>
-                             )}
-                           </div>
-                         </div>
-                       </div>
-                       {isLeader && spectator.status === 'waiting-to-play' && (
-                         <button 
-                           onClick={() => approvePlayer(spectator.id)}
-                           className="px-3 py-1 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg text-xs font-bold border border-green-500/30 transition"
-                         >
-                           อนุมัติ
-                         </button>
-                       )}
-                     </div>
-                   ))}
-                 </div>
-               </div>
-             )}
-
              {/* Bottom Actions */}
              <div className="mt-6 pt-4 border-t border-white/10 relative z-10">
-                 {/* Show Ready Button only if user is a Player (not Spectator) */}
-                 {!isSpectator && mySlot ? (
-                   <div className="flex justify-between items-center">
-                     <div className="text-xs text-gray-400">
-                       {isLeader ? "คุณคือหัวหน้าทีม เริ่มเกมเมื่อทุกคนพร้อม" : "รอหัวหน้าทีมเริ่มเกม..."}
-                     </div>
-                     <button 
-                        onClick={toggleReady}
-                        className={`px-8 py-3 rounded-xl font-bold text-lg shadow-lg transition-all transform active:scale-95 ${
-                           isReady 
-                           ? 'bg-green-500 hover:bg-green-400 text-black shadow-green-500/20' 
-                           : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                        }`}
-                     >
-                        {isReady ? (isLeader ? 'เริ่มเกม' : 'พร้อม!') : 'กดเพื่อพร้อม'}
-                     </button>
+                 <div className="flex justify-between items-center">
+                   <div className="text-xs text-gray-400">
+                     {isLeader ? "คุณคือหัวหน้าทีม เริ่มเกมเมื่อทุกคนพร้อม" : "รอหัวหน้าทีมเริ่มเกม..."}
+                        {myRole && (
+                           <span className="block text-[10px] text-gray-500 mt-1">ตำแหน่งของคุณ: {myRole}</span>
+                        )}
                    </div>
-                 ) : (
-                   // Show Spectator UI with Request to Join Button
-                   <div className="space-y-4">
-                     <div className="flex items-center justify-between bg-purple-500/10 border border-purple-500/20 rounded-xl p-4">
-                       <div className="flex items-center gap-3">
-                         <Eye className="w-5 h-5 text-purple-300" />
-                         <div>
-                           <div className="text-sm font-bold text-purple-200">คุณกำลังดูห้อง</div>
-                           <div className="text-xs text-purple-400">
-                             {currentParty.spectators?.find(s => s.id === 'me')?.status === 'waiting-to-play' 
-                               ? 'รอ Leader อนุมัติให้เข้าเล่น...' 
-                               : 'เลือกตำแหน่งเพื่อขอเข้าเล่น'}
-                           </div>
-                         </div>
-                       </div>
-                     </div>
-                     
-                     {/* Request to Join Dropdown */}
-                     {currentParty.spectators?.find(s => s.id === 'me')?.status !== 'waiting-to-play' && (
-                       <div className="grid grid-cols-2 gap-3">
-                         {currentParty.requiredRoles
-                           .filter(slot => slot.status === 'open')
-                           .map(slot => (
-                             <button
-                               key={slot.role}
-                               onClick={() => requestToJoinGame(slot.role)}
-                               className="p-3 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 rounded-lg text-sm font-bold text-cyan-300 transition flex items-center justify-center gap-2"
-                             >
-                               <UserPlus className="w-4 h-4" />
-                               ขอเป็น {slot.role}
-                             </button>
-                           ))}
-                       </div>
-                     )}
-                   </div>
-                 )}
+                   <button 
+                      onClick={toggleReady}
+                      className={`px-8 py-3 rounded-xl font-bold text-lg shadow-lg transition-all transform active:scale-95 ${
+                         isReady 
+                         ? 'bg-green-500 hover:bg-green-400 text-black shadow-green-500/20' 
+                         : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                      }`}
+                   >
+                      {isReady ? (isLeader ? 'เริ่มเกม' : 'พร้อว!') : 'กดเพื่อพร้อม'}
+                   </button>
+                 </div>
              </div>
           </div>
 
@@ -396,6 +326,18 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
                    <Send size={18} />
                 </button>
              </form>
+
+                  <div className="p-4 border-t border-white/10 bg-[#0a0a16] space-y-3">
+                     <p className="text-xs text-gray-500">หลังเล่นเสร็จช่วยกันรีวิวเพื่อให้ AI ฉลาดขึ้น</p>
+                     <div className="flex gap-3">
+                        <button className="flex-1 flex items-center justify-center gap-2 bg-white/5 text-gray-200 border border-white/10 rounded-xl py-2 text-sm font-medium hover:bg-white/10 transition">
+                           <ThumbsUp className="w-4 h-4 text-green-400" /> Endorse ทีม
+                        </button>
+                        <button className="flex-1 flex items-center justify-center gap-2 bg-red-500/10 text-red-300 border border-red-500/30 rounded-xl py-2 text-sm font-medium hover:bg-red-500/20 transition">
+                           <AlertTriangle className="w-4 h-4" /> Report
+                        </button>
+                     </div>
+                  </div>
           </div>
 
        </div>

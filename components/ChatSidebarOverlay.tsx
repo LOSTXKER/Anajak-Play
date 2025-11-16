@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Search, 
-  MoreHorizontal, 
   Phone, 
   Video, 
   Image as ImageIcon, 
@@ -15,7 +14,6 @@ import {
   CheckCheck, 
   Gamepad2,
   Shield,
-  CreditCard,
   MessageCircle,
   X,
   Maximize2,
@@ -24,14 +22,82 @@ import {
   Wallet,
   Gift,
   Clock,
-  CheckCircle2,
-  AlertCircle,
-  Info
+  CheckCircle2
 } from 'lucide-react';
 import Link from 'next/link';
 
+type ContactType = 'friend' | 'group' | 'market';
+
+interface Contact {
+  id: number;
+  name: string;
+  avatar: string;
+  status: 'online' | 'offline' | 'ingame';
+  lastMessage: string;
+  time: string;
+  unread: number;
+  type: ContactType;
+  game?: string;
+}
+
+type MessageStatus = 'sending' | 'sent' | 'read';
+
+interface BaseMessage {
+  id: number;
+  sender: string;
+  time: string;
+}
+
+interface TextMessage extends BaseMessage {
+  type: 'text';
+  text: string;
+  status?: MessageStatus;
+}
+
+interface InviteMessage extends BaseMessage {
+  type: 'invite';
+  data: {
+    game: string;
+    mode: string;
+    rank: string;
+    slots: string;
+  };
+}
+
+interface OfferMessage extends BaseMessage {
+  type: 'offer';
+  data: {
+    title: string;
+    price: number;
+    status: string;
+  };
+  status?: MessageStatus;
+}
+
+type ChatMessage = TextMessage | InviteMessage | OfferMessage;
+
+interface SellerInfo {
+  totalSales: number;
+  completionRate: number;
+  responseTime: string;
+}
+
+interface UserProfileSummary {
+  name: string;
+  avatar: string;
+  rank?: string;
+  games?: string[];
+  reputation?: number;
+  totalGames?: number;
+  totalOrders?: number;
+  winRate?: number;
+  wallet?: number;
+  isVerified?: boolean;
+  sellerInfo?: SellerInfo;
+}
+
 // Mock Data
-const contacts = [
+const contacts: Contact[] = [
   {
     id: 1,
     name: "KiraGod",
@@ -76,7 +142,7 @@ const contacts = [
 ];
 
 // User profiles for right panel
-const userProfiles: Record<number, any> = {
+const userProfiles: Record<number, UserProfileSummary> = {
   1: {
     name: "KiraGod",
     avatar: "KiraGod",
@@ -113,7 +179,7 @@ const userProfiles: Record<number, any> = {
   }
 };
 
-const mockMessages: Record<number, any[]> = {
+const mockMessages: Record<number, ChatMessage[]> = {
   1: [
     { id: 1, sender: "KiraGod", text: "โย่ว", time: "10:00", type: "text" },
     { id: 2, sender: "me", text: "ว่าไงวัยรุ่น", time: "10:05", type: "text", status: "read" },
@@ -146,7 +212,7 @@ const mockMessages: Record<number, any[]> = {
   ]
 };
 
-const MessageBubble = ({ msg }: any) => {
+const MessageBubble = ({ msg }: { msg: ChatMessage }) => {
   const isMe = msg.sender === 'me';
 
   if (msg.type === 'invite') {
@@ -230,7 +296,7 @@ interface ChatSidebarOverlayProps {
 export default function ChatSidebarOverlay({ isOpen, onClose }: ChatSidebarOverlayProps) {
   const [activeTab, setActiveTab] = useState('all');
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
-  const [chatData, setChatData] = useState(mockMessages);
+  const [chatData, setChatData] = useState<Record<number, ChatMessage[]>>(mockMessages);
   const [input, setInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
@@ -241,12 +307,14 @@ export default function ChatSidebarOverlay({ isOpen, onClose }: ChatSidebarOverl
 
   if (!isOpen) return null;
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!input.trim() || !selectedChatId || isSending) return;
+    if (!input.trim() || isSending) return;
+    if (!selectedChatId) return;
+    const chatId = selectedChatId;
     
     setIsSending(true);
-    const newMessage = {
+    const newMessage: TextMessage = {
       id: Date.now(),
       sender: 'me',
       text: input,
@@ -255,27 +323,33 @@ export default function ChatSidebarOverlay({ isOpen, onClose }: ChatSidebarOverl
       status: 'sending'
     };
 
-    setChatData({
-      ...chatData,
-      [selectedChatId]: [...(chatData[selectedChatId] || []), newMessage]
+    setChatData(prev => {
+      const current = prev[chatId] ?? [];
+      return {
+        ...prev,
+        [chatId]: [...current, newMessage],
+      };
     });
     setInput('');
     
     // Simulate message sent after 500ms
     setTimeout(() => {
-      setChatData(prev => ({
-        ...prev,
-        [selectedChatId]: prev[selectedChatId].map(msg => 
-          msg.id === newMessage.id ? { ...msg, status: 'sent' } : msg
-        )
-      }));
+      setChatData(prev => {
+        const current = prev[chatId] ?? [];
+        return {
+          ...prev,
+          [chatId]: current.map(msg =>
+            msg.id === newMessage.id ? { ...msg, status: 'sent' } : msg
+          ),
+        };
+      });
       setIsSending(false);
     }, 500);
   };
 
   const activeContact = contacts.find(c => c.id === selectedChatId);
-  const activeMessages = selectedChatId ? chatData[selectedChatId] || [] : [];
-  const activeProfile = selectedChatId ? userProfiles[selectedChatId] : null;
+  const activeMessages: ChatMessage[] = selectedChatId ? chatData[selectedChatId] || [] : [];
+  const activeProfile = selectedChatId ? userProfiles[selectedChatId] : undefined;
   const filteredContacts = contacts.filter(c => {
     if (activeTab === 'all') return true;
     if (activeTab === 'groups') return c.type === 'group';
@@ -453,7 +527,7 @@ export default function ChatSidebarOverlay({ isOpen, onClose }: ChatSidebarOverl
                     <div className="text-center my-3">
                       <span className="text-[9px] text-gray-600 bg-white/5 px-2 py-1 rounded-full">วันนี้</span>
                     </div>
-                    {activeMessages.map((msg: any) => (
+                    {activeMessages.map(msg => (
                       <MessageBubble key={msg.id} msg={msg} />
                     ))}
                   </>

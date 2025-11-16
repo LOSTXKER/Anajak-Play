@@ -1,22 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import { Wallet, TrendingUp, ArrowUpRight, ArrowDownLeft, Calendar, Plus, CreditCard, Smartphone } from 'lucide-react';
-import Sidebar from '@/components/Sidebar';
-import BottomNav from '@/components/BottomNav';
-import Navbar from '@/components/Navbar';
-import NotificationDropdown from '@/components/NotificationDropdown';
-import UserProfileModal from '@/components/UserProfileModal';
-import { notificationsData, userProfileData } from '@/lib/mockData';
+import DashboardLayout from '@/components/layouts/DashboardLayout';
+import { userProfileData } from '@/lib/mockData';
 
 export default function WalletPage() {
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  const [notifications] = useState(notificationsData);
-  const [amount, setAmount] = useState('');
-
-  const unreadCount = notifications.filter(n => !n.read).length;
-
   const transactions = [
     { id: 1, type: 'deposit', amount: 500, description: 'เติมเงินผ่าน TrueMoney', date: '2 ชม.ที่แล้ว', status: 'completed' },
     { id: 2, type: 'withdraw', amount: -200, description: 'จ้าง Coach Pro', date: '5 ชม.ที่แล้ว', status: 'completed' },
@@ -25,29 +13,7 @@ export default function WalletPage() {
   ];
 
   return (
-    <div className="min-h-screen w-full bg-[#05050a] text-white font-sans">
-      <Sidebar />
-      <BottomNav />
-      
-      <div className="lg:ml-20 pb-16 lg:pb-0">
-        <Navbar 
-          onOpenProfile={() => setShowProfileModal(true)}
-          onToggleNoti={() => setShowNotifications(!showNotifications)}
-          notiOpen={showNotifications}
-          unreadCount={unreadCount}
-        />
-
-        <NotificationDropdown 
-          isOpen={showNotifications}
-          notifications={notifications}
-          onClose={() => setShowNotifications(false)}
-        />
-
-        {showProfileModal && (
-          <UserProfileModal onClose={() => setShowProfileModal(false)} />
-        )}
-
-        <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <DashboardLayout contentClassName="max-w-[1400px]">
           {/* Balance Card */}
           <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl p-8 mb-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
@@ -186,8 +152,6 @@ export default function WalletPage() {
               </div>
             </div>
           </div>
-        </main>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 }

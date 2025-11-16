@@ -2,7 +2,6 @@
 
 import { X, Star, Edit3, Settings, LogOut, Trophy, Wallet, Plus } from 'lucide-react';
 import { userProfileData } from '@/lib/mockData';
-import Image from 'next/image';
 
 interface UserProfileModalProps {
   onClose: () => void;

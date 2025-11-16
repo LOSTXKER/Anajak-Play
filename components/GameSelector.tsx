@@ -5,6 +5,8 @@ import { games } from '@/lib/mockData';
 import Image from 'next/image';
 
 interface GameSelectorProps {
+  title?: string;
+  subtitle?: string;
   activeGameId?: number;
   onSelectGame?: (gameId: number) => void;
 }
@@ -16,13 +18,21 @@ const gameImages: { [key: string]: string } = {
   'PUBG': '/games/pubg.png',
 };
 
-export default function GameSelector({ activeGameId = 1, onSelectGame }: GameSelectorProps) {
+export default function GameSelector({
+  title = 'เลือกเกม',
+  subtitle,
+  activeGameId = 1,
+  onSelectGame,
+}: GameSelectorProps) {
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-white flex items-center gap-2">
-          <Gamepad2 className="w-5 h-5 text-purple-400" /> เลือกเกม
-        </h3>
+        <div>
+          <h3 className="text-lg font-bold text-white flex items-center gap-2">
+            <Gamepad2 className="w-5 h-5 text-purple-400" /> {title}
+          </h3>
+          {subtitle && <p className="text-xs text-gray-400 mt-1">{subtitle}</p>}
+        </div>
         <a href="#" className="text-sm text-cyan-400 hover:underline">ดูทั้งหมด</a>
       </div>
       <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">

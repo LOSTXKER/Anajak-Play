@@ -1,19 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { User, Bell, Lock, Globe, Palette, Shield, Volume2, Monitor, ChevronRight, Check } from 'lucide-react';
-import Sidebar from '@/components/Sidebar';
-import BottomNav from '@/components/BottomNav';
-import Navbar from '@/components/Navbar';
-import NotificationDropdown from '@/components/NotificationDropdown';
-import UserProfileModal from '@/components/UserProfileModal';
-import { notificationsData } from '@/lib/mockData';
+import { User, Bell, Globe, Shield, Volume2, ChevronRight, Check } from 'lucide-react';
+import DashboardLayout from '@/components/layouts/DashboardLayout';
 
 export default function SettingsPage() {
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  const [notifications] = useState(notificationsData);
-  
   // Settings States
   const [settings, setSettings] = useState({
     emailNotifications: true,
@@ -25,8 +16,6 @@ export default function SettingsPage() {
     autoJoinVoice: false,
     showOnlineStatus: true,
   });
-
-  const unreadCount = notifications.filter(n => !n.read).length;
 
   const toggleSetting = (key: keyof typeof settings) => {
     setSettings(prev => ({
@@ -88,29 +77,7 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="min-h-screen w-full bg-[#05050a] text-white font-sans">
-      <Sidebar />
-      <BottomNav />
-      
-      <div className="lg:ml-20 pb-16 lg:pb-0">
-        <Navbar 
-          onOpenProfile={() => setShowProfileModal(true)}
-          onToggleNoti={() => setShowNotifications(!showNotifications)}
-          notiOpen={showNotifications}
-          unreadCount={unreadCount}
-        />
-
-        <NotificationDropdown 
-          isOpen={showNotifications}
-          notifications={notifications}
-          onClose={() => setShowNotifications(false)}
-        />
-
-        {showProfileModal && (
-          <UserProfileModal onClose={() => setShowProfileModal(false)} />
-        )}
-
-        <main className="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <DashboardLayout contentClassName="max-w-[1000px]">
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-2">การตั้งค่า</h1>
             <p className="text-gray-400">จัดการการตั้งค่าบัญชีและความชอบของคุณ</p>
@@ -195,8 +162,6 @@ export default function SettingsPage() {
               </button>
             </div>
           </div>
-        </main>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 }

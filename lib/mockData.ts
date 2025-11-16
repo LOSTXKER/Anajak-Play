@@ -5,9 +5,9 @@ import {
   UserProfile, 
   Party,
   ChatMessage,
-  MarketplaceListing
+  MarketplaceListing,
+  MatchAlert
 } from './types';
-import { Swords, Shield, Zap, Crosshair, Users, Star } from 'lucide-react';
 
 export const games: Game[] = [
   { id: 1, name: 'RoV', icon: '⚔️', active: true, roles: ['Carry', 'Support', 'Mage', 'Fighter', 'Jungle', 'Any'] },
@@ -71,6 +71,42 @@ export const notificationsData: Notification[] = [
   { id: 4, type: 'friend', text: "NongMind ส่งคำขอเป็นเพื่อน", time: "1d ago", read: true },
 ];
 
+export const matchAlerts: MatchAlert[] = [
+  {
+    id: 'alert-rov-1',
+    game: 'RoV',
+    roleNeeded: 'Jungle',
+    rankRange: 'Diamond - Conqueror',
+    time: '30 วินาทีที่แล้ว',
+    compatibility: 94,
+    message: 'KiraGod ต้องการ Duo ที่เล่นเลนกลางหรือซัพพอร์ต ค่าพร้อมเล่นตอนนี้',
+    vibe: 'Chill Tryhard',
+    micRequired: true,
+  },
+  {
+    id: 'alert-val-2',
+    game: 'Valorant',
+    roleNeeded: 'Controller',
+    rankRange: 'Gold - Platinum',
+    time: '5 นาทีที่แล้ว',
+    compatibility: 87,
+    message: 'MEOW เปิดห้อง Competitive อยากได้คนไม่ toxic ยิงคม',
+    vibe: 'Calm shotcaller',
+    micRequired: false,
+  },
+  {
+    id: 'alert-mmo-3',
+    game: 'FFXIV',
+    roleNeeded: 'Healer',
+    rankRange: 'iLvl 630+',
+    time: '12 นาทีที่แล้ว',
+    compatibility: 90,
+    message: 'Static ขาด White Mage สำหรับลง Savage คืนนี้ 21:00',
+    vibe: 'Serious but friendly',
+    micRequired: true,
+  },
+];
+
 export const userProfileData: UserProfile = {
   name: "Meelike God",
   username: "@meelike_th",
@@ -98,7 +134,7 @@ export const partiesData: Party[] = [
     desc: "ขอคนเล่นเป็นทีมครับ ไม่เน้นคิล เน้นชนะ ฟังคอลได้ ขาดแครี่กับซัพพอร์ตครับ",
     game: "RoV",
     mode: "Ranked",
-    rank: "Commander I+",
+    rank: "Diamond - Conqueror",
     roles: ["Carry", "Support"],
     requiredRoles: [
       { role: "Jungle", status: "filled", player: "KiraGod", avatar: "KiraGod", ready: true, isLeader: true },
@@ -119,10 +155,13 @@ export const partiesData: Party[] = [
       type: "discord",
       link: "https://discord.gg/anajak-party-101"
     },
-    spectators: [
-      { id: "spec1", name: "NongMind", avatar: "NongMind", status: "waiting-to-play", requestedRole: "Support" },
-      { id: "spec2", name: "CoachPro", avatar: "CoachPro", status: "watching" }
-    ]
+    timeSlot: 'evening',
+    languages: ['th'],
+    playstyle: 'tryhard',
+    toxicTolerance: 'low',
+    neededPlayers: 2,
+    personalityTag: 'Shotcaller',
+    urgency: 'now'
   },
   {
     id: 102,
@@ -130,7 +169,7 @@ export const partiesData: Party[] = [
     desc: "เล่นชิลๆ ครับ ใครเพิ่งหัดเล่นมาได้เลย ไม่ซีเรียสแพ้ชนะ",
     game: "Valorant",
     mode: "Unrated",
-    rank: "Any",
+    rank: "Silver - Gold",
     roles: ["Any"],
     requiredRoles: [
         { role: "Controller", status: "filled", player: "Smoker", avatar: "Smoker", ready: true, isLeader: true },
@@ -146,7 +185,14 @@ export const partiesData: Party[] = [
     leaderRep: 4.5,
     leaderAvatar: "Smoker",
     tags: ["Fun", "Newbie Welcome"],
-    time: "2m ago"
+    time: "2m ago",
+    timeSlot: 'evening',
+    languages: ['th', 'en'],
+    playstyle: 'chill',
+    toxicTolerance: 'medium',
+    neededPlayers: 3,
+    personalityTag: 'Meme lord',
+    urgency: 'soon'
   },
   {
     id: 103,
@@ -154,7 +200,7 @@ export const partiesData: Party[] = [
     desc: "ลง Nest มังกรแดง ขาดพระ (Saint/Inquisitor) ขอของถึงนะครับ",
     game: "MMORPG",
     mode: "Raid",
-    rank: "High Gear",
+    rank: "High Gear / iLvl 640+",
     roles: ["Healer"],
     requiredRoles: [
         { role: "Leader", status: "filled", player: "DragonSlayer", avatar: "DragonSlayer", ready: true, isLeader: true },
@@ -173,7 +219,14 @@ export const partiesData: Party[] = [
     leaderRep: 5.0,
     leaderAvatar: "DragonSlayer",
     tags: ["Voice Req", "Experienced"],
-    time: "5m ago"
+    time: "5m ago",
+    timeSlot: 'late',
+    languages: ['th'],
+    playstyle: 'tryhard',
+    toxicTolerance: 'low',
+    neededPlayers: 1,
+    personalityTag: 'Strategist',
+    urgency: 'now'
   }
 ];
 

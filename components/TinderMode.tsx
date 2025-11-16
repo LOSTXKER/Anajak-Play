@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Flame, ChevronRight, Settings, Search, X, Heart, Star, RotateCcw, Gamepad2, CheckCircle2, MoreHorizontal, MessageCircle, Swords } from 'lucide-react';
 import { tinderProfiles, userProfileData } from '@/lib/mockData';
 import { TinderProfile } from '@/lib/types';
-import Image from 'next/image';
 
 interface TinderCardProps {
   profile: TinderProfile;
@@ -121,18 +120,15 @@ interface TinderModeProps {
 
 export default function TinderMode({ onExit }: TinderModeProps) {
    const [profiles, setProfiles] = useState(tinderProfiles);
-   const [lastDirection, setLastDirection] = useState<string | null>(null);
    const [matchedProfile, setMatchedProfile] = useState<TinderProfile | null>(null);
 
    const swipe = (direction: string) => {
       if (profiles.length === 0) return;
       
       const currentProfile = profiles[0];
-      setLastDirection(direction);
       
       setTimeout(() => {
          setProfiles(profiles.slice(1));
-         setLastDirection(null);
 
          if (direction === 'right' && Math.random() > 0.5) {
             setMatchedProfile(currentProfile);

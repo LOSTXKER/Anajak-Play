@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { PartyProvider } from "@/lib/PartyContext";
@@ -10,7 +10,12 @@ export const metadata: Metadata = {
   description: "ระบบหาตี้ Marketplace และคอมมูนิตี้เกมเมอร์ไทย",
   keywords: ["gaming", "thailand", "rov", "valorant", "party finder", "marketplace", "เกม", "หาตี้"],
   authors: [{ name: "Anajak Play" }],
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
   themeColor: "#7c3aed",
 };
 

@@ -1,21 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Edit, Settings, Trophy, Star, Shield, TrendingUp, Calendar, Award, Users, Gamepad2 } from 'lucide-react';
-import Sidebar from '@/components/Sidebar';
-import BottomNav from '@/components/BottomNav';
-import Navbar from '@/components/Navbar';
-import NotificationDropdown from '@/components/NotificationDropdown';
-import UserProfileModal from '@/components/UserProfileModal';
-import { notificationsData, userProfileData } from '@/lib/mockData';
+import { Edit, Trophy, Star, Shield, TrendingUp, Calendar, Award, Gamepad2 } from 'lucide-react';
+import DashboardLayout from '@/components/layouts/DashboardLayout';
+import { userProfileData } from '@/lib/mockData';
 
 export default function ProfilePage() {
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  const [notifications] = useState(notificationsData);
   const [activeTab, setActiveTab] = useState<'overview' | 'stats' | 'history'>('overview');
-
-  const unreadCount = notifications.filter(n => !n.read).length;
 
   const stats = [
     { label: 'เกมที่เล่น', value: '1,234', icon: Gamepad2, color: 'from-blue-500 to-cyan-500' },
@@ -39,30 +30,16 @@ export default function ProfilePage() {
     { game: 'RoV', mode: 'Ranked', result: 'Loss', kda: '5/8/12', date: '1 วันที่แล้ว' },
   ];
 
+  const lifestyle = [
+    { label: 'เวลาที่เล่น', value: '19:00 - 00:00 (ทุกวัน)' },
+    { label: 'โหมดที่ชอบ', value: 'Ranked / Competitive' },
+    { label: 'Device', value: 'PC + iPad + Discord Voice' },
+  ];
+
+  const profileTabs: Array<'overview' | 'stats' | 'history'> = ['overview', 'stats', 'history'];
+
   return (
-    <div className="min-h-screen w-full bg-[#05050a] text-white font-sans">
-      <Sidebar />
-      <BottomNav />
-      
-      <div className="lg:ml-20 pb-16 lg:pb-0">
-        <Navbar 
-          onOpenProfile={() => setShowProfileModal(true)}
-          onToggleNoti={() => setShowNotifications(!showNotifications)}
-          notiOpen={showNotifications}
-          unreadCount={unreadCount}
-        />
-
-        <NotificationDropdown 
-          isOpen={showNotifications}
-          notifications={notifications}
-          onClose={() => setShowNotifications(false)}
-        />
-
-        {showProfileModal && (
-          <UserProfileModal onClose={() => setShowProfileModal(false)} />
-        )}
-
-        <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <DashboardLayout contentClassName="max-w-[1400px]">
           {/* Profile Header */}
           <div className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] rounded-2xl p-8 mb-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl"></div>
@@ -119,10 +96,10 @@ export default function ProfilePage() {
 
           {/* Tabs */}
           <div className="flex gap-4 mb-6">
-            {['overview', 'stats', 'history'].map(tab => (
+            {profileTabs.map(tab => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab as any)}
+                onClick={() => setActiveTab(tab)}
                 className={`
                   px-6 py-2 rounded-lg font-semibold transition
                   ${activeTab === tab 
@@ -251,10 +228,20 @@ export default function ProfilePage() {
                   </div>
                 </div>
               </div>
+
+              <div className="bg-[#0f0f1a] rounded-2xl p-6">
+                <h3 className="text-lg font-bold mb-4">ไลฟ์สไตล์ / Device</h3>
+                <div className="space-y-2 text-sm">
+                  {lifestyle.map((item) => (
+                    <div key={item.label} className="flex justify-between gap-3">
+                      <span className="text-gray-400">{item.label}</span>
+                      <span className="text-white text-right">{item.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        </main>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 }

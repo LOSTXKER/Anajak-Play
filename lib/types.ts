@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 // Mock Data Types
 export interface Game {
   id: number;
@@ -51,21 +53,13 @@ export interface UserProfile {
 
 export interface RoleSlot {
   role: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   status: 'open' | 'filled';
   player?: string;
   avatar?: string;
   ready?: boolean;
   isLeader?: boolean;
   isMe?: boolean;
-}
-
-export interface Spectator {
-  id: string;
-  name: string;
-  avatar: string;
-  status: 'watching' | 'waiting-to-play'; // watching = ดูอย่างเดียว, waiting-to-play = รอเข้าเล่น
-  requestedRole?: string; // Role ที่ขอเข้าเล่น
 }
 
 export interface Party {
@@ -85,11 +79,17 @@ export interface Party {
   leaderAvatar: string;
   tags: string[];
   time: string;
-  spectators?: Spectator[]; // รายชื่อผู้ชม
   voiceChat?: {
     type: 'discord';
     link: string;
   }; // Discord Voice Chat Link
+  timeSlot?: 'morning' | 'afternoon' | 'evening' | 'late';
+  languages?: string[];
+  playstyle?: 'chill' | 'tryhard' | 'fun' | 'sweaty';
+  toxicTolerance?: 'zero' | 'low' | 'medium';
+  neededPlayers?: number;
+  personalityTag?: string;
+  urgency?: 'now' | 'soon' | 'later';
 }
 
 export interface ChatMessage {
@@ -117,6 +117,55 @@ export interface MarketplaceListing {
 export interface MarketplaceCategory {
   id: string;
   name: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   color: string;
+}
+
+export type FilterInputType = 'pill' | 'select' | 'multiselect' | 'toggle';
+
+export interface FilterOption {
+  label: string;
+  value: string;
+  description?: string;
+  accent?: string;
+  emoji?: string;
+}
+
+export interface FilterDefinition {
+  id: string;
+  label: string;
+  type: FilterInputType;
+  helperText?: string;
+  options?: FilterOption[];
+  defaultValue?: string | string[] | boolean;
+  placeholder?: string;
+}
+
+export interface GameFilterConfig {
+  key: string;
+  label: string;
+  basic: FilterDefinition[];
+  advanced: FilterDefinition[];
+}
+
+export interface PersonalityInsight {
+  id: string;
+  label: string;
+  value: string;
+  description: string;
+  badge?: string;
+  score?: number;
+  trend?: 'up' | 'down';
+}
+
+export interface MatchAlert {
+  id: string;
+  game: string;
+  roleNeeded: string;
+  rankRange: string;
+  time: string;
+  compatibility: number;
+  message: string;
+  vibe: string;
+  micRequired: boolean;
 }

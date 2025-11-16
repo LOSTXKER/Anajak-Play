@@ -1,13 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Send, Phone, Video, MoreVertical, Paperclip, Smile, Shield, Star } from 'lucide-react';
-import Sidebar from '@/components/Sidebar';
-import BottomNav from '@/components/BottomNav';
-import Navbar from '@/components/Navbar';
-import NotificationDropdown from '@/components/NotificationDropdown';
-import UserProfileModal from '@/components/UserProfileModal';
-import { notificationsData } from '@/lib/mockData';
+import { Search, Send, Phone, Video, MoreVertical, Paperclip, Smile, Shield } from 'lucide-react';
+import DashboardLayout from '@/components/layouts/DashboardLayout';
 
 interface Conversation {
   id: string;
@@ -97,9 +92,6 @@ export default function MessagesPage() {
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(conversations[0]);
   const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [newMessage, setNewMessage] = useState('');
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  const [notifications] = useState(notificationsData);
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
@@ -115,32 +107,8 @@ export default function MessagesPage() {
     }
   };
 
-  const unreadCount = notifications.filter(n => !n.read).length;
-
   return (
-    <div className="min-h-screen w-full bg-[#05050a] text-white font-sans">
-      <Sidebar />
-      <BottomNav />
-      
-      <div className="lg:ml-20">
-        <Navbar 
-          onOpenProfile={() => setShowProfileModal(true)}
-          onToggleNoti={() => setShowNotifications(!showNotifications)}
-          notiOpen={showNotifications}
-          unreadCount={unreadCount}
-        />
-
-        <NotificationDropdown 
-          isOpen={showNotifications}
-          notifications={notifications}
-          onClose={() => setShowNotifications(false)}
-        />
-
-        {showProfileModal && (
-          <UserProfileModal onClose={() => setShowProfileModal(false)} />
-        )}
-
-        <main className="h-[calc(100vh-73px)] flex">
+    <DashboardLayout contentClassName="h-[calc(100vh-73px)] flex py-0">
           {/* Conversations List - Hidden on mobile when chat is selected */}
           <div className={`
             w-full lg:w-80 bg-[#0a0a16] border-r border-white/10 flex flex-col
@@ -305,8 +273,6 @@ export default function MessagesPage() {
               </div>
             </div>
           )}
-        </main>
-      </div>
-    </div>
+        </DashboardLayout>
   );
 }

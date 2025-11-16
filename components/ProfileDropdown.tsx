@@ -90,7 +90,12 @@ export default function ProfileDropdown({ onOpenProfile }: ProfileDropdownProps)
                 <Link
                   key={index}
                   href={item.href}
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    if (item.label === 'ดูโปรไฟล์') {
+                      onOpenProfile?.();
+                    }
+                    setIsOpen(false);
+                  }}
                   className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors group"
                 >
                   <div className={`w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors`}>

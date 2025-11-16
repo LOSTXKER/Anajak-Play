@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, ShoppingBag, MessageSquare, User } from 'lucide-react';
+import { Home, Users, ShoppingBag, MessageSquare, User, Layers, BellRing, PlusCircle } from 'lucide-react';
 import { useParty } from '@/lib/PartyContext';
 
 export default function BottomNav() {
@@ -11,6 +11,9 @@ export default function BottomNav() {
 
   const navItems = [
     { icon: Home, label: 'หน้าแรก', href: '/' },
+    { icon: Layers, label: 'ฟีด', href: '/feed' },
+    { icon: PlusCircle, label: 'สร้าง', href: '/create-request' },
+    { icon: BellRing, label: 'Matching', href: '/notifications' },
     { icon: Users, label: 'ปาร์ตี้', href: '/party', hasParty: activeParty },
     { icon: ShoppingBag, label: 'ตลาด', href: '/market' },
     { icon: MessageSquare, label: 'แชท', href: '/messages' },
@@ -19,7 +22,7 @@ export default function BottomNav() {
 
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#0a0a16]/95 backdrop-blur-md border-t border-white/10 z-50">
-      <div className="grid grid-cols-5 h-16">
+      <div className="flex h-16 overflow-x-auto scrollbar-hide">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -29,7 +32,7 @@ export default function BottomNav() {
               key={item.href}
               href={item.href}
               className={`
-                relative flex flex-col items-center justify-center gap-1 transition-colors
+                relative flex flex-col items-center justify-center gap-1 transition-colors flex-1 min-w-[70px]
                 ${isActive ? 'text-purple-400' : 'text-gray-400 active:text-white'}
               `}
             >

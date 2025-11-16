@@ -1,15 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { ShoppingBag, Star, Shield, Search, Wallet, Swords, Zap, Gift, User, Filter, ChevronDown } from 'lucide-react';
+import { ShoppingBag, Star, Shield, Search, Swords, Zap, Gift, User, Filter, ChevronDown } from 'lucide-react';
 import { marketplaceListings } from '@/lib/mockData';
-import { MarketplaceListing } from '@/lib/types';
-import Sidebar from '@/components/Sidebar';
-import BottomNav from '@/components/BottomNav';
-import Navbar from '@/components/Navbar';
-import ChatSidebarOverlay from '@/components/ChatSidebarOverlay';
+import DashboardLayout from '@/components/layouts/DashboardLayout';
 import Image from 'next/image';
-import Link from 'next/link';
 
 const categories = [
   { id: 'hire', name: 'Hire to Play (จ้างเล่น)', icon: <Swords size={18}/>, color: 'from-blue-500 to-cyan-500' },
@@ -28,9 +23,7 @@ const gameFilters = [
 export default function MarketPage() {
   const [activeCategory, setActiveCategory] = useState('hire');
   const [activeGame, setActiveGame] = useState('all');
-  const [selectedItem, setSelectedItem] = useState<MarketplaceListing | null>(null);
-  const [showChatSidebar, setShowChatSidebar] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
   // Filter Logic
   const filteredListings = marketplaceListings.filter(item => {
@@ -44,21 +37,7 @@ export default function MarketPage() {
   });
 
   return (
-    <div className="min-h-screen w-full bg-[#05050a] text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden">
-      <Sidebar />
-      <BottomNav />
-      
-      <div className="lg:ml-20 pb-16 lg:pb-0">
-        <ChatSidebarOverlay 
-        isOpen={showChatSidebar}
-        onClose={() => setShowChatSidebar(false)}
-      />
-      
-      <Navbar 
-        onToggleChat={() => setShowChatSidebar(!showChatSidebar)}
-      />
-
-      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-8 mt-16">
+    <DashboardLayout enableChat enableNotifications={false} contentClassName="mt-16">
         {/* Hero Banner */}
         <div className="relative rounded-3xl overflow-hidden mb-8 border border-white/10 bg-[#13132b]">
           <div className="absolute inset-0 bg-gradient-to-r from-purple-900/80 to-blue-900/80 z-10"></div>
@@ -174,7 +153,6 @@ export default function MarketPage() {
               {filteredListings.map(item => (
                 <div 
                   key={item.id}
-                  onClick={() => setSelectedItem(item)}
                   className="group bg-[#13132b] border border-white/10 rounded-2xl overflow-hidden hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col h-full shadow-lg"
                 >
                   {/* Image */}
@@ -254,14 +232,11 @@ export default function MarketPage() {
             </div>
           )}
         </div>
-      </main>
-      
       {/* Footer */}
       <footer className="mt-12 border-t border-white/10 py-8 text-center text-gray-500 text-sm">
         <p>© 2025 Anajak Play สงวนลิขสิทธิ์</p>
         <p className="mt-2">ชำระเงินปลอดภัยด้วย Anajak Escrow System</p>
       </footer>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 }

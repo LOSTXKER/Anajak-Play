@@ -1,55 +1,84 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Sidebar from '@/components/Sidebar';
-import BottomNav from '@/components/BottomNav';
-import Navbar from '@/components/Navbar';
 import GameSelector from '@/components/GameSelector';
 import HeroAction from '@/components/HeroAction';
 import LobbyCard from '@/components/LobbyCard';
 import TinderMode from '@/components/TinderMode';
-import NotificationDropdown from '@/components/NotificationDropdown';
-import UserProfileModal from '@/components/UserProfileModal';
 import CreatePartyModal from '@/components/CreatePartyModal';
-import ChatSidebarOverlay from '@/components/ChatSidebarOverlay';
-import { partiesData, notificationsData } from '@/lib/mockData';
+import PartyJoinModal from '@/components/PartyJoinModal';
+import DashboardLayout from '@/components/layouts/DashboardLayout';
+import { partiesData } from '@/lib/mockData';
 import { Party } from '@/lib/types';
 import { useParty } from '@/lib/PartyContext';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Plus, Shield, Users, Zap } from 'lucide-react';
+import { Filter, Layers, Plus, Search, Shield, Sparkles, Users, Zap } from 'lucide-react';
 
 export default function Home() {
   const router = useRouter();
-  const { activeParty, joinParty, requestToJoinGame } = useParty();
+  const { joinParty } = useParty();
   const [parties, setParties] = useState<Party[]>(partiesData);
-  const [showNotifications, setShowNotifications] = useState(false);
   const [showTinderMode, setShowTinderMode] = useState(false);
-  const [showProfileModal, setShowProfileModal] = useState(false);
   const [showCreateParty, setShowCreateParty] = useState(false);
-  const [showChatSidebar, setShowChatSidebar] = useState(false);
-  const [notifications] = useState(notificationsData);
-  const [isLoading, setIsLoading] = useState(false);
+  const [showJoinParty, setShowJoinParty] = useState(false);
+  const [selectedParty, setSelectedParty] = useState<Party | null>(null);
+  const [isLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Redirect to party room if already in a party
-  useEffect(() => {
-    if (activeParty) {
-      router.push('/party');
-    }
-  }, [activeParty, router]);
+  const filterTiers = [
+    {
+      id: 'global',
+      title: 'Global Filters',
+      description: 'เวลา ภาษา ไมค์ Playstyle',
+      badge: 'ใช้ได้ทุกเกม',
+      icon: <Filter className="w-5 h-5 text-cyan-300" />,
+      gradient: 'from-cyan-500/20 to-blue-500/20',
+    },
+    {
+      id: 'game',
+      title: 'Game Specific',
+      description: 'Role • Mode • Rank',
+      badge: 'Auto-load ตามเกม',
+      icon: <Layers className="w-5 h-5 text-purple-300" />,
+      gradient: 'from-purple-500/20 to-indigo-500/20',
+    },
+    {
+      id: 'ai',
+      title: 'Personality AI',
+      description: 'วิเคราะห์ vibe + toxicity',
+      badge: 'Killer Feature',
+      icon: <Sparkles className="w-5 h-5 text-yellow-300" />,
+      gradient: 'from-amber-400/20 to-pink-500/20',
+    },
+  ];
+
+  const filteredParties = useMemo(() => {
+    if (!searchTerm.trim()) return parties;
+    const query = searchTerm.toLowerCase();
+    return parties.filter(
+      (party) =>
+        party.title.toLowerCase().includes(query) ||
+        party.game.toLowerCase().includes(query) ||
+        party.mode.toLowerCase().includes(query)
+    );
+  }, [parties, searchTerm]);
+
+  // ลบ auto-redirect ออก เพื่อให้สามารถอยู่หน้าแรกได้แม้มี party
+  // ผู้ใช้สามารถกลับมาหน้าแรกได้ตลอด
 
   const handleJoinClick = (party: Party) => {
-    // เข้าห้องแบบ Spectator (ดูก่อน)
-    joinParty(party);
-    // จะ redirect ไป /party อัตโนมัติผ่าน useEffect
+    // แสดง Modal เพื่อเลือก Role
+    setSelectedParty(party);
+    setShowJoinParty(true);
   };
 
-  const handleQuickJoin = (party: Party, role: string) => {
-    // Quick Join: เข้าห้อง + ขอเล่นทันที
-    joinParty(party);
-    requestToJoinGame(role);
-    // จะ redirect ไป /party อัตโนมัติ
+  const handleJoinConfirm = (party: Party, selectedRole: string) => {
+    // เข้าห้องกับ Role ที่เลือก
+    joinParty(party, selectedRole);
+    setShowJoinParty(false);
+    // redirect ไป /party หลังจาก join
+    router.push('/party');
   };
 
   const handleCreateParty = () => {
@@ -59,67 +88,86 @@ export default function Home() {
   const handleCreatePartyConfirm = (newParty: Party) => {
     setParties([newParty, ...parties]);
     setShowCreateParty(false);
-    joinParty(newParty);
+    // สร้างปาร์ตี้แล้วเข้าเลย (เป็น Leader อัตโนมัติ)
+    const leaderRole = newParty.requiredRoles.find(r => r.isLeader)?.role || newParty.requiredRoles[0].role;
+    joinParty(newParty, leaderRole);
+    // redirect ไป /party
+    router.push('/party');
   };
 
   const handleTinderMode = () => {
     setShowTinderMode(true);
   };
 
-  const unreadCount = notifications.filter(n => !n.read).length;
-
   return (
-    <div className="min-h-screen w-full bg-[#05050a] text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden">
-      <Sidebar />
-      <BottomNav />
-      
-      <div className="lg:ml-20 pb-16 lg:pb-0">
-        {showTinderMode && <TinderMode onExit={() => setShowTinderMode(false)} />}
-        {showCreateParty && (
-          <CreatePartyModal 
-            onClose={() => setShowCreateParty(false)}
-            onCreate={handleCreatePartyConfirm}
-          />
-        )}
-        
-        <ChatSidebarOverlay 
-          isOpen={showChatSidebar}
-          onClose={() => setShowChatSidebar(false)}
+    <DashboardLayout enableChat>
+      {showTinderMode && <TinderMode onExit={() => setShowTinderMode(false)} />}
+      {showCreateParty && (
+        <CreatePartyModal 
+          onClose={() => setShowCreateParty(false)}
+          onCreate={handleCreatePartyConfirm}
         />
-        
-        <Navbar 
-        onOpenProfile={() => setShowProfileModal(true)}
-        onToggleNoti={() => setShowNotifications(!showNotifications)}
-        onToggleChat={() => setShowChatSidebar(!showChatSidebar)}
-        notiOpen={showNotifications}
-        unreadCount={unreadCount}
-      />
-
-      <NotificationDropdown 
-        isOpen={showNotifications}
-        notifications={notifications}
-        onClose={() => setShowNotifications(false)}
-      />
-
-      {showProfileModal && (
-        <UserProfileModal onClose={() => setShowProfileModal(false)} />
+      )}
+      {showJoinParty && selectedParty && (
+        <PartyJoinModal 
+          party={selectedParty}
+          onClose={() => setShowJoinParty(false)}
+          onConfirm={handleJoinConfirm}
+        />
       )}
 
-      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-8">
-            <HeroAction 
-              onCreateClick={handleCreateParty}
-              onTinderClick={handleTinderMode}
-            />
+      <div className="mb-8">
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
+          <input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="🔍 Search เกม / โหมด / ปาร์ตี้"
+            className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-gray-500 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+          />
+        </div>
+        <p className="text-xs text-gray-500 mt-2">เลือกเกมหรือพิมพ์คำค้น ระบบจะแนะนำ Global/Game Filter ให้อัตโนมัติ</p>
+      </div>
 
-            <div className="flex flex-col lg:flex-row gap-8">
+      <HeroAction 
+        onCreateClick={handleCreateParty}
+        onTinderClick={handleTinderMode}
+      />
+
+      <div className="grid gap-4 md:grid-cols-3 mb-10">
+        {filterTiers.map((tier) => (
+          <div
+            key={tier.id}
+            className={`rounded-2xl border border-white/10 bg-gradient-to-br ${tier.gradient} p-4`}
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-xl bg-black/30 flex items-center justify-center">
+                {tier.icon}
+              </div>
+              <div>
+                <p className="text-sm text-white font-semibold">{tier.title}</p>
+                <p className="text-xs text-gray-300">{tier.description}</p>
+              </div>
+            </div>
+            <span className="inline-flex text-[10px] px-2 py-0.5 rounded-full bg-black/30 text-gray-200 border border-white/10">
+              {tier.badge}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-8">
               {/* Main Content */}
               <div className="flex-1">
-                <GameSelector />
+                <GameSelector 
+                  title="เกมที่คุณเล่นบ่อย"
+                  subtitle="เลือกเกม ระบบจะโหลด Role / Rank มาตรฐานให้อัตโนมัติ"
+                />
                 
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-white flex items-center gap-2">
                     <span className="w-2 h-6 bg-cyan-500 rounded-full"></span>
-                    ห้องที่กำลังหาคน (Live)
+                    🔥 หาตี้ด่วนสำหรับคุณ
                   </h3>
                   <div className="flex gap-2">
                     <button className="px-3 py-1.5 text-sm bg-white/10 rounded-lg hover:bg-white/20 transition">
@@ -151,7 +199,7 @@ export default function Home() {
                         </div>
                       ))}
                     </>
-                  ) : parties.length === 0 ? (
+                  ) : filteredParties.length === 0 ? (
                     // Empty State
                     <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
                       <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6">
@@ -159,8 +207,8 @@ export default function Home() {
                       </div>
                       <h3 className="text-2xl font-bold text-white mb-2">ไม่มีห้องที่เปิดรับ</h3>
                       <p className="text-gray-400 mb-6 max-w-md">
-                        ตอนนี้ยังไม่มีปาร์ตี้ที่เปิดรับสมาชิก<br/>
-                        ลองสร้างปาร์ตี้ของคุณเองเพื่อเริ่มเล่นกัน!
+                        ไม่พบห้องที่ตรงกับ {searchTerm ? `คำค้น ${searchTerm}` : 'ตัวกรองนี้'}<br/>
+                        ลองปรับตัวกรอง หรือตั้งห้องใหม่ได้เลย
                       </p>
                       <button 
                         onClick={handleCreateParty}
@@ -171,12 +219,11 @@ export default function Home() {
                     </div>
                   ) : (
                     <>
-                      {parties.map(party => (
+                      {filteredParties.map(party => (
                         <LobbyCard 
                           key={party.id} 
                           party={party} 
                           onJoin={handleJoinClick}
-                          onQuickJoin={handleQuickJoin}
                         />
                       ))}
                       
@@ -267,9 +314,7 @@ export default function Home() {
                   </ul>
                 </div>
               </div>
-            </div>
-      </main>
-      </div>
-    </div>
+          </div>
+    </DashboardLayout>
   );
 }

@@ -1,18 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { Users, Star, Shield, Mic, Volume2, ChevronDown, Eye, UserPlus } from 'lucide-react';
+import { Users, Star, Shield, Mic, Volume2, UserPlus } from 'lucide-react';
 import { Party } from '@/lib/types';
-import Image from 'next/image';
 
 interface LobbyCardProps {
   party: Party;
   onJoin: (party: Party) => void;
-  onQuickJoin?: (party: Party, role: string) => void;
 }
 
-export default function LobbyCard({ party, onJoin, onQuickJoin }: LobbyCardProps) {
-  const [showQuickJoin, setShowQuickJoin] = useState(false);
+export default function LobbyCard({ party, onJoin }: LobbyCardProps) {
   
   // Get available roles (open slots)
   const availableRoles = party.requiredRoles
@@ -121,56 +117,13 @@ export default function LobbyCard({ party, onJoin, onQuickJoin }: LobbyCardProps
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2">
-          <button 
-            onClick={() => onJoin(party)}
-            className="flex-1 px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2 border border-white/10"
-          >
-            <Eye className="w-4 h-4" />
-            เข้าดูห้อง
-          </button>
-          
-          {availableRoles.length > 0 && (
-            <div className="relative flex-1">
-              <button 
-                onClick={() => setShowQuickJoin(!showQuickJoin)}
-                className="w-full px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold rounded-lg transition-colors shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2"
-              >
-                <UserPlus className="w-4 h-4" />
-                เข้าร่วมเล่น
-                <ChevronDown className={`w-4 h-4 transition-transform ${showQuickJoin ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {showQuickJoin && (
-                <div className="absolute bottom-full left-0 right-0 mb-2 bg-[#1a1a2e] border border-purple-500/30 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 z-10">
-                  {availableRoles.map((role, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        onQuickJoin?.(party, role);
-                        setShowQuickJoin(false);
-                      }}
-                      className="w-full px-4 py-2.5 text-left text-sm text-white hover:bg-purple-600/30 transition-colors border-b border-white/5 last:border-b-0 flex items-center justify-between"
-                    >
-                      <span className="font-medium">{role}</span>
-                      <UserPlus className="w-4 h-4 text-purple-400" />
-                    </button>
-                  ))}
-                  <button
-                    onClick={() => {
-                      onQuickJoin?.(party, 'Any');
-                      setShowQuickJoin(false);
-                    }}
-                    className="w-full px-4 py-2.5 text-left text-sm text-gray-300 hover:bg-purple-600/30 transition-colors flex items-center justify-between"
-                  >
-                    <span>Any (ตำแหน่งไหนก็ได้)</span>
-                    <UserPlus className="w-4 h-4 text-gray-400" />
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+        <button 
+          onClick={() => onJoin(party)}
+          className="w-full px-4 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white text-sm font-bold rounded-lg transition-all shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2"
+        >
+          <UserPlus className="w-4 h-4" />
+          เข้าร่วมปาร์ตี้
+        </button>
       </div>
     </div>
   );

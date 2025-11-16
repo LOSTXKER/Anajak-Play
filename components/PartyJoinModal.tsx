@@ -1,18 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Users, CheckCircle2, Shield, Star, Mic, Swords, Zap } from 'lucide-react';
+import { X, Users, CheckCircle2, Shield, Star, Mic, Swords } from 'lucide-react';
 import { Party } from '@/lib/types';
-import Image from 'next/image';
 
 interface PartyJoinModalProps {
   party: Party;
   onClose: () => void;
-  onConfirm: (party: Party, selectedRole: number | null) => void;
+  onConfirm: (party: Party, selectedRole: string) => void;
 }
 
 export default function PartyJoinModal({ party, onClose, onConfirm }: PartyJoinModalProps) {
-  const [selectedRole, setSelectedRole] = useState<number | null>(null);
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
   if (!party) return null;
 
@@ -62,7 +61,7 @@ export default function PartyJoinModal({ party, onClose, onConfirm }: PartyJoinM
                    </div>
                    <h2 className="text-2xl font-bold text-white mb-2">{party.title}</h2>
                    <p className="text-gray-300 bg-white/5 p-3 rounded-xl border border-white/5 text-sm leading-relaxed">
-                      "{party.desc || 'ไม่มีรายละเอียดเพิ่มเติม'}"
+                      &ldquo;{party.desc || 'ไม่มีรายละเอียดเพิ่มเติม'}&rdquo;
                    </p>
                 </div>
                 <div className="text-right hidden md:block">
@@ -73,21 +72,26 @@ export default function PartyJoinModal({ party, onClose, onConfirm }: PartyJoinM
 
              {/* Slots / Roles Selection */}
              <div className="mb-8">
-                <h4 className="text-white font-bold mb-4 flex items-center gap-2">
-                   <Users size={18} className="text-purple-400" /> 
-                   ตำแหน่งในทีม (เลือก 1 ตำแหน่ง)
+                <h4 className="text-white font-bold mb-4 flex items-center justify-between">
+                   <span className="flex items-center gap-2">
+                      <Users size={18} className="text-purple-400" /> 
+                      ตำแหน่งในทีม (เลือก 1 ตำแหน่ง)
+                   </span>
+                   <span className="text-sm font-normal text-gray-400">
+                      ว่าง {party.requiredRoles.filter(r => r.status === 'open').length}/{party.requiredRoles.length}
+                   </span>
                 </h4>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                    {party.requiredRoles && party.requiredRoles.map((role, idx) => {
                       const isFilled = role.status === 'filled';
-                      const isSelected = selectedRole === idx;
+                      const isSelected = selectedRole === role.role;
 
                       return (
                          <button 
                             key={idx}
                             disabled={isFilled}
-                            onClick={() => setSelectedRole(idx)}
+                            onClick={() => setSelectedRole(role.role)}
                             className={`
                                relative p-3 rounded-xl border text-left transition-all flex items-center gap-3
                                ${isFilled 
@@ -156,7 +160,7 @@ export default function PartyJoinModal({ party, onClose, onConfirm }: PartyJoinM
                    ยกเลิก
                 </button>
                 <button 
-                   onClick={() => onConfirm(party, selectedRole)}
+                   onClick={() => selectedRole && onConfirm(party, selectedRole)}
                    disabled={selectedRole === null}
                    className={`
                       px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg
