@@ -1,9 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Prompt, Sarabun, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { PartyProvider } from "@/lib/PartyContext";
 
-const inter = Inter({ subsets: ["latin"] });
+const headingFont = Prompt({
+  subsets: ["latin", "thai"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-heading",
+});
+
+const bodyFont = Sarabun({
+  subsets: ["latin", "thai"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-body",
+});
+
+const monoFont = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-mono",
+});
 
 export const metadata: Metadata = {
   title: "Anajak Play - Gaming Superapp",
@@ -26,7 +42,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      <body className={inter.className}>
+      <body className={`${headingFont.variable} ${bodyFont.variable} ${monoFont.variable} font-body bg-dark-base text-text-primary`}>
         <PartyProvider>
           {children}
         </PartyProvider>

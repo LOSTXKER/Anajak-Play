@@ -11,7 +11,10 @@ import {
   FeedPost,
   GameId,
   ActivityFeedItem,
-  PlatformStats
+  PlatformStats,
+  LivePresenceEvent,
+  OnlineFriendPresence,
+  ReputationOverview
 } from '../types/index';
 
 // ==================== MOCK USERS ====================
@@ -155,7 +158,7 @@ export const mockUsers: User[] = [
       friendCount: 42,
       riotId: 'ValoQueen#TH1'
     },
-    isOnline: false,
+    isOnline: true,
     cosmetics: {
       activeFrame: 'frame-rare',
       activeTitle: 'เทพซัพพอร์ต',
@@ -417,6 +420,93 @@ export const mockPlatformStats: PlatformStats = {
   activeSessions: 128,
   trendingGame: 'rov',
   updatedAt: new Date()
+};
+
+// ==================== LIVE PRESENCE ====================
+
+export const mockLivePresenceEvents: LivePresenceEvent[] = [
+  {
+    id: 'presence-1',
+    type: 'session',
+    icon: '🎮',
+    message: 'KiraGod เริ่ม Session RoV Ranked',
+    accent: 'purple',
+    timestamp: new Date(Date.now() - 1000 * 60 * 1)
+  },
+  {
+    id: 'presence-2',
+    type: 'match',
+    icon: '🤝',
+    message: 'Valo Chill unrated ได้เพื่อนใหม่ 2 คน',
+    accent: 'blue',
+    timestamp: new Date(Date.now() - 1000 * 60 * 3)
+  },
+  {
+    id: 'presence-3',
+    type: 'reputation',
+    icon: '🛡️',
+    message: 'Reputation 4.8 • Pro Player',
+    accent: 'gold',
+    timestamp: new Date(Date.now() - 1000 * 60 * 5)
+  },
+  {
+    id: 'presence-4',
+    type: 'marketplace',
+    icon: '💼',
+    message: 'โค้ช Valorant ปิดงานสอนสำเร็จ',
+    accent: 'purple',
+    timestamp: new Date(Date.now() - 1000 * 60 * 7)
+  },
+  {
+    id: 'presence-5',
+    type: 'achievement',
+    icon: '🏅',
+    message: 'DragonSlayer ได้ Badge The Friendly',
+    accent: 'blue',
+    timestamp: new Date(Date.now() - 1000 * 60 * 12)
+  }
+];
+
+export const mockOnlineFriends: OnlineFriendPresence[] = [
+  {
+    id: 'friend-1',
+    user: mockUsers[0],
+    status: 'matching',
+    game: 'rov',
+    rankLabel: 'Commander I+',
+    reputationScore: 4.8
+  },
+  {
+    id: 'friend-2',
+    user: mockUsers[1],
+    status: 'idle',
+    game: 'rov',
+    rankLabel: 'Platinum',
+    reputationScore: 4.2
+  },
+  {
+    id: 'friend-3',
+    user: mockUsers[2],
+    status: 'in-session',
+    game: 'valorant',
+    rankLabel: 'Diamond',
+    reputationScore: 4.9
+  }
+];
+
+export const mockReputationOverview: ReputationOverview = {
+  score: 4.8,
+  tier: 'Pro Player',
+  percentile: 92,
+  trend: 0.2,
+  totalSessions: 128,
+  totalReviews: 45,
+  highlights: ['ไม่เคยเทนัด 30 วัน', 'ได้คำชม 12 ครั้ง/สัปดาห์', 'Mentor ผู้เล่นใหม่'],
+  breakdown: [
+    { label: 'Behavior', value: 90 },
+    { label: 'Reliability', value: 85 },
+    { label: 'Teamwork', value: 86 }
+  ]
 };
 
 // ==================== GAME CONFIG ====================

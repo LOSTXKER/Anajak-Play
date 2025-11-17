@@ -631,6 +631,40 @@ export interface PlatformStats {
   updatedAt: Date;
 }
 
+export type LivePresenceAccent = 'purple' | 'blue' | 'gold';
+
+export interface LivePresenceEvent {
+  id: string;
+  type: 'session' | 'match' | 'reputation' | 'marketplace' | 'achievement';
+  icon: string;
+  message: string;
+  accent?: LivePresenceAccent;
+  timestamp: Date;
+}
+
+export interface OnlineFriendPresence {
+  id: string;
+  user: User;
+  status: 'matching' | 'in-session' | 'idle';
+  game?: GameId;
+  rankLabel?: string;
+  reputationScore?: number;
+}
+
+export interface ReputationOverview {
+  score: number; // 0-5 scale for UI
+  tier: string;
+  percentile: number;
+  trend: number; // positive = improving
+  totalSessions: number;
+  totalReviews: number;
+  highlights: string[];
+  breakdown: Array<{
+    label: string;
+    value: number; // 0-100
+  }>;
+}
+
 // ==================== API RESPONSES ====================
 
 export interface ApiResponse<T> {

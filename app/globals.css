@@ -5,6 +5,7 @@
 :root {
   --background: #05050a;
   --foreground: #ffffff;
+  color-scheme: dark;
 }
 
 @layer base {
@@ -24,8 +25,26 @@
   }
 
   body {
-    @apply bg-[#05050a] text-white;
+    @apply bg-dark-base text-text-primary font-body antialiased;
   }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading text-text-primary;
+  }
+
+  code,
+  pre {
+    @apply font-mono;
+  }
+}
+
+::selection {
+  @apply bg-primary-neon text-white;
 }
 
 @layer utilities {
