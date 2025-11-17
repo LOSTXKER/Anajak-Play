@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ShoppingBag, Star, Shield, Search, Swords, Zap, Gift, User, Filter, ChevronDown } from 'lucide-react';
-import { marketplaceListings } from '@/lib/mockData';
+import { mockMarketplaceListings } from '@/lib/data/mock-data';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import Image from 'next/image';
 
@@ -26,7 +26,7 @@ export default function MarketPage() {
   const [isLoading] = useState(false);
 
   // Filter Logic
-  const filteredListings = marketplaceListings.filter(item => {
+  const filteredListings = mockMarketplaceListings.filter((item: any) => {
     const catMatch = activeCategory === 'all' || item.category === activeCategory;
     const gameMatch = activeGame === 'all' || (
       (activeGame === 'rov' && item.game === 'RoV') ||
@@ -150,7 +150,7 @@ export default function MarketPage() {
             </div>
           ) : filteredListings.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredListings.map(item => (
+              {filteredListings.map((item: any) => (
                 <div 
                   key={item.id}
                   className="group bg-[#13132b] border border-white/10 rounded-2xl overflow-hidden hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col h-full shadow-lg"

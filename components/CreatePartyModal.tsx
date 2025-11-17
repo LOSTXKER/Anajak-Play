@@ -2,8 +2,14 @@
 
 import { useState } from 'react';
 import { X, ChevronRight, Plus, Trash2 } from 'lucide-react';
-import { games } from '@/lib/mockData';
-import { Party, Game } from '@/lib/types';
+import { Party, Game } from '@/lib/types/index';
+
+// Mock games data
+const games: Game[] = [
+  { id: 1, name: 'RoV', icon: '⚔️', active: true, roles: ['Carry', 'Support', 'Mage', 'Fighter', 'Jungle', 'Any'] },
+  { id: 2, name: 'Valorant', icon: '🔫', active: false, roles: ['Duelist', 'Controller', 'Initiator', 'Sentinel', 'Any'] },
+  { id: 3, name: 'MLBB', icon: '⚡', active: false, roles: ['Carry', 'Tank', 'Mage', 'Marksman', 'Support', 'Any'] },
+];
 
 interface CreatePartyModalProps {
   onClose: () => void;

@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { User, Settings, Wallet, LogOut, Shield, Trophy, ChevronRight } from 'lucide-react';
-import { userProfileData } from '@/lib/mockData';
+import { mockUsers } from '@/lib/data/mock-data';
+import { userProfileData } from '@/lib/data/legacy-data';
 
 interface ProfileDropdownProps {
   onOpenProfile?: () => void;

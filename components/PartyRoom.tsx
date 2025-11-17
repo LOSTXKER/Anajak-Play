@@ -20,7 +20,7 @@ import {
    ThumbsUp,
    AlertTriangle
 } from 'lucide-react';
-import { Party } from '@/lib/types';
+import { Party } from '@/lib/types/index';
 import { useParty } from '@/lib/PartyContext';
 
 interface PartyRoomProps {

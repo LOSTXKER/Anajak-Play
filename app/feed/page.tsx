@@ -10,8 +10,8 @@ import LobbyCard from '@/components/LobbyCard';
 import PartyJoinModal from '@/components/PartyJoinModal';
 import LFGFilterPanel from '@/components/LFGFilterPanel';
 import { useParty } from '@/lib/PartyContext';
-import { partiesData } from '@/lib/mockData';
-import { Party } from '@/lib/types';
+import { partiesData } from '@/lib/data/legacy-data';
+import { Party } from '@/lib/types/index';
 import {
   aiPersonalityInsights,
   defaultGameKey,

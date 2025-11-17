@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronDown, Filter, SlidersHorizontal } from 'lucide-react';
-import { FilterDefinition, GameFilterConfig } from '@/lib/types';
+import { FilterDefinition, GameFilterConfig } from '@/lib/types/index';
 
 interface FilterPanelProps {
   selectedGame: string;

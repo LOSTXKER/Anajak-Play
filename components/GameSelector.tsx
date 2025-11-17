@@ -1,7 +1,7 @@
 'use client';
 
 import { Gamepad2 } from 'lucide-react';
-import { games } from '@/lib/mockData';
+import { games } from '@/lib/data/legacy-data';
 import Image from 'next/image';
 
 interface GameSelectorProps {

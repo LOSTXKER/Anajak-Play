@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { BellRing, CheckCircle2, Clock, Flame, ShieldCheck, UserPlus, XCircle } from 'lucide-react';
 
 import DashboardLayout from '@/components/layouts/DashboardLayout';
-import { matchAlerts, notificationsData } from '@/lib/mockData';
+import { notificationsData } from '@/lib/data/legacy-data';
+
+const matchAlerts = [];
 
 export default function NotificationsPage() {
   const [alerts, setAlerts] = useState(matchAlerts);
