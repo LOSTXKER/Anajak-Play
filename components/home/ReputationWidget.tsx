@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { ReputationOverview } from '@/lib/types';
+import { ReputationOverview } from '@/lib/types/index';
 import { ShieldCheck, TrendingUp } from 'lucide-react';
 
 interface ReputationWidgetProps {

@@ -4,7 +4,7 @@ import React from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui/Avatar';
-import { OnlineFriendPresence } from '@/lib/types';
+import { OnlineFriendPresence } from '@/lib/types/index';
 import { MessageCircle } from 'lucide-react';
 
 interface OnlineFriendsProps {

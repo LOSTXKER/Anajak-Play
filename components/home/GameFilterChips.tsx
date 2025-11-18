@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { GameId } from '@/lib/types';
+import { GameId } from '@/lib/types/index';
 import { Button } from '@/components/ui/Button';
 
 export type GameFilterValue = 'all' | GameId;

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/Card';
-import { MarketplaceListing } from '@/lib/types';
+import { MarketplaceListing } from '@/lib/types/index';
 import { ArrowUpRight, BadgeHelp } from 'lucide-react';
 
 interface MarketplacePreviewProps {

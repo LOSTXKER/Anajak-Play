@@ -1,4 +1,4 @@
-import { Party, RoleSlot } from '@/lib/types';
+import { Party, RoleSlot } from '@/lib/types/index';
 import { GameId, LFGSession, MoodStatus, RankTier } from '@/lib/types/index';
 import { gameConfig, getUserById } from '@/lib/data/mock-data';
 

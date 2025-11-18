@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Wallet } from 'lucide-react';
-import { userProfileData } from '@/lib/mockData';
+import { userProfileData } from '@/lib/data/legacy-data';
 
 interface ProfileDropdownProps {
   onOpenProfile?: () => void;
