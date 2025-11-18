@@ -18,7 +18,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <Navbar onOpenProfile={() => router.push('/profile')} />
       
       {/* Main Content */}
-      <main className="pb-20 md:pb-0">
+      <main className="pb-20 md:pb-0 pt-20">
         {children}
       </main>
       

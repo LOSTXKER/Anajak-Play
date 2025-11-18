@@ -151,7 +151,7 @@ export const LFGCard: React.FC<LFGCardProps> = ({ session, onJoin }) => {
       {/* Footer Section */}
       <div className="relative mt-auto border-t border-white/5 bg-black/20 px-5 py-3 flex items-center justify-between z-10">
         <div className="flex items-center gap-2">
-          <div className="flex -space-x-2">
+          <div className="flex -space-x-2 mr-1">
             {session.currentPlayers.slice(0, 3).map((p, i) => (
               <div key={i} className="w-6 h-6 rounded-full bg-gray-800 border border-[#13132b] flex items-center justify-center overflow-hidden">
                  <img 
@@ -162,10 +162,19 @@ export const LFGCard: React.FC<LFGCardProps> = ({ session, onJoin }) => {
               </div>
             ))}
           </div>
-          <span className="text-xs text-gray-400 font-medium">
-            <span className={currentPlayersCount >= session.maxPlayers ? 'text-red-400' : 'text-white'}>{currentPlayersCount}</span>
-            /{session.maxPlayers}
-          </span>
+          {/* Visual Slots instead of Text */}
+          <div className="flex items-center gap-1">
+            {Array.from({ length: session.maxPlayers }).map((_, i) => (
+              <div 
+                key={i} 
+                className={`w-2 h-2 rounded-full ${
+                  i < currentPlayersCount 
+                    ? 'bg-white' 
+                    : 'bg-white/20'
+                }`} 
+              />
+            ))}
+          </div>
         </div>
 
         <button 

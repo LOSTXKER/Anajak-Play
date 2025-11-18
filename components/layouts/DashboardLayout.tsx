@@ -68,7 +68,7 @@ export default function DashboardLayout({
       )}
 
       {/* Main Content Wrapper */}
-      <div className="lg:ml-20 pb-16 lg:pb-0 pt-16 lg:pt-0"> {/* Added padding-top for mobile/desktop if needed, adjust based on Navbar height behavior */}
+      <div className="lg:ml-20 pb-16 lg:pb-0 pt-20"> {/* Added padding-top for mobile/desktop if needed, adjust based on Navbar height behavior */}
         {enableChat && (
           <ChatSidebarOverlay
             isOpen={showChatSidebar}

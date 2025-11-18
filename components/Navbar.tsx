@@ -32,7 +32,7 @@ export default function Navbar({
   return (
     <nav 
       className={`
-        sticky top-0 z-50 w-full transition-all duration-300 border-b
+        fixed top-0 z-50 w-full transition-all duration-300 border-b
         ${isScrolled 
           ? 'bg-[#0a0a16]/90 backdrop-blur-xl border-white/5 shadow-lg shadow-purple-900/5' 
           : 'bg-transparent border-transparent'

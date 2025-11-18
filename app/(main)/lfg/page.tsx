@@ -7,7 +7,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Zap, Users, Gamepad2, Swords, ArrowRight, Plus, ArrowLeft } from 'lucide-react';
+import { Zap, Users, Gamepad2, Swords, ArrowRight, Plus, ArrowLeft, Filter, SlidersHorizontal, Mic } from 'lucide-react';
 import { LFGSession, GameId } from '@/lib/types/index';
 import { LFGCard } from '@/components/lfg/LFGCard';
 import CreateLFGSession from '@/components/lfg/CreateLFGSession';
@@ -33,13 +33,29 @@ export default function LFGPage() {
   const [rooms, setRooms] = useState<LFGSession[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
+  // Smart Filters State
+  const [filterRank, setFilterRank] = useState<'all' | 'ranked' | 'casual'>('all');
+  const [filterMood, setFilterMood] = useState<'all' | 'fun' | 'serious'>('all');
+  const [showFilters, setShowFilters] = useState(false);
+
   useEffect(() => {
     setRooms(generateMockRooms());
   }, []);
 
   const activeRooms = rooms.filter(room => {
     if (room.status === 'completed' || room.status === 'cancelled') return false;
+    
+    // Game Filter
     if (selectedGame !== 'all' && room.game !== selectedGame) return false;
+    
+    // Rank Filter
+    if (filterRank === 'ranked' && room.requiredRank === 'unranked') return false;
+    if (filterRank === 'casual' && room.requiredRank !== 'unranked') return false;
+
+    // Mood Filter
+    if (filterMood === 'serious' && (room.mood === 'fun' || room.mood === 'chill')) return false;
+    if (filterMood === 'fun' && (room.mood === 'tryhard' || room.mood === 'competitive')) return false;
+
     return true;
   });
 
@@ -195,32 +211,68 @@ export default function LFGPage() {
 
             {/* Row 2: Filters (Lobby Only) */}
             {viewMode === 'lobby' && (
-              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1 animate-slideDown">
-                <button
-                  onClick={() => setSelectedGame('all')}
-                  className={`flex-shrink-0 h-8 px-4 rounded-lg text-xs font-bold transition-all border ${
-                    selectedGame === 'all' 
-                      ? 'bg-white text-black border-white' 
-                      : 'bg-[#18181b]/50 text-gray-400 border-white/5 hover:bg-white/5 hover:border-white/10'
-                  }`}
-                >
-                  ทั้งหมด
-                </button>
-                <div className="w-[1px] h-5 bg-white/10 mx-1"></div>
-                {Object.values(gameConfig).map(game => (
-                  <button
-                    key={game.id}
-                    onClick={() => setSelectedGame(game.id)}
-                    className={`flex-shrink-0 flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold transition-all border ${
-                      selectedGame === game.id 
-                        ? 'bg-[#27272a] text-white border-purple-500 shadow-sm' 
-                        : 'bg-[#18181b]/50 text-gray-400 border-white/5 hover:bg-white/5 hover:border-white/10'
+              <div className="flex flex-col gap-3 animate-slideDown">
+                {/* Game Filter & Expand Toggle */}
+                <div className="flex items-center justify-between">
+                   <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
+                    <button
+                      onClick={() => setSelectedGame('all')}
+                      className={`flex-shrink-0 h-8 px-4 rounded-lg text-xs font-bold transition-all border ${
+                        selectedGame === 'all' 
+                          ? 'bg-white text-black border-white' 
+                          : 'bg-[#18181b]/50 text-gray-400 border-white/5 hover:bg-white/5 hover:border-white/10'
+                      }`}
+                    >
+                      ทั้งหมด
+                    </button>
+                    <div className="w-[1px] h-5 bg-white/10 mx-1"></div>
+                    {Object.values(gameConfig).map(game => (
+                      <button
+                        key={game.id}
+                        onClick={() => setSelectedGame(game.id)}
+                        className={`flex-shrink-0 flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold transition-all border ${
+                          selectedGame === game.id 
+                            ? 'bg-[#27272a] text-white border-purple-500 shadow-sm' 
+                            : 'bg-[#18181b]/50 text-gray-400 border-white/5 hover:bg-white/5 hover:border-white/10'
+                        }`}
+                      >
+                        <img src={game.icon} className="w-3.5 h-3.5 rounded-sm opacity-90" alt="" />
+                        {game.name}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button 
+                    onClick={() => setShowFilters(!showFilters)}
+                    className={`h-8 w-8 flex items-center justify-center rounded-lg border transition-colors ${
+                      showFilters ? 'bg-cyan-900/20 text-cyan-400 border-cyan-500/30' : 'bg-[#18181b]/50 text-gray-400 border-white/5 hover:text-white'
                     }`}
                   >
-                    <img src={game.icon} className="w-3.5 h-3.5 rounded-sm opacity-90" alt="" />
-                    {game.name}
+                    <SlidersHorizontal size={14} />
                   </button>
-                ))}
+                </div>
+
+                {/* Advanced Filters Panel */}
+                {showFilters && (
+                  <div className="p-4 bg-[#13132b]/40 rounded-xl border border-white/5 grid grid-cols-2 md:grid-cols-4 gap-4 animate-fadeIn">
+                    <div>
+                      <label className="text-[10px] uppercase text-gray-500 font-bold mb-1.5 block">Rank Mode</label>
+                      <div className="flex gap-1">
+                        <button onClick={() => setFilterRank('all')} className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${filterRank === 'all' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'}`}>All</button>
+                        <button onClick={() => setFilterRank('ranked')} className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${filterRank === 'ranked' ? 'bg-purple-500/20 text-purple-400' : 'text-gray-500 hover:text-gray-300'}`}>Ranked</button>
+                        <button onClick={() => setFilterRank('casual')} className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${filterRank === 'casual' ? 'bg-green-500/20 text-green-400' : 'text-gray-500 hover:text-gray-300'}`}>Casual</button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase text-gray-500 font-bold mb-1.5 block">Vibe / Mood</label>
+                      <div className="flex gap-1">
+                        <button onClick={() => setFilterMood('all')} className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${filterMood === 'all' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'}`}>All</button>
+                        <button onClick={() => setFilterMood('serious')} className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${filterMood === 'serious' ? 'bg-red-500/20 text-red-400' : 'text-gray-500 hover:text-gray-300'}`}>Serious</button>
+                        <button onClick={() => setFilterMood('fun')} className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${filterMood === 'fun' ? 'bg-yellow-500/20 text-yellow-400' : 'text-gray-500 hover:text-gray-300'}`}>Fun</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -311,8 +363,8 @@ export default function LFGPage() {
             {activeRooms.length === 0 && (
               <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl bg-[#13132b]/30">
                 <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">🦗</div>
-                <h3 className="text-lg font-bold text-white mb-1">ไม่มีห้องที่เปิดอยู่</h3>
-                <p className="text-gray-400 text-sm mb-6">ยังไม่มีใครตั้งห้องเลย มาเปิดห้องแรกกันเถอะ!</p>
+                <h3 className="text-lg font-bold text-white mb-1">ไม่มีห้องที่ตรงกับเงื่อนไข</h3>
+                <p className="text-gray-400 text-sm mb-6">ลองปรับตัวกรองหรือสร้างห้องใหม่เลย!</p>
                 <button onClick={() => setShowCreateModal(true)} className="px-6 py-2.5 bg-white text-black rounded-xl text-sm font-bold hover:bg-gray-200 transition-colors">
                    + สร้างห้องใหม่
                 </button>
