@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, ShoppingBag, MessageSquare, Gamepad2, Layers, BellRing, PlusCircle } from 'lucide-react';
+import { Home, Users, ShoppingBag, MessageSquare, Gamepad2 } from 'lucide-react';
 import { useParty } from '@/lib/PartyContext';
 
 export default function Sidebar() {
@@ -11,9 +11,6 @@ export default function Sidebar() {
 
   const navItems = [
     { icon: Home, label: 'หน้าแรก', href: '/', badge: null },
-    { icon: Layers, label: 'LFG Feed', href: '/feed', badge: null },
-    { icon: PlusCircle, label: 'สร้างคำขอ', href: '/create-request', badge: null },
-    { icon: BellRing, label: 'Matching', href: '/notifications', badge: null },
     { icon: Users, label: 'ปาร์ตี้', href: '/party', badge: activeParty ? 'active' : null, highlight: !!activeParty },
     { icon: ShoppingBag, label: 'ตลาด', href: '/market', badge: null },
     { icon: MessageSquare, label: 'แชท', href: '/messages', badge: '3' },

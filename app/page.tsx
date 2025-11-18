@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import GameSelector from '@/components/GameSelector';
 import HeroAction from '@/components/HeroAction';
@@ -13,7 +13,7 @@ import { partiesData } from '@/lib/mockData';
 import { Party } from '@/lib/types';
 import { useParty } from '@/lib/PartyContext';
 import Link from 'next/link';
-import { Filter, Layers, Plus, Search, Shield, Sparkles, Users, Zap } from 'lucide-react';
+import { Plus, Shield, Users, Zap } from 'lucide-react';
 
 export default function Home() {
   const router = useRouter();
@@ -24,45 +24,6 @@ export default function Home() {
   const [showJoinParty, setShowJoinParty] = useState(false);
   const [selectedParty, setSelectedParty] = useState<Party | null>(null);
   const [isLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const filterTiers = [
-    {
-      id: 'global',
-      title: 'Global Filters',
-      description: 'เวลา ภาษา ไมค์ Playstyle',
-      badge: 'ใช้ได้ทุกเกม',
-      icon: <Filter className="w-5 h-5 text-cyan-300" />,
-      gradient: 'from-cyan-500/20 to-blue-500/20',
-    },
-    {
-      id: 'game',
-      title: 'Game Specific',
-      description: 'Role • Mode • Rank',
-      badge: 'Auto-load ตามเกม',
-      icon: <Layers className="w-5 h-5 text-purple-300" />,
-      gradient: 'from-purple-500/20 to-indigo-500/20',
-    },
-    {
-      id: 'ai',
-      title: 'Personality AI',
-      description: 'วิเคราะห์ vibe + toxicity',
-      badge: 'Killer Feature',
-      icon: <Sparkles className="w-5 h-5 text-yellow-300" />,
-      gradient: 'from-amber-400/20 to-pink-500/20',
-    },
-  ];
-
-  const filteredParties = useMemo(() => {
-    if (!searchTerm.trim()) return parties;
-    const query = searchTerm.toLowerCase();
-    return parties.filter(
-      (party) =>
-        party.title.toLowerCase().includes(query) ||
-        party.game.toLowerCase().includes(query) ||
-        party.mode.toLowerCase().includes(query)
-    );
-  }, [parties, searchTerm]);
 
   // ลบ auto-redirect ออก เพื่อให้สามารถอยู่หน้าแรกได้แม้มี party
   // ผู้ใช้สามารถกลับมาหน้าแรกได้ตลอด
@@ -116,45 +77,10 @@ export default function Home() {
         />
       )}
 
-      <div className="mb-8">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
-          <input
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="🔍 Search เกม / โหมด / ปาร์ตี้"
-            className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-gray-500 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
-          />
-        </div>
-        <p className="text-xs text-gray-500 mt-2">เลือกเกมหรือพิมพ์คำค้น ระบบจะแนะนำ Global/Game Filter ให้อัตโนมัติ</p>
-      </div>
-
       <HeroAction 
         onCreateClick={handleCreateParty}
         onTinderClick={handleTinderMode}
       />
-
-      <div className="grid gap-4 md:grid-cols-3 mb-10">
-        {filterTiers.map((tier) => (
-          <div
-            key={tier.id}
-            className={`rounded-2xl border border-white/10 bg-gradient-to-br ${tier.gradient} p-4`}
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-black/30 flex items-center justify-center">
-                {tier.icon}
-              </div>
-              <div>
-                <p className="text-sm text-white font-semibold">{tier.title}</p>
-                <p className="text-xs text-gray-300">{tier.description}</p>
-              </div>
-            </div>
-            <span className="inline-flex text-[10px] px-2 py-0.5 rounded-full bg-black/30 text-gray-200 border border-white/10">
-              {tier.badge}
-            </span>
-          </div>
-        ))}
-      </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
               {/* Main Content */}
@@ -179,7 +105,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5">
                   {isLoading ? (
                     // Loading Skeleton
                     <>
@@ -199,7 +125,7 @@ export default function Home() {
                         </div>
                       ))}
                     </>
-                  ) : filteredParties.length === 0 ? (
+                  ) : parties.length === 0 ? (
                     // Empty State
                     <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
                       <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6">
@@ -207,7 +133,7 @@ export default function Home() {
                       </div>
                       <h3 className="text-2xl font-bold text-white mb-2">ไม่มีห้องที่เปิดรับ</h3>
                       <p className="text-gray-400 mb-6 max-w-md">
-                        ไม่พบห้องที่ตรงกับ {searchTerm ? `คำค้น ${searchTerm}` : 'ตัวกรองนี้'}<br/>
+                        ไม่พบห้องที่เปิดรับอยู่ในขณะนี้<br/>
                         ลองปรับตัวกรอง หรือตั้งห้องใหม่ได้เลย
                       </p>
                       <button 
@@ -219,7 +145,7 @@ export default function Home() {
                     </div>
                   ) : (
                     <>
-                      {filteredParties.map(party => (
+                      {parties.map(party => (
                         <LobbyCard 
                           key={party.id} 
                           party={party} 

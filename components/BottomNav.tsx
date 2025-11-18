@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, ShoppingBag, MessageSquare, User, Layers, BellRing, PlusCircle } from 'lucide-react';
+import { Home, Users, ShoppingBag, MessageSquare, User } from 'lucide-react';
 import { useParty } from '@/lib/PartyContext';
 
 export default function BottomNav() {
@@ -11,9 +11,6 @@ export default function BottomNav() {
 
   const navItems = [
     { icon: Home, label: 'หน้าแรก', href: '/' },
-    { icon: Layers, label: 'ฟีด', href: '/feed' },
-    { icon: PlusCircle, label: 'สร้าง', href: '/create-request' },
-    { icon: BellRing, label: 'Matching', href: '/notifications' },
     { icon: Users, label: 'ปาร์ตี้', href: '/party', hasParty: activeParty },
     { icon: ShoppingBag, label: 'ตลาด', href: '/market' },
     { icon: MessageSquare, label: 'แชท', href: '/messages' },

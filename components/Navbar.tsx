@@ -1,27 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { Bell, Search, Zap, MessageSquare } from 'lucide-react';
+import { Bell, Search, Zap } from 'lucide-react';
 import ProfileDropdown from './ProfileDropdown';
 
 interface NavbarProps {
   onOpenProfile?: () => void;
   onToggleNoti?: () => void;
-  onToggleChat?: () => void;
   notiOpen?: boolean;
   unreadCount?: number;
-  showChatButton?: boolean;
-  chatOpen?: boolean;
 }
 
 export default function Navbar({ 
   onOpenProfile, 
   onToggleNoti,
-  onToggleChat,
   notiOpen = false, 
-  unreadCount = 0,
-  showChatButton = false,
-  chatOpen = false
+  unreadCount = 0
 }: NavbarProps) {
   return (
     <nav className="sticky top-0 z-50 bg-[#0a0a16]/90 backdrop-blur-md border-b border-white/10 w-full">
@@ -63,15 +57,6 @@ export default function Navbar({
               </span>
             )}
           </button>
-
-          {showChatButton && (
-            <button
-              className={`relative p-2 transition-colors ${chatOpen ? 'text-white bg-white/10 rounded-full' : 'text-gray-400 hover:text-white'}`}
-              onClick={onToggleChat}
-            >
-              <MessageSquare className="w-6 h-6" />
-            </button>
-          )}
 
           <ProfileDropdown onOpenProfile={onOpenProfile} />
         </div>

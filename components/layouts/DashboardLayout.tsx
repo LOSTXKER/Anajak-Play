@@ -62,13 +62,8 @@ export default function DashboardLayout({
               ? () => setShowNotifications((prev) => !prev)
               : undefined
           }
-          onToggleChat={
-            enableChat ? () => setShowChatSidebar((prev) => !prev) : undefined
-          }
           notiOpen={showNotifications}
           unreadCount={enableNotifications ? unreadCount : 0}
-          showChatButton={enableChat}
-          chatOpen={showChatSidebar}
         />
 
         {enableNotifications && (
