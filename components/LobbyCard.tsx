@@ -1,6 +1,6 @@
 'use client';
 
-import { Users, Star, Shield, Mic, Volume2, UserPlus } from 'lucide-react';
+import { Users, Star, Shield, Mic, Volume2, UserPlus, Search } from 'lucide-react';
 import { Party } from '@/lib/types/index';
 
 interface LobbyCardProps {
@@ -87,7 +87,10 @@ export default function LobbyCard({ party, onJoin }: LobbyCardProps) {
       {/* Available Roles */}
       {availableRoles.length > 0 && (
         <div className="mb-4 pb-4 border-b border-white/10">
-          <div className="text-xs text-gray-400 mb-2">🔍 ตำแหน่งที่เปิดรับ:</div>
+          <div className="text-xs text-gray-400 mb-2 flex items-center gap-1">
+            <Search className="w-3.5 h-3.5" />
+            ตำแหน่งที่เปิดรับ:
+          </div>
           <div className="flex flex-wrap gap-2">
             {availableRoles.map((role, idx) => (
               <span key={idx} className="text-xs px-2 py-1 bg-cyan-500/10 text-cyan-300 rounded border border-cyan-500/30 font-medium">
