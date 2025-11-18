@@ -11,7 +11,7 @@ export default function Sidebar() {
 
   const navItems = [
     { icon: Home, label: 'หน้าแรก', href: '/', badge: null },
-    { icon: Users, label: 'ปาร์ตี้', href: '/party', badge: activeParty ? 'active' : null, highlight: !!activeParty },
+    { icon: Users, label: 'ปาร์ตี้', href: '/lfg', badge: activeParty ? 'active' : null, highlight: !!activeParty },
     { icon: ShoppingBag, label: 'ตลาด', href: '/market', badge: null },
     { icon: MessageSquare, label: 'แชท', href: '/messages', badge: '3' },
   ];
@@ -88,7 +88,7 @@ export default function Sidebar() {
       {activeParty && (
         <div className="w-full px-3 mb-4">
           <Link
-            href="/party"
+            href="/lfg"
             className="flex flex-col items-center gap-2 p-3 bg-gradient-to-br from-purple-600/30 to-cyan-600/30 rounded-xl border-2 border-purple-500/50 hover:border-purple-500 transition-all group relative overflow-hidden"
           >
             {/* Animated background */}

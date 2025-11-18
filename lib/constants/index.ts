@@ -96,7 +96,7 @@ export const APP_ROUTES = {
   MARKETPLACE: '/marketplace',
   PROFILE: '/profile',
   FEED: '/feed',
-  PARTY: '/party',
+  PARTY: '/lfg',
   MESSAGES: '/messages',
   NOTIFICATIONS: '/notifications',
   SETTINGS: '/settings',

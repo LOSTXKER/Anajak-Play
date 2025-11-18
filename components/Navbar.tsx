@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { Bell, Search, Zap } from 'lucide-react';
+import { Bell, Search, Zap, Menu, X } from 'lucide-react';
 import ProfileDropdown from './ProfileDropdown';
+import { useState, useEffect } from 'react';
 
 interface NavbarProps {
   onOpenProfile?: () => void;
@@ -17,47 +18,96 @@ export default function Navbar({
   notiOpen = false, 
   unreadCount = 0
 }: NavbarProps) {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <nav className="sticky top-0 z-50 bg-[#0a0a16]/90 backdrop-blur-md border-b border-white/10 w-full">
-      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-3 flex items-center justify-between">
+    <nav 
+      className={`
+        sticky top-0 z-50 w-full transition-all duration-300 border-b
+        ${isScrolled 
+          ? 'bg-[#0a0a16]/90 backdrop-blur-xl border-white/5 shadow-lg shadow-purple-900/5' 
+          : 'bg-transparent border-transparent'
+        }
+      `}
+    >
+      {/* Top Glow Line */}
+      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-purple-500/30 to-transparent opacity-50"></div>
+
+      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-3 flex items-center justify-between relative">
+        
+        {/* Left: Brand */}
         <Link 
           href="/" 
-          className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+          className="flex items-center gap-3 cursor-pointer group"
         >
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(79,70,229,0.5)]">
-            <Zap className="text-white w-6 h-6 fill-current" />
+          <div className="relative w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl opacity-90 group-hover:opacity-100 blur-[1px]"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl opacity-50 blur-md group-hover:opacity-70 transition-opacity"></div>
+            <Zap className="relative text-white w-5 h-5 fill-white drop-shadow-md" />
           </div>
           <div className="hidden lg:block">
-            <h1 className="text-xl font-bold text-white tracking-wider">
-              ANAJAK <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">PLAY</span>
+            <h1 className="text-lg font-bold text-white tracking-wider leading-none">
+              ANAJAK
             </h1>
-            <p className="text-[10px] text-gray-400 uppercase tracking-widest">แอพเกมเมอร์ครบวงจร</p>
+            <span className="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 tracking-[0.2em]">
+              PLAY
+            </span>
           </div>
         </Link>
 
-        <div className="hidden lg:flex flex-1 max-w-md mx-8 relative">
-          <input 
-            type="text" 
-            placeholder="ค้นหาเกม, ชื่อผู้เล่น, หรือปาร์ตี้..." 
-            className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-gray-300 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-          />
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+        {/* Center: Modern Search Bar */}
+        <div className="hidden lg:flex flex-1 max-w-md mx-12 relative group">
+          <div className={`
+            absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full opacity-0 transition-opacity duration-300 blur-sm
+            ${isSearchFocused ? 'opacity-30' : 'group-hover:opacity-20'}
+          `}></div>
+          <div className="relative w-full">
+            <input 
+              type="text" 
+              placeholder="Search games, players, or parties..." 
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+              className="w-full bg-[#13132b]/80 border border-white/10 rounded-full py-2.5 pl-11 pr-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:bg-[#0a0a16] focus:border-white/20 transition-all shadow-inner"
+            />
+            <Search className={`
+              absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors
+              ${isSearchFocused ? 'text-purple-400' : 'text-gray-500'}
+            `} />
+          </div>
         </div>
 
-        <div className="flex items-center gap-3 md:gap-5">
-          {/* Notification Bell */}
+        {/* Right: Actions */}
+        <div className="flex items-center gap-4 md:gap-6">
+          
+          {/* Notification */}
           <button 
-            className={`relative p-2 transition-colors ${notiOpen ? 'text-white bg-white/10 rounded-full' : 'text-gray-400 hover:text-white'}`}
+            className={`
+              relative p-2.5 rounded-full transition-all duration-200 group
+              ${notiOpen ? 'bg-white/10 text-white' : 'hover:bg-white/5 text-gray-400 hover:text-white'}
+            `}
             onClick={onToggleNoti}
           >
-            <Bell className="w-6 h-6" />
+            <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center text-white font-bold border border-[#0a0a16]">
-                {unreadCount}
-              </span>
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-[#0a0a16] animate-pulse"></span>
             )}
+            <div className="absolute inset-0 rounded-full border border-white/0 group-hover:border-white/10 transition-colors"></div>
           </button>
 
+          {/* Divider */}
+          <div className="h-6 w-[1px] bg-white/10 hidden sm:block"></div>
+
+          {/* Profile */}
           <ProfileDropdown onOpenProfile={onOpenProfile} />
         </div>
       </div>

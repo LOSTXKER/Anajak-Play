@@ -270,6 +270,46 @@ export const mockLFGSessions: LFGSession[] = [
     verificationMethod: 'ready-check',
     createdAt: new Date(Date.now() - 1000 * 60 * 10), // 10 mins ago
     chatRoomId: 'chat-3'
+  },
+  // Add more sessions for testing
+  {
+    id: 'session-4',
+    hostId: 'user-3',
+    host: mockUsers[2],
+    game: 'valorant',
+    gameMode: 'Competitive',
+    requiredRank: 'ascendant',
+    currentPlayers: [
+      { userId: 'user-3', user: mockUsers[2], joinedAt: new Date(), isReady: true, isHost: true },
+      { userId: 'user-1', user: mockUsers[0], joinedAt: new Date(), isReady: true, isHost: false }
+    ],
+    maxPlayers: 5,
+    voiceOption: 'discord',
+    mood: 'competitive',
+    tags: ['Road to Immortal', 'Mic Required'],
+    status: 'ready-check',
+    verificationMethod: 'game-api',
+    createdAt: new Date(Date.now() - 1000 * 60 * 2),
+    chatRoomId: 'chat-4'
+  },
+  {
+    id: 'session-5',
+    hostId: 'user-2',
+    host: mockUsers[1],
+    game: 'genshin',
+    gameMode: 'Domain Farm',
+    currentPlayers: [
+      { userId: 'user-2', user: mockUsers[1], joinedAt: new Date(), isReady: true, isHost: true },
+      { userId: 'user-4', user: mockUsers[3], joinedAt: new Date(), isReady: true, isHost: false }
+    ],
+    maxPlayers: 4,
+    voiceOption: 'in-game',
+    mood: 'chill',
+    tags: ['Artifact Farm', 'Help Welcome'],
+    status: 'active',
+    verificationMethod: 'ready-check',
+    createdAt: new Date(Date.now() - 1000 * 60 * 45), // 45 mins ago
+    chatRoomId: 'chat-5'
   }
 ];
 

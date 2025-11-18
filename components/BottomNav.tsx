@@ -11,7 +11,7 @@ export default function BottomNav() {
 
   const navItems = [
     { icon: Home, label: 'หน้าแรก', href: '/' },
-    { icon: Users, label: 'ปาร์ตี้', href: '/party', hasParty: activeParty },
+    { icon: Users, label: 'ปาร์ตี้', href: '/lfg', hasParty: activeParty },
     { icon: ShoppingBag, label: 'ตลาด', href: '/market' },
     { icon: MessageSquare, label: 'แชท', href: '/messages' },
     { icon: User, label: 'โปรไฟล์', href: '/profile' },
