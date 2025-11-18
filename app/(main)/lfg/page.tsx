@@ -231,7 +231,7 @@ function LFGContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white pb-20 font-sans selection:bg-purple-500/30">
+    <div className="min-h-screen w-full text-white pb-20 font-sans selection:bg-purple-500/30">
       
       {/* Background Gradient Mesh */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -327,45 +327,7 @@ function LFGContent() {
                 </div>
               </div>
 
-              {/* Right: Toggle & Create */}
-              <div className="flex items-center gap-3">
-                {/* Toggle Mode */}
-                <div className="hidden sm:flex bg-[#18181b]/80 p-1 rounded-xl border border-white/10">
-                  <button
-                    onClick={() => setViewMode('match')}
-                    className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 ${
-                      viewMode === 'match'
-                        ? 'bg-[#27272a] text-white shadow-md ring-1 ring-white/10'
-                        : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
-                    }`}
-                  >
-                    <Zap className={`w-3 h-3 ${viewMode === 'match' ? 'text-yellow-400 fill-yellow-400' : ''}`} />
-                    MATCH
-                  </button>
-                  <button
-                    onClick={() => setViewMode('lobby')}
-                    className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 ${
-                      viewMode === 'lobby'
-                        ? 'bg-[#27272a] text-white shadow-md ring-1 ring-white/10'
-                        : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
-                    }`}
-                  >
-                    <Users className={`w-3 h-3 ${viewMode === 'lobby' ? 'text-cyan-400 fill-cyan-400' : ''}`} />
-                    LOBBY
-                  </button>
-                </div>
-
-                {/* Create Button (Lobby Only) */}
-                {viewMode === 'lobby' && (
-                  <button 
-                    onClick={() => setShowCreateModal(true)}
-                    className="h-9 px-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-lg text-xs font-bold flex items-center gap-2 shadow-lg shadow-purple-900/20 transition-all"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    สร้างห้อง
-                  </button>
-                )}
-              </div>
+              {/* Right: Empty div to maintain spacing if needed, or removed */}
             </div>
 
             {/* Row 2: Filters (Lobby Only) */}
@@ -526,7 +488,7 @@ function LFGContent() {
             )}
 
             {searchStep === 'found' && matchResult && (
-              <div className="relative z-10 py-4 animate-slideUp">
+              <div className="relative z-10 py-4 animate-fadeIn pb-6">
                  <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 text-green-400 shadow-[0_0_30px_rgba(34,197,94,0.3)]">
                     <CheckCircle2 size={40} />
                  </div>
@@ -553,18 +515,20 @@ function LFGContent() {
                     </div>
                  </div>
 
-                 <button
-                    onClick={confirmMatch}
-                    className="w-full max-w-md py-3.5 bg-green-600 hover:bg-green-500 text-white font-bold text-base rounded-xl shadow-lg transition-all transform hover:scale-[1.02]"
-                 >
-                    เข้าร่วมทันที (Join Now)
-                 </button>
-                 <button 
-                    onClick={() => setSearchStep('idle')}
-                    className="mt-4 text-gray-500 hover:text-white text-sm"
-                 >
-                    ค้นหาใหม่
-                 </button>
+                 <div className="flex flex-col items-center gap-3 w-full max-w-md mx-auto">
+                   <button
+                      onClick={confirmMatch}
+                      className="w-full py-3.5 bg-green-600 hover:bg-green-500 text-white font-bold text-base rounded-xl shadow-lg transition-all transform hover:scale-[1.02]"
+                   >
+                      เข้าร่วมทันที (Join Now)
+                   </button>
+                   <button 
+                      onClick={() => setSearchStep('idle')}
+                      className="text-gray-500 hover:text-white text-sm py-2"
+                   >
+                      ค้นหาใหม่
+                   </button>
+                 </div>
               </div>
             )}
           </div>
@@ -590,6 +554,18 @@ function LFGContent() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {/* Create New Room Card - Always First */}
+            <button 
+               onClick={() => setShowCreateModal(true)}
+               className="group relative flex flex-col items-center justify-center min-h-[200px] rounded-2xl border-2 border-dashed border-white/10 hover:border-purple-500/50 bg-[#13132b]/20 hover:bg-[#13132b]/40 transition-all duration-300 hover:-translate-y-1"
+            >
+               <div className="w-16 h-16 bg-purple-600/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform border border-purple-500/20 group-hover:border-purple-500/50">
+                  <Plus className="w-8 h-8 text-purple-400" />
+               </div>
+               <h3 className="text-lg font-bold text-white mb-1">สร้างห้องใหม่</h3>
+               <p className="text-xs text-gray-500">Create New Room</p>
+            </button>
+
             {readyRooms.map(room => (
                <div key={room.id} className="relative group/card">
                  <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-2xl opacity-30 blur-md animate-pulse group-hover/card:opacity-50 transition-opacity"></div>
@@ -604,17 +580,6 @@ function LFGContent() {
                 <LFGCard session={room} onJoin={handleJoinRoom} />
               </div>
             ))}
-            
-            {activeRooms.length === 0 && (
-              <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl bg-[#13132b]/30">
-                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">🦗</div>
-                <h3 className="text-lg font-bold text-white mb-1">ไม่มีห้องที่ตรงกับเงื่อนไข</h3>
-                <p className="text-gray-400 text-sm mb-6">ลองปรับตัวกรองหรือสร้างห้องใหม่เลย!</p>
-                <button onClick={() => setShowCreateModal(true)} className="px-6 py-2.5 bg-white text-black rounded-xl text-sm font-bold hover:bg-gray-200 transition-colors">
-                   + สร้างห้องใหม่
-                </button>
-              </div>
-            )}
           </div>
         </main>
       )}

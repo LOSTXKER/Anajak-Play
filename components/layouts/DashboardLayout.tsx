@@ -6,9 +6,9 @@ import Sidebar from '@/components/Sidebar';
 import BottomNav from '@/components/BottomNav';
 import Navbar from '@/components/Navbar';
 import NotificationDropdown from '@/components/NotificationDropdown';
-import ChatSidebarOverlay from '@/components/ChatSidebarOverlay';
 import { notificationsData } from '@/lib/data/legacy-data';
 import { Notification } from '@/lib/types/index';
+import ChatSidebarOverlay from '@/components/ChatSidebarOverlay';
 
 import { HomeSidebar } from '@/components/home/HomeSidebar';
 
@@ -19,19 +19,23 @@ interface DashboardLayoutProps {
   enableChat?: boolean;
   showRightSidebar?: boolean;
   notificationsFeed?: Notification[];
+  showNavbarSearch?: boolean;
+  disableMainTopPadding?: boolean;
 }
 
 export default function DashboardLayout({
   children,
   contentClassName = '',
   enableNotifications = true,
-  enableChat = false,
+  enableChat = true,
   showRightSidebar = false,
   notificationsFeed,
+  showNavbarSearch = true,
+  disableMainTopPadding = false,
 }: DashboardLayoutProps) {
   const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showChatSidebar, setShowChatSidebar] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const notifications = notificationsFeed ?? notificationsData;
 
   const unreadCount = useMemo(() => {
@@ -48,8 +52,8 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen w-full bg-[#05050a] text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden">
-      <Sidebar />
-      <BottomNav />
+      <Sidebar onChatClick={() => setIsChatOpen(true)} />
+      <BottomNav onChatClick={() => setIsChatOpen(true)} />
 
       {/* Top Navbar (Full Width) */}
       <Navbar
@@ -61,6 +65,7 @@ export default function DashboardLayout({
         }
         notiOpen={showNotifications}
         unreadCount={enableNotifications ? unreadCount : 0}
+        showSearch={showNavbarSearch}
       />
 
       {enableNotifications && (
@@ -71,14 +76,15 @@ export default function DashboardLayout({
         />
       )}
 
+      {enableChat && (
+        <ChatSidebarOverlay 
+          isOpen={isChatOpen}
+          onClose={() => setIsChatOpen(false)}
+        />
+      )}
+
       {/* Main Content Wrapper */}
-      <div className="lg:ml-20 pb-16 lg:pb-0 pt-20"> {/* Added padding-top for mobile/desktop if needed, adjust based on Navbar height behavior */}
-        {enableChat && (
-          <ChatSidebarOverlay
-            isOpen={showChatSidebar}
-            onClose={() => setShowChatSidebar(false)}
-          />
-        )}
+      <div className={`lg:ml-20 pb-16 lg:pb-0 ${disableMainTopPadding ? '' : 'pt-20'}`}> {/* Added padding-top for mobile/desktop if needed, adjust based on Navbar height behavior */}
 
         <main className={mainClassName}>
           {showRightSidebar ? (

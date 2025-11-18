@@ -10,13 +10,15 @@ interface NavbarProps {
   onToggleNoti?: () => void;
   notiOpen?: boolean;
   unreadCount?: number;
+  showSearch?: boolean;
 }
 
 export default function Navbar({ 
   onOpenProfile, 
   onToggleNoti,
   notiOpen = false, 
-  unreadCount = 0
+  unreadCount = 0,
+  showSearch = true
 }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -65,25 +67,27 @@ export default function Navbar({
         </Link>
 
         {/* Center: Modern Search Bar */}
-        <div className="hidden lg:flex flex-1 max-w-md mx-12 relative group">
-          <div className={`
-            absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full opacity-0 transition-opacity duration-300 blur-sm
-            ${isSearchFocused ? 'opacity-30' : 'group-hover:opacity-20'}
-          `}></div>
-          <div className="relative w-full">
-            <input 
-              type="text" 
-              placeholder="ค้นหาเกม, ผู้เล่น, หรือปาร์ตี้..." 
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
-              className="w-full bg-[#13132b]/80 border border-white/10 rounded-full py-2.5 pl-11 pr-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:bg-[#0a0a16] focus:border-white/20 transition-all shadow-inner"
-            />
-            <Search className={`
-              absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors
-              ${isSearchFocused ? 'text-purple-400' : 'text-gray-500'}
-            `} />
+        {showSearch && (
+          <div className="hidden lg:flex flex-1 max-w-md mx-12 relative group">
+            <div className={`
+              absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full opacity-0 transition-opacity duration-300 blur-sm
+              ${isSearchFocused ? 'opacity-30' : 'group-hover:opacity-20'}
+            `}></div>
+            <div className="relative w-full">
+              <input 
+                type="text" 
+                placeholder="ค้นหาเกม, ผู้เล่น, หรือปาร์ตี้..." 
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+                className="w-full bg-[#13132b]/80 border border-white/10 rounded-full py-2.5 pl-11 pr-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:bg-[#0a0a16] focus:border-white/20 transition-all shadow-inner"
+              />
+              <Search className={`
+                absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors
+                ${isSearchFocused ? 'text-purple-400' : 'text-gray-500'}
+              `} />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Right: Actions */}
         <div className="flex items-center gap-4 md:gap-6">

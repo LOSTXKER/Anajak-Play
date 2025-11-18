@@ -2,18 +2,23 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, ShoppingBag, MessageSquare, User } from 'lucide-react';
+import { Home, Users, User, ShoppingBag, MessageCircle, Flame } from 'lucide-react';
 import { useParty } from '@/lib/PartyContext';
 
-export default function BottomNav() {
+interface BottomNavProps {
+  onChatClick?: () => void;
+}
+
+export default function BottomNav({ onChatClick }: BottomNavProps) {
   const pathname = usePathname();
   const { activeParty } = useParty();
 
   const navItems = [
     { icon: Home, label: 'หน้าแรก', href: '/' },
     { icon: Users, label: 'ปาร์ตี้', href: '/lfg', hasParty: activeParty },
-    { icon: ShoppingBag, label: 'ตลาด', href: '/market' },
-    { icon: MessageSquare, label: 'แชท', href: '/messages' },
+    { icon: Flame, label: 'ปัดหาเพื่อน', href: '/tinder' },
+    { icon: ShoppingBag, label: 'ตลาด', href: '/marketplace' },
+    { icon: MessageCircle, label: 'แชท', href: '#', isAction: true },
     { icon: User, label: 'โปรไฟล์', href: '/profile' },
   ];
 
@@ -22,19 +27,14 @@ export default function BottomNav() {
       <div className="flex h-16 overflow-x-auto scrollbar-hide">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          // @ts-ignore
+          const isActive = pathname === item.href && !item.isAction;
           
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`
-                relative flex flex-col items-center justify-center gap-1 transition-colors flex-1 min-w-[70px]
-                ${isActive ? 'text-purple-400' : 'text-gray-400 active:text-white'}
-              `}
-            >
+          const Content = (
+            <>
               <div className="relative">
                 <Icon className="w-6 h-6" />
+                {/* @ts-ignore */}
                 {item.hasParty && (
                   <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                 )}
@@ -43,6 +43,37 @@ export default function BottomNav() {
               {isActive && (
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-purple-500 rounded-b-full"></div>
               )}
+            </>
+          );
+
+          const commonClasses = `
+            relative flex flex-col items-center justify-center gap-1 transition-colors flex-1 min-w-[70px]
+            ${isActive ? 'text-purple-400' : 'text-gray-400 active:text-white'}
+          `;
+
+          // @ts-ignore
+          if (item.isAction) {
+             return (
+               <button
+                 key={item.label}
+                 onClick={(e) => {
+                   e.preventDefault();
+                   if (item.label === 'แชท' && onChatClick) onChatClick();
+                 }}
+                 className={commonClasses}
+               >
+                 {Content}
+               </button>
+             );
+          }
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={commonClasses}
+            >
+              {Content}
             </Link>
           );
         })}

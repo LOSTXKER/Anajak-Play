@@ -1,278 +1,153 @@
 'use client';
 
-import { useState } from 'react';
-import { Search, Send, Phone, Video, MoreVertical, Paperclip, Smile, Shield } from 'lucide-react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
+import ChatList from '@/components/chat/ChatList';
+import ChatArea from '@/components/chat/ChatArea';
+import { Conversation, Message } from '@/components/chat/types';
 
-interface Conversation {
-  id: string;
-  name: string;
-  avatar: string;
-  lastMessage: string;
-  timestamp: string;
-  unread: number;
-  online: boolean;
-  type: 'friend' | 'marketplace' | 'party';
-}
-
-interface Message {
-  id: string;
-  senderId: string;
-  text: string;
-  timestamp: string;
-  isMe: boolean;
-}
-
+// Shared Mock Data (In a real app this would come from a store/context/api)
 const mockConversations: Conversation[] = [
   {
     id: '1',
-    name: 'ProGamer99',
-    avatar: 'user1',
-    lastMessage: 'เจอกันตอนเย็นนะครับ',
-    timestamp: '5 นาที',
+    user: { id: 'u1', name: 'KiraGod', avatar: 'KiraGod', status: 'online' },
+    lastMessage: 'คืนนี้ว่างปะ ลงแรงค์กัน ขาดป่า',
+    time: '2m',
     unread: 2,
-    online: true,
     type: 'friend'
   },
   {
     id: '2',
-    name: 'ItemSeller',
-    avatar: 'user2',
-    lastMessage: 'ราคานี้พอดีแล้วครับ',
-    timestamp: '1 ชม.',
+    user: { id: 'u2', name: "Team 'RoV Pro League'", avatar: 'TeamRoV', status: 'ingame', game: 'RoV' },
+    lastMessage: 'NongMind: เดี๋ยวผมเล่นแครี่เอง',
+    time: '5m',
     unread: 0,
-    online: true,
-    type: 'marketplace'
+    type: 'group'
   },
   {
     id: '3',
-    name: 'CoachRank',
-    avatar: 'user3',
-    lastMessage: 'คอร์สเริ่มพรุ่งนี้',
-    timestamp: '2 ชม.',
-    unread: 1,
-    online: false,
-    type: 'marketplace'
+    user: { id: 'u3', name: 'SniperWolf (Seller)', avatar: 'SniperWolf', status: 'offline' },
+    lastMessage: 'ขอบคุณครับ โอนเงินผ่านระบบแล้วนะครับ',
+    time: '1h',
+    unread: 0,
+    type: 'market'
   },
 ];
 
-const mockMessages: Message[] = [
-  {
-    id: '1',
-    senderId: '1',
-    text: 'สวัสดีครับ พร้อมเล่นไหม?',
-    timestamp: '14:30',
-    isMe: false
-  },
-  {
-    id: '2',
-    senderId: 'me',
-    text: 'พร้อมครับ รอแปปนึงนะ',
-    timestamp: '14:32',
-    isMe: true
-  },
-  {
-    id: '3',
-    senderId: '1',
-    text: 'โอเค ผมรออยู่ในเกมเลย',
-    timestamp: '14:33',
-    isMe: false
-  },
-  {
-    id: '4',
-    senderId: 'me',
-    text: 'เจอกันตอนเย็นนะครับ',
-    timestamp: '14:35',
-    isMe: true
-  },
-];
-
-export default function MessagesPage() {
-  const [conversations] = useState<Conversation[]>(mockConversations);
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(conversations[0]);
-  const [messages, setMessages] = useState<Message[]>(mockMessages);
-  const [newMessage, setNewMessage] = useState('');
-
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      const message: Message = {
-        id: Date.now().toString(),
-        senderId: 'me',
-        text: newMessage,
-        timestamp: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
-        isMe: true
-      };
-      setMessages([...messages, message]);
-      setNewMessage('');
+const mockMessagesData: Record<string, Message[]> = {
+  '1': [
+    { id: '1', senderId: 'u1', text: 'โย่ว', time: '10:00', type: 'text' },
+    { id: '2', senderId: 'me', text: 'ว่าไงวัยรุ่น', time: '10:05', type: 'text', status: 'read', isMe: true },
+    { id: '3', senderId: 'u1', text: 'คืนนี้ว่างปะ ลงแรงค์กัน ขาดป่า', time: '10:06', type: 'text' },
+    { 
+      id: '4', 
+      senderId: 'u1', 
+      type: 'invite', 
+      text: 'Sent an invite',
+      data: { game: 'RoV', mode: 'Ranked', rank: 'Conqueror', slots: '4/5' },
+      time: '10:06' 
     }
+  ],
+  '2': [
+     { id: '1', senderId: 'u4', text: 'พรุ่งนี้ซ้อมกี่โมง?', time: '9:00', type: 'text' },
+     { id: '2', senderId: 'u5', text: '2 โมงเย็นนะครับ', time: '9:05', type: 'text' }
+  ],
+  '3': [
+    { id: '1', senderId: 'me', text: 'สนใจจ้างโค้ช Valorant ครับ', time: 'เมื่อวาน', type: 'text', status: 'read', isMe: true },
+    { 
+      id: '2', 
+      senderId: 'me', 
+      type: 'offer',
+      text: 'Sent an offer', 
+      data: { title: 'Coaching 1 Hour', price: 350, status: 'completed' },
+      time: 'เมื่อวาน',
+      status: 'read',
+      isMe: true
+    }
+  ]
+};
+
+function MessagesContent() {
+  const searchParams = useSearchParams();
+  const initialChatId = searchParams.get('chatId');
+  
+  const [selectedId, setSelectedId] = useState<string | null>(initialChatId);
+  const [messages, setMessages] = useState(mockMessagesData);
+
+  useEffect(() => {
+    if (initialChatId) {
+        setSelectedId(initialChatId);
+    }
+  }, [initialChatId]);
+
+  const activeConversation = selectedId ? mockConversations.find(c => c.id === selectedId) || null : null;
+  const activeMessages = selectedId ? messages[selectedId] || [] : [];
+
+  const handleSendMessage = (text: string) => {
+    if (!selectedId) return;
+    
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      senderId: 'me',
+      text,
+      time: 'Now',
+      type: 'text',
+      status: 'sending',
+      isMe: true
+    };
+
+    setMessages(prev => ({
+      ...prev,
+      [selectedId]: [...(prev[selectedId] || []), newMessage]
+    }));
+
+    setTimeout(() => {
+       setMessages(prev => {
+         const chatMsgs = prev[selectedId] || [];
+         return {
+            ...prev,
+            [selectedId]: chatMsgs.map(m => m.id === newMessage.id ? { ...m, status: 'sent' } : m)
+         };
+       });
+    }, 1000);
   };
 
   return (
-    <DashboardLayout contentClassName="h-[calc(100vh-73px)] flex py-0">
-          {/* Conversations List - Hidden on mobile when chat is selected */}
-          <div className={`
-            w-full lg:w-80 bg-[#0a0a16] border-r border-white/10 flex flex-col
-            ${selectedConversation ? 'hidden lg:flex' : 'flex'}
-          `}>
-            <div className="p-4 border-b border-white/10">
-              <h2 className="text-xl font-bold mb-4">ข้อความ</h2>
-              <div className="relative">
-                <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
-                <input 
-                  type="text"
-                  placeholder="ค้นหาการสนทนา..."
-                  className="w-full bg-white/5 border border-white/10 rounded-lg py-2 pl-10 pr-4 text-sm text-gray-300 focus:outline-none focus:border-purple-500"
-                />
-              </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto">
-              {conversations.map(conv => (
-                <div
-                  key={conv.id}
-                  onClick={() => setSelectedConversation(conv)}
-                  className={`
-                    p-4 border-b border-white/5 cursor-pointer transition-colors
-                    ${selectedConversation?.id === conv.id ? 'bg-purple-600/20' : 'hover:bg-white/5'}
-                  `}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="relative flex-shrink-0">
-                      <img
-                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${conv.avatar}`}
-                        alt={conv.name}
-                        className="w-12 h-12 rounded-full bg-gray-700"
-                      />
-                      {conv.online && (
-                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0a0a16] rounded-full"></div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-white truncate">{conv.name}</h3>
-                          {conv.type === 'marketplace' && (
-                            <Shield className="w-3 h-3 text-yellow-400" />
-                          )}
-                        </div>
-                        <span className="text-xs text-gray-500">{conv.timestamp}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm text-gray-400 truncate">{conv.lastMessage}</p>
-                        {conv.unread > 0 && (
-                          <span className="bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                            {conv.unread}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+    <DashboardLayout 
+      contentClassName="h-screen flex flex-col py-0 gap-0 px-0 pt-20" // pt-20 matches navbar height
+      showRightSidebar={false} 
+      enableChat={false}
+      disableMainTopPadding={true}
+    >
+      <div className="flex-1 flex overflow-hidden lg:mx-4 lg:mt-2 lg:rounded-t-2xl border-t border-white/10 bg-[#05050a] shadow-2xl">
+          {/* Left: Chat List */}
+          <div className={`w-full lg:w-80 border-r border-white/5 flex flex-col ${selectedId ? 'hidden lg:flex' : 'flex'}`}>
+             <ChatList 
+                conversations={mockConversations} 
+                selectedId={selectedId} 
+                onSelect={setSelectedId}
+             />
           </div>
 
-          {/* Chat Area */}
-          {selectedConversation ? (
-            <div className="flex-1 flex flex-col bg-[#05050a]">
-              {/* Chat Header */}
-              <div className="p-4 bg-[#0a0a16] border-b border-white/10 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {/* Back button for mobile */}
-                  <button
-                    onClick={() => setSelectedConversation(null)}
-                    className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition"
-                  >
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  <img
-                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${selectedConversation.avatar}`}
-                    alt={selectedConversation.name}
-                    className="w-10 h-10 rounded-full bg-gray-700"
-                  />
-                  <div>
-                    <h3 className="font-bold text-white">{selectedConversation.name}</h3>
-                    <p className="text-xs text-gray-400">
-                      {selectedConversation.online ? 'ออนไลน์' : 'ออฟไลน์'}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button className="p-2 hover:bg-white/10 rounded-lg transition">
-                    <Phone className="w-5 h-5 text-gray-400" />
-                  </button>
-                  <button className="p-2 hover:bg-white/10 rounded-lg transition">
-                    <Video className="w-5 h-5 text-gray-400" />
-                  </button>
-                  <button className="p-2 hover:bg-white/10 rounded-lg transition">
-                    <MoreVertical className="w-5 h-5 text-gray-400" />
-                  </button>
-                </div>
-              </div>
+          {/* Right: Chat Area */}
+          <div className={`flex-1 flex flex-col bg-[#05050a] ${!selectedId ? 'hidden lg:flex' : 'flex'}`}>
+             <ChatArea 
+                conversation={activeConversation} 
+                messages={activeMessages} 
+                onSendMessage={handleSendMessage}
+                onBack={() => setSelectedId(null)}
+             />
+          </div>
+      </div>
+    </DashboardLayout>
+  );
+}
 
-              {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {messages.map(msg => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div className={`max-w-[70%] ${msg.isMe ? 'order-2' : 'order-1'}`}>
-                      <div
-                        className={`
-                          px-4 py-2 rounded-2xl
-                          ${msg.isMe 
-                            ? 'bg-gradient-to-r from-purple-600 to-cyan-600 text-white' 
-                            : 'bg-[#1a1a2e] text-gray-200'
-                          }
-                        `}
-                      >
-                        <p className="text-sm">{msg.text}</p>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-1 px-2">
-                        {msg.timestamp}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Input Area */}
-              <div className="p-4 bg-[#0a0a16] border-t border-white/10">
-                <div className="flex items-center gap-2">
-                  <button className="p-2 hover:bg-white/10 rounded-lg transition">
-                    <Paperclip className="w-5 h-5 text-gray-400" />
-                  </button>
-                  <button className="p-2 hover:bg-white/10 rounded-lg transition">
-                    <Smile className="w-5 h-5 text-gray-400" />
-                  </button>
-                  <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                    placeholder="พิมพ์ข้อความ..."
-                    className="flex-1 bg-white/5 border border-white/10 rounded-lg py-2 px-4 text-gray-300 focus:outline-none focus:border-purple-500"
-                  />
-                  <button
-                    onClick={handleSendMessage}
-                    className="p-2 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 rounded-lg transition"
-                  >
-                    <Send className="w-5 h-5 text-white" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex-1 flex items-center justify-center bg-[#05050a]">
-              <div className="text-center">
-                <h3 className="text-xl font-bold text-gray-400 mb-2">เลือกการสนทนา</h3>
-                <p className="text-gray-500">เลือกแชทเพื่อเริ่มสนทนา</p>
-              </div>
-            </div>
-          )}
-        </DashboardLayout>
+export default function MessagesPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MessagesContent />
+    </Suspense>
   );
 }

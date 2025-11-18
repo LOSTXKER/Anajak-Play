@@ -4,6 +4,8 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { User } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export interface AvatarProps {
   src?: string;
@@ -48,14 +50,17 @@ export const Avatar: React.FC<AvatarProps> = ({
   };
   
   return (
-    <div className={`relative inline-block ${className}`}>
+    <div className={cn("relative inline-block", className)}>
       {/* Frame */}
       {frame && (
         <div className="absolute inset-0 rounded-full border-2 border-primary-neon animate-glow pointer-events-none" />
       )}
       
       {/* Avatar Image */}
-      <div className={`${sizes[size]} rounded-full overflow-hidden bg-dark-surface flex items-center justify-center`}>
+      <div className={cn(
+        sizes[size], 
+        "rounded-full overflow-hidden bg-dark-surface flex items-center justify-center"
+      )}>
         {src ? (
           <Image 
             src={src} 
@@ -66,14 +71,22 @@ export const Avatar: React.FC<AvatarProps> = ({
           />
         ) : (
           <div className="w-full h-full bg-gradient-button flex items-center justify-center text-white font-bold">
-            {alt.charAt(0).toUpperCase()}
+            {alt && alt !== 'Avatar' ? (
+              alt.charAt(0).toUpperCase()
+            ) : (
+              <User className="w-1/2 h-1/2 text-white/80" />
+            )}
           </div>
         )}
       </div>
       
       {/* Status Indicator */}
       {status && (
-        <div className={`absolute bottom-0 right-0 ${statusSize[size]} rounded-full ${statusColors[status]} border-2 border-dark-card`} />
+        <div className={cn(
+          "absolute bottom-0 right-0 rounded-full border-2 border-dark-card",
+          statusSize[size],
+          statusColors[status]
+        )} />
       )}
     </div>
   );
