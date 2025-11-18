@@ -116,7 +116,7 @@ export default function MarketplacePage() {
 
   return (
     <DashboardLayout 
-      enableChat={false} 
+      enableChat={true} 
       enableNotifications={true} 
       contentClassName="pb-24"
       showNavbarSearch={false}
