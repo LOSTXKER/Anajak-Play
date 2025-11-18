@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Bell, Search, Zap, Menu, X } from 'lucide-react';
+import { Bell, Search, Zap } from 'lucide-react';
 import ProfileDropdown from './ProfileDropdown';
 import { useState, useEffect } from 'react';
 
@@ -21,7 +21,6 @@ export default function Navbar({
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -43,7 +42,7 @@ export default function Navbar({
       {/* Top Glow Line */}
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-purple-500/30 to-transparent opacity-50"></div>
 
-      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-3 flex items-center justify-between relative">
+      <div className="w-full px-4 md:px-6 py-3 flex items-center justify-between relative">
         
         {/* Left: Brand */}
         <Link 
@@ -74,7 +73,7 @@ export default function Navbar({
           <div className="relative w-full">
             <input 
               type="text" 
-              placeholder="Search games, players, or parties..." 
+              placeholder="ค้นหาเกม, ผู้เล่น, หรือปาร์ตี้..." 
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
               className="w-full bg-[#13132b]/80 border border-white/10 rounded-full py-2.5 pl-11 pr-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:bg-[#0a0a16] focus:border-white/20 transition-all shadow-inner"
@@ -96,6 +95,7 @@ export default function Navbar({
               ${notiOpen ? 'bg-white/10 text-white' : 'hover:bg-white/5 text-gray-400 hover:text-white'}
             `}
             onClick={onToggleNoti}
+            title="แจ้งเตือน"
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (

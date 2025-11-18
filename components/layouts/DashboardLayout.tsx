@@ -47,30 +47,32 @@ export default function DashboardLayout({
       <Sidebar />
       <BottomNav />
 
-      <div className="lg:ml-20 pb-16 lg:pb-0">
+      {/* Top Navbar (Full Width) */}
+      <Navbar
+        onOpenProfile={() => router.push('/profile')}
+        onToggleNoti={
+          enableNotifications
+            ? () => setShowNotifications((prev) => !prev)
+            : undefined
+        }
+        notiOpen={showNotifications}
+        unreadCount={enableNotifications ? unreadCount : 0}
+      />
+
+      {enableNotifications && (
+        <NotificationDropdown
+          isOpen={showNotifications}
+          notifications={notifications}
+          onClose={() => setShowNotifications(false)}
+        />
+      )}
+
+      {/* Main Content Wrapper */}
+      <div className="lg:ml-20 pb-16 lg:pb-0 pt-16 lg:pt-0"> {/* Added padding-top for mobile/desktop if needed, adjust based on Navbar height behavior */}
         {enableChat && (
           <ChatSidebarOverlay
             isOpen={showChatSidebar}
             onClose={() => setShowChatSidebar(false)}
-          />
-        )}
-
-        <Navbar
-          onOpenProfile={() => router.push('/profile')}
-          onToggleNoti={
-            enableNotifications
-              ? () => setShowNotifications((prev) => !prev)
-              : undefined
-          }
-          notiOpen={showNotifications}
-          unreadCount={enableNotifications ? unreadCount : 0}
-        />
-
-        {enableNotifications && (
-          <NotificationDropdown
-            isOpen={showNotifications}
-            notifications={notifications}
-            onClose={() => setShowNotifications(false)}
           />
         )}
 

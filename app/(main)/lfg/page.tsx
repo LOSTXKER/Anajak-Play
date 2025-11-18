@@ -51,7 +51,7 @@ export default function LFGPage() {
     setIsSearching(true);
     setTimeout(() => {
       setIsSearching(false);
-      alert('Found a match! (Demo)');
+      alert('เจอห้องแล้ว! (Demo)');
     }, 3000);
   };
 
@@ -69,11 +69,11 @@ export default function LFGPage() {
       {viewMode === 'gateway' && (
         <main className="min-h-[80vh] flex flex-col items-center justify-center px-4 relative z-10 animate-fadeIn">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight">
-              Choose Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">Playstyle</span>
+            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+              เลือกสไตล์การ <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">หาเพื่อนเล่น</span>
             </h1>
             <p className="text-gray-400 text-lg max-w-xl mx-auto">
-              How do you want to find your team today?
+              วันนี้คุณอยากหาทีมแบบไหน? เลือกโหมดที่ใช่ได้เลย
             </p>
           </div>
 
@@ -88,12 +88,12 @@ export default function LFGPage() {
                 <div className="w-16 h-16 bg-purple-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <Zap className="w-8 h-8 text-purple-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-2">Quick Match</h3>
+                <h3 className="text-2xl font-bold text-white mb-2">Quick Match (ด่วน)</h3>
                 <p className="text-gray-400 mb-6 text-sm leading-relaxed">
-                  System automatically finds the best teammates for you based on Rank & Role. Fast and simple.
+                  ระบบจับคู่อัตโนมัติ หาเพื่อนร่วมทีมที่เหมาะสมที่สุดตาม Rank และ Role ของคุณ รวดเร็วทันใจ ไม่ต้องเลือกเอง
                 </p>
                 <div className="flex items-center text-purple-400 text-sm font-bold gap-2 group-hover:gap-3 transition-all">
-                  Select Match Mode <ArrowRight size={16} />
+                  เข้าโหมดจับคู่ <ArrowRight size={16} />
                 </div>
               </div>
             </button>
@@ -108,12 +108,12 @@ export default function LFGPage() {
                 <div className="w-16 h-16 bg-cyan-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <Users className="w-8 h-8 text-cyan-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-2">Social Lobby</h3>
+                <h3 className="text-2xl font-bold text-white mb-2">Social Lobby (เลือกเอง)</h3>
                 <p className="text-gray-400 mb-6 text-sm leading-relaxed">
-                  Browse active rooms, choose your vibe, and join the party manually. Great for making friends.
+                  เดินเลือกห้องเองตามใจชอบ ดูบรรยากาศห้อง เลือกเพื่อนร่วมทีมที่ Vibe ตรงกัน เหมาะสำหรับสายปาร์ตี้
                 </p>
                 <div className="flex items-center text-cyan-400 text-sm font-bold gap-2 group-hover:gap-3 transition-all">
-                  Enter Lobby <ArrowRight size={16} />
+                  เข้าล็อบบี้ <ArrowRight size={16} />
                 </div>
               </div>
             </button>
@@ -124,53 +124,97 @@ export default function LFGPage() {
       {/* --- INNER PAGES HEADER (Match/Lobby) --- */}
       {viewMode !== 'gateway' && (
         <div className="sticky top-[65px] z-20 backdrop-blur-xl border-b border-white/5 shadow-sm animate-slideDown">
-          <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 space-y-4">
             
-            {/* Left: Back & Title */}
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={() => setViewMode('gateway')}
-                className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-                title="Change Mode"
-              >
-                <ArrowLeft size={20} />
-              </button>
-              
-              <div className="flex flex-col">
-                <h2 className="text-lg font-bold text-white leading-none flex items-center gap-2">
-                  {viewMode === 'match' ? (
-                    <><Zap className="w-4 h-4 text-purple-400" /> Quick Match</>
-                  ) : (
-                    <><Users className="w-4 h-4 text-cyan-400" /> Social Lobby</>
-                  )}
-                </h2>
-                <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wide">
-                  {viewMode === 'match' ? 'Auto-Matching' : 'Manual Selection'}
-                </span>
+            {/* Row 1: Navigation & Actions */}
+            <div className="flex items-center justify-between">
+              {/* Left: Back & Title */}
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => setViewMode('gateway')}
+                  className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                  title="เปลี่ยนโหมด"
+                >
+                  <ArrowLeft size={20} />
+                </button>
+                
+                <div className="flex flex-col">
+                  <h2 className="text-lg font-bold text-white leading-none flex items-center gap-2">
+                    {viewMode === 'match' ? (
+                      <><Zap className="w-4 h-4 text-purple-400" /> Quick Match</>
+                    ) : (
+                      <><Users className="w-4 h-4 text-cyan-400" /> Social Lobby</>
+                    )}
+                  </h2>
+                  <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wide">
+                    {viewMode === 'match' ? 'Auto-Matching' : 'Manual Selection'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Right: Toggle & Create */}
+              <div className="flex items-center gap-3">
+                {/* Toggle Mode */}
+                <div className="hidden sm:flex bg-[#18181b]/80 p-1 rounded-xl border border-white/10">
+                  <button
+                    onClick={() => setViewMode('match')}
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 ${
+                      viewMode === 'match'
+                        ? 'bg-[#27272a] text-white shadow-md ring-1 ring-white/10'
+                        : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
+                    }`}
+                  >
+                    <Zap className={`w-3 h-3 ${viewMode === 'match' ? 'text-yellow-400 fill-yellow-400' : ''}`} />
+                    MATCH
+                  </button>
+                  <button
+                    onClick={() => setViewMode('lobby')}
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 ${
+                      viewMode === 'lobby'
+                        ? 'bg-[#27272a] text-white shadow-md ring-1 ring-white/10'
+                        : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
+                    }`}
+                  >
+                    <Users className={`w-3 h-3 ${viewMode === 'lobby' ? 'text-cyan-400 fill-cyan-400' : ''}`} />
+                    LOBBY
+                  </button>
+                </div>
+
+                {/* Create Button (Lobby Only) */}
+                {viewMode === 'lobby' && (
+                  <button 
+                    onClick={() => setShowCreateModal(true)}
+                    className="h-9 px-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-lg text-xs font-bold flex items-center gap-2 shadow-lg shadow-purple-900/20 transition-all"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    สร้างห้อง
+                  </button>
+                )}
               </div>
             </div>
 
-            {/* Middle: Filters (Lobby Only) */}
+            {/* Row 2: Filters (Lobby Only) */}
             {viewMode === 'lobby' && (
-              <div className="hidden md:flex items-center gap-2 overflow-x-auto scrollbar-hide">
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1 animate-slideDown">
                 <button
                   onClick={() => setSelectedGame('all')}
-                  className={`h-8 px-3 rounded-lg text-xs font-bold transition-all border ${
+                  className={`flex-shrink-0 h-8 px-4 rounded-lg text-xs font-bold transition-all border ${
                     selectedGame === 'all' 
                       ? 'bg-white text-black border-white' 
-                      : 'bg-[#18181b]/50 text-gray-400 border-white/5 hover:bg-white/5'
+                      : 'bg-[#18181b]/50 text-gray-400 border-white/5 hover:bg-white/5 hover:border-white/10'
                   }`}
                 >
-                  All
+                  ทั้งหมด
                 </button>
+                <div className="w-[1px] h-5 bg-white/10 mx-1"></div>
                 {Object.values(gameConfig).map(game => (
                   <button
                     key={game.id}
                     onClick={() => setSelectedGame(game.id)}
-                    className={`flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold transition-all border ${
+                    className={`flex-shrink-0 flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold transition-all border ${
                       selectedGame === game.id 
                         ? 'bg-[#27272a] text-white border-purple-500 shadow-sm' 
-                        : 'bg-[#18181b]/50 text-gray-400 border-white/5 hover:bg-white/5'
+                        : 'bg-[#18181b]/50 text-gray-400 border-white/5 hover:bg-white/5 hover:border-white/10'
                     }`}
                   >
                     <img src={game.icon} className="w-3.5 h-3.5 rounded-sm opacity-90" alt="" />
@@ -179,51 +223,7 @@ export default function LFGPage() {
                 ))}
               </div>
             )}
-
-            {/* Right: Actions */}
-            <div className="flex items-center gap-2">
-              {viewMode === 'lobby' && (
-                <button 
-                  onClick={() => setShowCreateModal(true)}
-                  className="h-9 px-4 bg-white text-black hover:bg-gray-200 rounded-lg text-xs font-bold flex items-center gap-2 transition-all shadow-lg"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  Create Room
-                </button>
-              )}
-            </div>
           </div>
-          
-          {/* Mobile Filter Bar (Lobby Only) */}
-          {viewMode === 'lobby' && (
-            <div className="md:hidden px-4 pb-3 flex items-center gap-2 overflow-x-auto scrollbar-hide">
-               {/* ...same filters as above for mobile... */}
-               <button
-                  onClick={() => setSelectedGame('all')}
-                  className={`flex-shrink-0 h-8 px-3 rounded-lg text-xs font-bold transition-all border ${
-                    selectedGame === 'all' 
-                      ? 'bg-white text-black border-white' 
-                      : 'bg-[#18181b]/50 text-gray-400 border-white/5'
-                  }`}
-                >
-                  All
-                </button>
-                {Object.values(gameConfig).map(game => (
-                  <button
-                    key={game.id}
-                    onClick={() => setSelectedGame(game.id)}
-                    className={`flex-shrink-0 flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold transition-all border ${
-                      selectedGame === game.id 
-                        ? 'bg-[#27272a] text-white border-purple-500' 
-                        : 'bg-[#18181b]/50 text-gray-400 border-white/5'
-                    }`}
-                  >
-                    <img src={game.icon} className="w-3.5 h-3.5 rounded-sm opacity-90" alt="" />
-                    {game.name}
-                  </button>
-                ))}
-            </div>
-          )}
         </div>
       )}
 
@@ -241,7 +241,7 @@ export default function LFGPage() {
 
               <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Quick Match</h2>
               <p className="text-gray-400 mb-8 max-w-md mx-auto text-base font-light">
-                Find your squad instantly based on your profile.
+                ระบบจะหาเพื่อนร่วมทีมที่เหมาะสมที่สุดให้คุณโดยอัตโนมัติ
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8 max-w-lg mx-auto">
@@ -267,7 +267,7 @@ export default function LFGPage() {
                 disabled={isSearching}
                 className="w-full max-w-lg py-3.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold text-base rounded-xl shadow-xl shadow-purple-900/20 transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
               >
-                {isSearching ? 'SEARCHING...' : 'FIND MATCH NOW'}
+                {isSearching ? 'กำลังค้นหา...' : 'เริ่มค้นหา (Start)'}
               </button>
             </div>
           </div>
@@ -280,15 +280,15 @@ export default function LFGPage() {
           
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <h2 className="text-xl font-bold text-white tracking-tight">Active Rooms</h2>
+              <h2 className="text-xl font-bold text-white tracking-tight">ห้องที่เปิดอยู่ (Active Rooms)</h2>
               <span className="px-2.5 py-0.5 bg-[#27272a] rounded-md text-xs font-bold text-gray-400 border border-white/10">
                 {activeRooms.length}
               </span>
             </div>
             <div className="hidden sm:flex items-center gap-4 text-xs text-gray-500 font-medium">
-               <div className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.5)]"></span> Open</div>
-               <div className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-yellow-500 shadow-[0_0_5px_rgba(234,179,8,0.5)]"></span> Check-In</div>
-               <div className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-gray-500"></span> Playing</div>
+               <div className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.5)]"></span> ว่าง (Open)</div>
+               <div className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-yellow-500 shadow-[0_0_5px_rgba(234,179,8,0.5)]"></span> กำลังเริ่ม</div>
+               <div className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-gray-500"></span> เล่นอยู่</div>
             </div>
           </div>
 
@@ -311,10 +311,10 @@ export default function LFGPage() {
             {activeRooms.length === 0 && (
               <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl bg-[#13132b]/30">
                 <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">🦗</div>
-                <h3 className="text-lg font-bold text-white mb-1">No Active Rooms</h3>
-                <p className="text-gray-400 text-sm mb-6">Be the first to start a party!</p>
+                <h3 className="text-lg font-bold text-white mb-1">ไม่มีห้องที่เปิดอยู่</h3>
+                <p className="text-gray-400 text-sm mb-6">ยังไม่มีใครตั้งห้องเลย มาเปิดห้องแรกกันเถอะ!</p>
                 <button onClick={() => setShowCreateModal(true)} className="px-6 py-2.5 bg-white text-black rounded-xl text-sm font-bold hover:bg-gray-200 transition-colors">
-                   Create Room
+                   + สร้างห้องใหม่
                 </button>
               </div>
             )}
@@ -330,10 +330,10 @@ export default function LFGPage() {
               onClick={() => setShowCreateModal(false)}
               className="absolute -top-12 right-0 text-white/50 hover:text-white flex items-center gap-2 transition-colors"
             >
-              Close <div className="w-6 h-6 rounded border border-white/20 flex items-center justify-center text-[10px]">ESC</div>
+              ปิด <div className="w-6 h-6 rounded border border-white/20 flex items-center justify-center text-[10px]">ESC</div>
             </button>
             <CreateLFGSession 
-              onSessionCreated={() => { setShowCreateModal(false); alert('Room Created Successfully!'); }}
+              onSessionCreated={() => { setShowCreateModal(false); alert('สร้างห้องสำเร็จ!'); }}
               onCancel={() => setShowCreateModal(false)}
             />
           </div>

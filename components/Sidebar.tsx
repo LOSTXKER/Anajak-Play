@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, ShoppingBag, MessageSquare, Gamepad2 } from 'lucide-react';
+import { Home, Users, ShoppingBag, MessageSquare, Settings, LogOut } from 'lucide-react';
 import { useParty } from '@/lib/PartyContext';
 
 export default function Sidebar() {
@@ -17,19 +17,10 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[#0a0a16] border-r border-white/10 flex-col items-center py-6 z-40">
-      {/* Logo */}
-      <Link href="/" className="mb-8">
-        <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(79,70,229,0.5)] hover:scale-110 transition-transform">
-          <Gamepad2 className="text-white w-6 h-6" />
-        </div>
-      </Link>
-
-      {/* Divider */}
-      <div className="w-8 h-[2px] bg-white/10 mb-6"></div>
-
-      {/* Navigation Items */}
-      <nav className="flex-1 flex flex-col gap-3 w-full px-3">
+    <aside className="hidden lg:flex fixed left-4 top-1/2 -translate-y-1/2 h-auto min-h-[500px] w-20 z-50 flex-col justify-center gap-8 items-center py-8 bg-[#0a0a16]/80 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl shadow-black/50 transition-all hover:border-white/20">
+      
+      {/* Center: Navigation */}
+      <nav className="flex flex-col gap-3 w-full px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -39,101 +30,63 @@ export default function Sidebar() {
               key={item.href}
               href={item.href}
               className={`
-                relative group flex flex-col items-center justify-center gap-1 py-3 px-2 rounded-xl transition-all
+                relative group flex flex-col items-center justify-center gap-1 py-3 rounded-2xl transition-all duration-300
                 ${isActive 
-                  ? 'bg-gradient-to-br from-purple-600/30 to-cyan-600/30 text-white border border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.3)]' 
+                  ? 'bg-white/10 text-white shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] border border-white/10' 
                   : item.highlight
-                    ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/20 text-green-400 border border-green-500/30 hover:border-green-500/50'
+                    ? 'bg-green-500/10 text-green-400 border border-green-500/20'
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }
               `}
             >
-              <Icon className="w-6 h-6" />
-              <span className="text-[9px] font-medium">{item.label}</span>
+              <div className={`p-1.5 rounded-xl transition-all ${isActive ? 'bg-gradient-to-br from-purple-500 to-blue-500 shadow-lg' : ''}`}>
+                <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'group-hover:scale-110 transition-transform'}`} />
+              </div>
+              
+              <span className={`text-[10px] font-medium ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-gray-300'}`}>
+                {item.label}
+              </span>
               
               {/* Badge */}
               {item.badge && (
                 <span className={`
-                  absolute top-1 right-1 rounded-full text-[8px] flex items-center justify-center font-bold
-                  ${item.badge === 'active' 
-                    ? 'w-2 h-2 bg-green-500 animate-pulse' 
-                    : 'w-4 h-4 bg-red-500 text-white'
-                  }
-                `}>
-                  {item.badge === 'active' ? '' : item.badge}
-                </span>
+                  absolute top-2 right-2 w-2.5 h-2.5 rounded-full border-2 border-[#0a0a16]
+                  ${item.badge === 'active' ? 'bg-green-500 animate-pulse' : 'bg-red-500'}
+                `}></span>
               )}
 
-              {/* Active Indicator */}
+              {/* Active Indicator (Left Bar) */}
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-purple-500 to-cyan-500 rounded-r-full"></div>
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
               )}
 
               {/* Tooltip */}
-              <div className="absolute left-full ml-4 px-3 py-1.5 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
+              <div className="absolute left-full ml-4 px-3 py-1.5 bg-gray-900/90 backdrop-blur border border-white/10 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 translate-x-[-10px] group-hover:translate-x-0 whitespace-nowrap shadow-xl z-50">
                 {item.label}
-                {item.badge === 'active' && activeParty && (
-                  <div className="text-xs text-gray-400 mt-1">
-                    {activeParty.title}
-                  </div>
-                )}
-                <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
               </div>
             </Link>
           );
         })}
       </nav>
 
-      {/* Active Party Indicator */}
-      {activeParty && (
-        <div className="w-full px-3 mb-4">
-          <Link
-            href="/lfg"
-            className="flex flex-col items-center gap-2 p-3 bg-gradient-to-br from-purple-600/30 to-cyan-600/30 rounded-xl border-2 border-purple-500/50 hover:border-purple-500 transition-all group relative overflow-hidden"
-          >
-            {/* Animated background */}
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-cyan-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            
-            <div className="relative flex items-center justify-center w-full">
-              <Users className="w-5 h-5 text-purple-400" />
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-            </div>
-            
-            <div className="relative text-center">
-              <div className="text-[10px] text-gray-400 mb-1">ปาร์ตี้ที่เข้าร่วม</div>
-              <div className="text-xs font-bold text-white truncate max-w-[60px]">
-                {activeParty.title}
-              </div>
-              <div className="text-[9px] text-cyan-400 mt-1">
-                {activeParty.requiredRoles.filter(r => r.status === 'filled').length}/{activeParty.requiredRoles.length} คน
-              </div>
-            </div>
-            
-            {/* Pulse ring */}
-            <div className="absolute inset-0 border-2 border-purple-500 rounded-xl animate-ping opacity-20"></div>
-          </Link>
-        </div>
-      )}
-
-      {/* Bottom Divider */}
-      <div className="w-8 h-[2px] bg-white/10 mb-4"></div>
-
-      {/* User Profile */}
-      <Link href="/profile" className="group relative">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-500 to-orange-500 p-[2px] hover:scale-110 transition-transform">
-          <img 
-            src="https://api.dicebear.com/7.x/avataaars/svg?seed=user" 
-            alt="Profile"
-            className="rounded-full bg-black w-full h-full"
-          />
-        </div>
+      {/* Bottom: Profile & Settings */}
+      <div className="flex flex-col gap-4 items-center w-full px-2">
+        <button className="p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+          <Settings className="w-5 h-5" />
+        </button>
         
-        {/* Tooltip */}
-        <div className="absolute left-full ml-4 px-3 py-1.5 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">
-          โปรไฟล์
-          <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
-        </div>
-      </Link>
+        <Link href="/profile" className="relative group">
+          <div className="w-10 h-10 rounded-full p-[2px] bg-gradient-to-tr from-purple-500 to-pink-500 hover:scale-105 transition-transform shadow-lg">
+            <img 
+              src="https://api.dicebear.com/7.x/avataaars/svg?seed=user" 
+              alt="Profile"
+              className="rounded-full bg-black w-full h-full object-cover border-2 border-black"
+            />
+          </div>
+          {/* Status Dot */}
+          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0a0a16] rounded-full"></div>
+        </Link>
+      </div>
     </aside>
   );
 }
