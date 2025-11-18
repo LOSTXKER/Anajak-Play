@@ -7,11 +7,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Zap, Users, Gamepad2, Swords, ArrowRight, Plus, ArrowLeft, Filter, SlidersHorizontal, Mic } from 'lucide-react';
-import { LFGSession, GameId } from '@/lib/types/index';
+import { useRouter } from 'next/navigation';
+import { Zap, Users, Gamepad2, Swords, ArrowRight, Plus, ArrowLeft, SlidersHorizontal } from 'lucide-react';
+import { LFGSession, GameId, RoleType } from '@/lib/types/index';
 import { LFGCard } from '@/components/lfg/LFGCard';
 import CreateLFGSession from '@/components/lfg/CreateLFGSession';
 import { mockLFGSessions, gameConfig } from '@/lib/data/mock-data';
+import { useParty } from '@/lib/PartyContext';
 
 // --- Types for Hybrid System ---
 type ViewMode = 'gateway' | 'match' | 'lobby';
@@ -27,6 +29,8 @@ const generateMockRooms = (): LFGSession[] => {
 };
 
 export default function LFGPage() {
+  const router = useRouter();
+  const { updateParty, joinParty } = useParty();
   const [viewMode, setViewMode] = useState<ViewMode>('gateway');
   const [selectedGame, setSelectedGame] = useState<GameId | 'all'>('all');
   const [isSearching, setIsSearching] = useState(false);
@@ -41,6 +45,78 @@ export default function LFGPage() {
   useEffect(() => {
     setRooms(generateMockRooms());
   }, []);
+
+  // Convert LFGSession to Party (Legacy Type for PartyContext)
+  const handleJoinRoom = (session: LFGSession) => {
+    const legacyParty: any = {
+      id: parseInt(session.id.split('-')[1] || '1'),
+      title: `${session.host.displayName}'s Room`,
+      desc: session.tags.join(', '),
+      game: session.game,
+      mode: session.gameMode,
+      rank: session.requiredRank || 'Any',
+      roles: [],
+      requiredRoles: Array.from({ length: session.maxPlayers }).map((_, i) => ({
+        role: i === 0 ? 'Leader' : 'Member',
+        status: i < session.currentPlayers.length ? 'filled' : 'open',
+        player: i < session.currentPlayers.length ? session.currentPlayers[i].user.displayName : undefined,
+        avatar: i < session.currentPlayers.length ? session.currentPlayers[i].user.avatar : undefined,
+        ready: i < session.currentPlayers.length ? session.currentPlayers[i].isReady : false,
+        isLeader: i === 0,
+        isMe: false,
+      })),
+      currentPlayers: session.currentPlayers.length,
+      maxPlayers: session.maxPlayers,
+      mic: session.voiceOption !== 'no-voice',
+      leader: session.host.displayName,
+      leaderRep: session.host.reputation.overall,
+      leaderAvatar: session.host.avatar || '',
+      tags: session.tags,
+      time: 'Now',
+      voiceChat: session.voiceOption === 'discord' ? { type: 'discord', link: '#' } : undefined
+    };
+
+    // Just join as first available open slot for demo
+    joinParty(legacyParty, 'Member');
+    router.push('/party');
+  };
+
+  const handleSessionCreated = (sessionId: string, formData: any) => {
+    setShowCreateModal(false);
+    
+    // Create new Party Object
+    const newParty: any = {
+      id: Date.now(),
+      title: `My ${formData.game} Room`,
+      desc: `Join me for ${formData.gameMode}`,
+      game: formData.game,
+      mode: formData.gameMode,
+      rank: formData.rank,
+      roles: [],
+      requiredRoles: [
+        { role: 'Leader', status: 'filled', player: 'Meelike God', avatar: 'Felix', ready: true, isLeader: true, isMe: true },
+        ...Array.from({ length: formData.neededPlayers }).map(() => ({
+          role: formData.role || 'Member',
+          status: 'open',
+          ready: false,
+          isLeader: false,
+          isMe: false
+        }))
+      ],
+      currentPlayers: 1,
+      maxPlayers: 1 + formData.neededPlayers,
+      mic: formData.voiceOption !== 'no-voice',
+      leader: 'Meelike God',
+      leaderRep: 100,
+      leaderAvatar: 'Felix',
+      tags: [formData.mood || 'Fun'],
+      time: 'Now',
+      voiceChat: formData.voiceOption === 'discord' ? { type: 'discord', link: 'https://discord.gg/mock-link' } : undefined
+    };
+
+    updateParty(newParty);
+    router.push('/party');
+  };
 
   const activeRooms = rooms.filter(room => {
     if (room.status === 'completed' || room.status === 'cancelled') return false;
@@ -67,8 +143,36 @@ export default function LFGPage() {
     setIsSearching(true);
     setTimeout(() => {
       setIsSearching(false);
-      alert('เจอห้องแล้ว! (Demo)');
-    }, 3000);
+      // Create a mock match party
+      const matchParty: any = {
+        id: Date.now(),
+        title: `Quick Match Lobby`,
+        desc: `Auto-generated lobby`,
+        game: 'valorant',
+        mode: 'Unrated',
+        rank: 'Gold',
+        roles: [],
+        requiredRoles: Array.from({ length: 5 }).map((_, i) => ({
+          role: i === 0 ? 'Leader' : 'Member',
+          status: 'filled', // All filled for match found
+          player: i === 0 ? 'Meelike God' : `Player ${i+1}`,
+          avatar: `User${i}`,
+          ready: false,
+          isLeader: i === 0,
+          isMe: i === 0,
+        })),
+        currentPlayers: 5,
+        maxPlayers: 5,
+        mic: true,
+        leader: 'Meelike God',
+        leaderRep: 100,
+        leaderAvatar: 'Felix',
+        tags: ['Quick Match'],
+        time: 'Now'
+      };
+      updateParty(matchParty);
+      router.push('/party');
+    }, 2000);
   };
 
   return (
@@ -348,15 +452,15 @@ export default function LFGPage() {
             {readyRooms.map(room => (
                <div key={room.id} className="relative group/card">
                  <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-2xl opacity-30 blur-md animate-pulse group-hover/card:opacity-50 transition-opacity"></div>
-                 <LFGCard session={room} />
+                 <LFGCard session={room} onJoin={handleJoinRoom} />
                </div>
             ))}
             {openRooms.map(room => (
-              <LFGCard key={room.id} session={room} />
+              <LFGCard key={room.id} session={room} onJoin={handleJoinRoom} />
             ))}
             {inGameRooms.map(room => (
               <div key={room.id} className="grayscale-[30%] opacity-70 hover:opacity-100 transition-all duration-300 hover:scale-[1.02]">
-                <LFGCard session={room} />
+                <LFGCard session={room} onJoin={handleJoinRoom} />
               </div>
             ))}
             
@@ -385,7 +489,7 @@ export default function LFGPage() {
               ปิด <div className="w-6 h-6 rounded border border-white/20 flex items-center justify-center text-[10px]">ESC</div>
             </button>
             <CreateLFGSession 
-              onSessionCreated={() => { setShowCreateModal(false); alert('สร้างห้องสำเร็จ!'); }}
+              onSessionCreated={handleSessionCreated}
               onCancel={() => setShowCreateModal(false)}
             />
           </div>
