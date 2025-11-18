@@ -77,8 +77,124 @@ export const notificationsData = [
 
 // Export legacy party data (to be deprecated)
 export const partiesData = [
-  // This is now handled by LFGSession in new structure
-  // Keeping for backward compatibility only
+  {
+    id: 1,
+    title: "Ranked ดึงเพชร+ ไมค์เปิด",
+    desc: "หาตี้ขึ้นดึง ต้องไมค์เปิด เล่นแนวจริงจัง",
+    game: "RoV",
+    mode: "Ranked",
+    rank: "Diamond+",
+    roles: ["Support", "Jungle"],
+    requiredRoles: [
+      { role: "Carry", status: "filled", player: "SkullKnight", avatar: "skull" },
+      { role: "Jungle", status: "open" },
+      { role: "Support", status: "open" },
+      { role: "Mid", status: "filled", player: "MageGod", avatar: "mage" },
+      { role: "Top", status: "filled", player: "TankMaster", avatar: "tank" }
+    ],
+    currentPlayers: 3,
+    maxPlayers: 5,
+    mic: true,
+    leader: "SkullKnight",
+    leaderRep: 4.8,
+    leaderAvatar: "skull",
+    tags: ["Serious", "Tryhard", "No Toxic"],
+    time: "2 นาทีที่แล้ว",
+    voiceChat: { type: 'discord', link: 'https://discord.gg/example1' },
+    timeSlot: "evening",
+    languages: ["TH"],
+    playstyle: "tryhard",
+    toxicTolerance: "zero",
+    urgency: "now"
+  },
+  {
+    id: 2,
+    title: "ปาร์ตี้สบายๆ เล่นไปคุยไป 🎮",
+    desc: "หาเพื่อนเล่นสนุกๆ ไม่ด่า ไม่เครียด",
+    game: "Valorant",
+    mode: "Unrated",
+    rank: "Silver - Gold",
+    roles: ["Any"],
+    requiredRoles: [
+      { role: "Duelist", status: "filled", player: "JettMain", avatar: "jett" },
+      { role: "Controller", status: "filled", player: "OmenPro", avatar: "omen" },
+      { role: "Any", status: "open" },
+      { role: "Any", status: "open" }
+    ],
+    currentPlayers: 2,
+    maxPlayers: 4,
+    mic: false,
+    leader: "JettMain",
+    leaderRep: 4.5,
+    leaderAvatar: "jett",
+    tags: ["Chill", "Fun", "Newbie Welcome"],
+    time: "5 นาทีที่แล้ว",
+    timeSlot: "evening",
+    languages: ["TH", "EN"],
+    playstyle: "chill",
+    toxicTolerance: "medium",
+    urgency: "soon"
+  },
+  {
+    id: 3,
+    title: "🔥 Push Conqueror ด่วน!",
+    desc: "รับแค่ Conqueror+ เท่านั้น ไม่มีไมค์ไม่รับ",
+    game: "RoV",
+    mode: "Ranked",
+    rank: "Conqueror",
+    roles: ["Carry"],
+    requiredRoles: [
+      { role: "Carry", status: "open" },
+      { role: "Support", status: "filled", player: "HealMaster", avatar: "healer", isLeader: true },
+      { role: "Jungle", status: "filled", player: "JungleKing", avatar: "jungle" },
+      { role: "Mid", status: "filled", player: "MageLord", avatar: "mage2" },
+      { role: "Top", status: "filled", player: "TankGod", avatar: "tank2" }
+    ],
+    currentPlayers: 4,
+    maxPlayers: 5,
+    mic: true,
+    leader: "HealMaster",
+    leaderRep: 5.0,
+    leaderAvatar: "healer",
+    tags: ["Experienced", "Discord Voice", "High Rank"],
+    time: "เมื่อสักครู่",
+    voiceChat: { type: 'discord', link: 'https://discord.gg/example3' },
+    timeSlot: "evening",
+    languages: ["TH"],
+    playstyle: "sweaty",
+    toxicTolerance: "zero",
+    neededPlayers: 1,
+    urgency: "now"
+  },
+  {
+    id: 4,
+    title: "🎯 Duo Queue ลงแรงค์ Plat+",
+    desc: "หา 1 คน Support หรือ Tank มาดูโอคิว",
+    game: "RoV",
+    mode: "Ranked Duo",
+    rank: "Platinum+",
+    roles: ["Support", "Tank"],
+    requiredRoles: [
+      { role: "ADC", status: "filled", player: "SharpShooter", avatar: "adc", isLeader: true },
+      { role: "Support/Tank", status: "open" }
+    ],
+    currentPlayers: 1,
+    maxPlayers: 2,
+    mic: true,
+    leader: "SharpShooter",
+    leaderRep: 4.7,
+    leaderAvatar: "adc",
+    tags: ["Duo", "Voice Req", "Experienced"],
+    time: "10 นาทีที่แล้ว",
+    voiceChat: { type: 'discord', link: 'https://discord.gg/example4' },
+    timeSlot: "evening",
+    languages: ["TH"],
+    playstyle: "tryhard",
+    toxicTolerance: "low",
+    neededPlayers: 1,
+    personalityTag: "มุ่งมั่น รักทีม",
+    urgency: "soon"
+  }
 ];
 
 // Export legacy marketplace listings (to be deprecated)
