@@ -10,11 +10,14 @@ import ChatSidebarOverlay from '@/components/ChatSidebarOverlay';
 import { notificationsData } from '@/lib/data/legacy-data';
 import { Notification } from '@/lib/types/index';
 
+import { HomeSidebar } from '@/components/home/HomeSidebar';
+
 interface DashboardLayoutProps {
   children: ReactNode;
   contentClassName?: string;
   enableNotifications?: boolean;
   enableChat?: boolean;
+  showRightSidebar?: boolean;
   notificationsFeed?: Notification[];
 }
 
@@ -23,6 +26,7 @@ export default function DashboardLayout({
   contentClassName = '',
   enableNotifications = true,
   enableChat = false,
+  showRightSidebar = false,
   notificationsFeed,
 }: DashboardLayoutProps) {
   const router = useRouter();
@@ -76,7 +80,20 @@ export default function DashboardLayout({
           />
         )}
 
-        <main className={mainClassName}>{children}</main>
+        <main className={mainClassName}>
+          {showRightSidebar ? (
+            <div className="flex flex-col lg:flex-row gap-8 h-full">
+              <div className="flex-1 min-w-0 h-full">
+                {children}
+              </div>
+              <div className="h-full">
+                <HomeSidebar />
+              </div>
+            </div>
+          ) : (
+            children
+          )}
+        </main>
       </div>
     </div>
   );

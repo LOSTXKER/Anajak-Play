@@ -3,28 +3,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { 
   X, 
-  Copy, 
   Settings, 
   LogOut, 
   Users, 
-  Mic, 
   MessageSquare, 
   Send, 
-  MoreHorizontal,
   Gamepad2,
-  Star,
-  Plus,
-  Volume2,
   ExternalLink,
   Clock3,
-  ThumbsUp,
-  AlertTriangle,
   Crown,
   CheckCircle2,
-  MicOff,
-  Shield
+  Shield,
+  Volume2
 } from 'lucide-react';
-import { Party } from '@/lib/types/index';
+import { Party, RoleSlot } from '@/lib/types/index';
 import { useParty } from '@/lib/PartyContext';
 
 interface PartyRoomProps {
@@ -38,11 +30,13 @@ interface ChatMessage {
   text: string;
   time: string;
   isMe: boolean;
+  type?: 'system' | 'user';
 }
 
 const mockChatMessages: ChatMessage[] = [
-  { id: 1, sender: "KiraGod", text: "สวัสดีครับ ขาดอีก 2 คน รอแป๊บนะ", time: "10:30", isMe: false },
-  { id: 2, sender: "MageGod", text: "ได้เลยครับ ผมวอร์มนิ้วรอ", time: "10:31", isMe: false },
+  { id: 1, sender: "System", text: "Welcome to the party lobby!", time: "10:30", isMe: false, type: 'system' },
+  { id: 2, sender: "KiraGod", text: "สวัสดีครับ ขาดอีก 2 คน รอแป๊บนะ", time: "10:30", isMe: false, type: 'user' },
+  { id: 3, sender: "MageGod", text: "ได้เลยครับ ผมวอร์มนิ้วรอ", time: "10:31", isMe: false, type: 'user' },
 ];
 
 export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
@@ -53,13 +47,11 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
 
   const { 
     activeParty, 
-    myRole,
     toggleReady
   } = useParty();
 
   const currentParty = activeParty || party;
-  const isLeader = currentParty.leader === "Meelike God";
-  const mySlot = currentParty.requiredRoles.find(slot => slot.isMe);
+  const mySlot = currentParty.requiredRoles.find((slot: RoleSlot) => slot.isMe);
   const isReady = mySlot?.ready || false;
 
   const scrollToBottom = () => {
@@ -86,15 +78,16 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
     if (!inputMsg.trim()) return;
     setMessages([...messages, { 
       id: Date.now(), 
-      sender: "Meelike God", 
+      sender: "Me", 
       text: inputMsg, 
       time: "Now", 
-      isMe: true 
+      isMe: true,
+      type: 'user'
     }]);
     setInputMsg("");
   };
 
-  // Mock Game Color Logic
+  // Game Color Logic
   const getGameColor = () => {
      const game = currentParty.game.toLowerCase();
      if(game.includes('rov')) return 'from-orange-600 to-red-600';
@@ -104,10 +97,10 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto animate-in fade-in zoom-in duration-300">
+    <div className="max-w-[1600px] mx-auto animate-in fade-in zoom-in duration-300 px-4 md:px-6 pb-10">
        
        {/* 1. Header Banner */}
-       <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 bg-[#13132b] shadow-2xl mb-6">
+       <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 bg-[#13132b] shadow-2xl mb-6 mt-6">
           <div className={`absolute inset-0 bg-gradient-to-r ${getGameColor()} opacity-20`}></div>
           <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
           
@@ -126,15 +119,15 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
                       </span>
                    </div>
                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300">
-                      <div className="flex items-center gap-1.5 bg-black/20 px-3 py-1 rounded-full">
+                      <div className="flex items-center gap-1.5 bg-black/20 px-3 py-1 rounded-full border border-white/5">
                          <Clock3 size={14} className="text-purple-400" /> 
-                         <span>Open: {formatDuration(elapsedSeconds)}</span>
+                         <span>Time: {formatDuration(elapsedSeconds)}</span>
                       </div>
-                      <div className="flex items-center gap-1.5 bg-black/20 px-3 py-1 rounded-full">
+                      <div className="flex items-center gap-1.5 bg-black/20 px-3 py-1 rounded-full border border-white/5">
                          <Users size={14} className="text-cyan-400" /> 
-                         <span>{currentParty.requiredRoles.filter(s => s.status === 'filled').length}/{currentParty.requiredRoles.length} Players</span>
+                         <span>{currentParty.requiredRoles.filter((s: RoleSlot) => s.status === 'filled').length}/{currentParty.requiredRoles.length} Players</span>
                       </div>
-                      <div className="flex items-center gap-1.5 bg-black/20 px-3 py-1 rounded-full">
+                      <div className="flex items-center gap-1.5 bg-black/20 px-3 py-1 rounded-full border border-white/5">
                          <Shield size={14} className="text-yellow-400" /> 
                          <span>{currentParty.mode} • {currentParty.rank}</span>
                       </div>
@@ -144,7 +137,7 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
 
              <div className="flex gap-3 w-full md:w-auto">
                 <button className="flex-1 md:flex-none px-4 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all border border-white/5">
-                   <Settings size={18} /> Settings
+                   <Settings size={18} /> <span className="hidden sm:inline">Settings</span>
                 </button>
                 <button 
                    onClick={onLeave}
@@ -165,11 +158,11 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
              {currentParty.voiceChat && (
                <div className="bg-[#1e1e38]/50 border border-indigo-500/20 rounded-2xl p-4 flex items-center justify-between backdrop-blur-sm">
                   <div className="flex items-center gap-4">
-                     <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                     <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30">
                         <Volume2 className="text-indigo-400" size={20} />
                      </div>
                      <div>
-                        <h3 className="font-bold text-white text-sm">Discord Voice Chat</h3>
+                        <h3 className="font-bold text-white text-sm">Voice Chat Active</h3>
                         <p className="text-xs text-gray-400">Click to join voice channel</p>
                      </div>
                   </div>
@@ -177,7 +170,7 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
                      href={currentParty.voiceChat.link}
                      target="_blank"
                      rel="noreferrer"
-                     className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg flex items-center gap-2 transition-colors"
+                     className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg flex items-center gap-2 transition-colors shadow-lg shadow-indigo-900/20"
                   >
                      Connect <ExternalLink size={12} />
                   </a>
@@ -187,16 +180,16 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
              {/* Slots Grid */}
              <div className="flex-1 bg-[#13132b]/50 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 overflow-y-auto custom-scrollbar relative">
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                   {currentParty.requiredRoles.map((slot, idx) => (
+                   {currentParty.requiredRoles.map((slot: RoleSlot, idx: number) => (
                       <div key={idx} className={`
-                         relative group p-4 rounded-2xl border-2 transition-all duration-300
+                         relative group p-4 rounded-2xl border-2 transition-all duration-300 overflow-hidden
                          ${slot.status === 'filled' 
                             ? 'bg-[#1a1a2e] border-[#2a2a45] hover:border-purple-500/30' 
                             : 'bg-black/20 border-dashed border-white/10 hover:border-white/20'
                          }
                          ${slot.isMe ? 'ring-2 ring-purple-500 shadow-lg shadow-purple-900/20' : ''}
                       `}>
-                         <div className="flex items-center gap-4">
+                         <div className="flex items-center gap-4 relative z-10">
                             {/* Avatar */}
                             <div className="relative">
                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden shadow-inner ${slot.status === 'open' ? 'bg-white/5' : 'bg-gray-800'}`}>
@@ -206,11 +199,11 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
                                          alt="Player"
                                          className="w-full h-full object-cover" 
                                        />
-                                     : <Plus className="text-gray-600" size={24} />
+                                     : <Users className="text-gray-600" size={24} />
                                   }
                                </div>
                                {slot.isLeader && (
-                                  <div className="absolute -top-2 -right-2 bg-yellow-500 text-black rounded-full p-1 shadow-lg">
+                                  <div className="absolute -top-2 -right-2 bg-yellow-500 text-black rounded-full p-1 shadow-lg border border-black">
                                      <Crown size={12} fill="currentColor" />
                                   </div>
                                )}
@@ -219,7 +212,7 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
                             {/* Info */}
                             <div className="flex-1 min-w-0">
                                <div className="flex items-center gap-2 mb-1">
-                                  <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 bg-white/5 px-2 py-0.5 rounded">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 bg-white/5 px-2 py-0.5 rounded border border-white/5">
                                      {slot.role}
                                   </span>
                                   {slot.status === 'filled' && (
@@ -230,27 +223,27 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
                                   )}
                                </div>
                                
-                               <div className={`font-bold text-lg truncate mb-1 ${slot.status === 'open' ? 'text-gray-600' : 'text-white'}`}>
-                                  {slot.status === 'filled' ? slot.player : 'Empty Slot'}
+                               <div className={`font-bold text-lg truncate mb-1 ${slot.status === 'open' ? 'text-gray-600 italic' : 'text-white'}`}>
+                                  {slot.status === 'filled' ? slot.player : 'Waiting for player...'}
                                </div>
 
                                {slot.status === 'filled' && (
                                   <div className="flex items-center gap-2">
                                      {slot.ready ? (
-                                        <span className="text-xs font-bold text-green-400 flex items-center gap-1">
+                                        <span className="text-xs font-bold text-green-400 flex items-center gap-1 bg-green-900/20 px-2 py-0.5 rounded-full border border-green-500/20">
                                            <CheckCircle2 size={12} /> READY
                                         </span>
                                      ) : (
-                                        <span className="text-xs font-bold text-gray-500 flex items-center gap-1">
-                                           Thinking...
+                                        <span className="text-xs font-bold text-gray-500 flex items-center gap-1 bg-gray-800 px-2 py-0.5 rounded-full border border-gray-700">
+                                           Running Late...
                                         </span>
                                      )}
                                   </div>
                                )}
                             </div>
 
-                            {/* Action (Kick) */}
-                            {isLeader && slot.status === 'filled' && !slot.isMe && (
+                            {/* Action (Kick) - Mock */}
+                            {slot.status === 'filled' && !slot.isMe && (
                                <button className="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-500/10 text-gray-500 hover:text-red-500 rounded-lg transition-all">
                                   <X size={18} />
                                </button>
@@ -259,7 +252,7 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
                          
                          {/* Ready Indicator Bar */}
                          {slot.status === 'filled' && (
-                            <div className={`absolute bottom-0 left-0 h-1 rounded-b-2xl transition-all duration-500 ${slot.ready ? 'w-full bg-green-500' : 'w-0 bg-gray-700'}`}></div>
+                            <div className={`absolute bottom-0 left-0 h-1 rounded-b-2xl transition-all duration-500 ${slot.ready ? 'w-full bg-green-500 shadow-[0_0_10px_#22c55e]' : 'w-0 bg-gray-700'}`}></div>
                          )}
                       </div>
                    ))}
@@ -267,11 +260,11 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
              </div>
              
              {/* Bottom Action Bar */}
-             <div className="bg-[#13132b] border border-white/10 p-4 rounded-2xl flex items-center justify-between">
+             <div className="bg-[#13132b] border border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-xl">
                 <div className="flex items-center gap-3">
                    <div className={`w-3 h-3 rounded-full animate-pulse ${isReady ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
                    <span className="text-gray-400 text-sm font-medium">
-                      {isReady ? 'Waiting for others...' : 'Please confirm your readiness'}
+                      {isReady ? 'Waiting for leader to start...' : 'Please confirm your readiness'}
                    </span>
                 </div>
                 <button 
@@ -297,33 +290,40 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
                 </h3>
                 <div className="flex gap-1">
                    <button className="p-2 hover:bg-white/5 rounded-lg text-gray-400 hover:text-white transition"><Users size={16}/></button>
-                   <button className="p-2 hover:bg-white/5 rounded-lg text-gray-400 hover:text-white transition"><Settings size={16}/></button>
                 </div>
              </div>
 
              <div className="flex-1 p-4 overflow-y-auto custom-scrollbar space-y-4 bg-[#0f0f1a]">
                 {messages.map((msg) => (
-                   <div key={msg.id} className={`flex flex-col ${msg.isMe ? 'items-end' : 'items-start'}`}>
-                      <div className={`flex items-end gap-2 max-w-[85%] ${msg.isMe ? 'flex-row-reverse' : ''}`}>
-                         {!msg.isMe && (
-                            <div className="w-8 h-8 rounded-full bg-gray-700 overflow-hidden flex-shrink-0 border border-white/10">
-                              <img 
-                                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${msg.sender}`}
-                                alt={msg.sender}
-                              />
-                            </div>
-                         )}
-                         <div className={`
-                            p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm
-                            ${msg.isMe 
-                               ? 'bg-purple-600 text-white rounded-br-sm' 
-                               : 'bg-[#2a2a40] text-gray-200 rounded-bl-sm'
-                            }
-                         `}>
-                            {msg.text}
-                         </div>
-                      </div>
-                      <span className="text-[10px] text-gray-500 mt-1.5 px-1 opacity-70">{msg.sender} • {msg.time}</span>
+                   <div key={msg.id} className={`flex flex-col ${msg.type === 'system' ? 'items-center' : (msg.isMe ? 'items-end' : 'items-start')}`}>
+                      {msg.type === 'system' ? (
+                        <div className="bg-white/5 px-3 py-1 rounded-full text-[10px] text-gray-400 my-2 border border-white/5">
+                          {msg.text}
+                        </div>
+                      ) : (
+                        <>
+                          <div className={`flex items-end gap-2 max-w-[85%] ${msg.isMe ? 'flex-row-reverse' : ''}`}>
+                             {!msg.isMe && (
+                                <div className="w-8 h-8 rounded-full bg-gray-700 overflow-hidden flex-shrink-0 border border-white/10">
+                                  <img 
+                                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${msg.sender}`}
+                                    alt={msg.sender}
+                                  />
+                                </div>
+                             )}
+                             <div className={`
+                                p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm
+                                ${msg.isMe 
+                                   ? 'bg-purple-600 text-white rounded-br-sm' 
+                                   : 'bg-[#2a2a40] text-gray-200 rounded-bl-sm'
+                                }
+                             `}>
+                                {msg.text}
+                             </div>
+                          </div>
+                          <span className="text-[10px] text-gray-500 mt-1.5 px-1 opacity-70">{!msg.isMe && `${msg.sender} • `}{msg.time}</span>
+                        </>
+                      )}
                    </div>
                 ))}
                 <div ref={chatEndRef} />

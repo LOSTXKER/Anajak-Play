@@ -3,30 +3,15 @@
  * Sidebar แสดงข้อมูลเสริม (Reputation, Market, Friends)
  */
 
-import { Shield, Users, Zap, Plus } from 'lucide-react';
+import { Users, Zap, Plus } from 'lucide-react';
 import Link from 'next/link';
+import { UserProgressCard } from './UserProgressCard';
 
 export function HomeSidebar() {
   return (
-    <div className="hidden lg:block w-80 space-y-6">
-      {/* Reputation Teaser */}
-      <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] rounded-2xl p-5 border border-white/10 relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-3 opacity-10">
-          <Shield className="w-24 h-24 text-white" />
-        </div>
-        <h4 className="font-bold text-white mb-2">ระบบชื่อเสียง</h4>
-        <div className="flex items-center gap-3 mb-3">
-          <div className="text-3xl font-bold text-yellow-400">4.8</div>
-          <div className="text-xs text-gray-400">
-            คะแนนของคุณ <br />
-            ระดับ: <span className="text-cyan-400">Pro Player</span>
-          </div>
-        </div>
-        <p className="text-xs text-gray-400 mb-3">รักษาเครดิตดี หางานง่าย หาตี้ไว</p>
-        <div className="w-full bg-gray-700 h-1.5 rounded-full overflow-hidden">
-          <div className="bg-yellow-400 w-[85%] h-full"></div>
-        </div>
-      </div>
+    <div className="hidden lg:block w-80 shrink-0 space-y-6">
+      {/* User Progress (Updated V5) - Replaces old Reputation Teaser */}
+      <UserProgressCard compact />
 
       {/* Marketplace Teaser */}
       <div className="bg-[#0f0f1a] rounded-2xl p-5 border border-white/5 opacity-75 hover:opacity-100 transition-opacity">

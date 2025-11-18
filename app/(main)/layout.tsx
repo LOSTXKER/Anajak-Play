@@ -3,12 +3,12 @@
  * Applies MainLayout to all main app pages
  */
 
-import { MainLayout } from '@/components/layouts/MainLayout';
+import DashboardLayout from '@/components/layouts/DashboardLayout';
 
 export default function GroupLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <MainLayout>{children}</MainLayout>;
+  return <DashboardLayout>{children}</DashboardLayout>;
 }

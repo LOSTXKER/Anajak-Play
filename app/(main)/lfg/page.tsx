@@ -6,14 +6,15 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Zap, Users, Gamepad2, Swords, ArrowRight, Plus, ArrowLeft, SlidersHorizontal } from 'lucide-react';
-import { LFGSession, GameId, RoleType } from '@/lib/types/index';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Zap, Users, Gamepad2, Swords, ArrowRight, Plus, ArrowLeft, SlidersHorizontal, Loader2, CheckCircle2 } from 'lucide-react';
+import { LFGSession, GameId, RoleType, MatchRequest, RankTier } from '@/lib/types/index';
 import { LFGCard } from '@/components/lfg/LFGCard';
 import CreateLFGSession from '@/components/lfg/CreateLFGSession';
-import { mockLFGSessions, gameConfig } from '@/lib/data/mock-data';
+import { mockLFGSessions, mockUsers, gameConfig } from '@/lib/data/mock-data';
 import { useParty } from '@/lib/PartyContext';
+import { calculateMatchScore, DEFAULT_MATCH_CRITERIA } from '@/lib/utils/matchEngine';
 
 // --- Types for Hybrid System ---
 type ViewMode = 'gateway' | 'match' | 'lobby';
@@ -28,12 +29,23 @@ const generateMockRooms = (): LFGSession[] => {
   });
 };
 
-export default function LFGPage() {
+function LFGContent() {
   const router = useRouter();
+  const urlParams = useSearchParams();
   const { updateParty, joinParty } = useParty();
   const [viewMode, setViewMode] = useState<ViewMode>('gateway');
   const [selectedGame, setSelectedGame] = useState<GameId | 'all'>('all');
+  
+  // Match Engine State
   const [isSearching, setIsSearching] = useState(false);
+  const [searchStep, setSearchStep] = useState<'idle' | 'scanning' | 'analyzing' | 'found'>('idle');
+  const [matchResult, setMatchResult] = useState<{ session: LFGSession; score: number } | null>(null);
+  const [searchParams, setSearchParams] = useState({
+    game: 'rov' as GameId,
+    mode: 'Ranked',
+    role: 'Any Role'
+  });
+
   const [rooms, setRooms] = useState<LFGSession[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -44,10 +56,20 @@ export default function LFGPage() {
 
   useEffect(() => {
     setRooms(generateMockRooms());
-  }, []);
+    
+    // Check for create action in URL
+    if (urlParams.get('create') === 'true') {
+      setViewMode('lobby');
+      setShowCreateModal(true);
+    }
+  }, [urlParams]);
 
   // Convert LFGSession to Party (Legacy Type for PartyContext)
   const handleJoinRoom = (session: LFGSession) => {
+    // Check constraints first (Mock logic)
+    const currentUser = mockUsers[0];
+    // Use MatchEngine Logic here for realism if needed, but for direct join we skip strict check
+    
     const legacyParty: any = {
       id: parseInt(session.id.split('-')[1] || '1'),
       title: `${session.host.displayName}'s Room`,
@@ -141,38 +163,71 @@ export default function LFGPage() {
 
   const handleQuickMatch = () => {
     setIsSearching(true);
+    setSearchStep('scanning');
+    setMatchResult(null);
+    
+    // 1. Simulate Scanning
     setTimeout(() => {
-      setIsSearching(false);
-      // Create a mock match party
-      const matchParty: any = {
-        id: Date.now(),
-        title: `Quick Match Lobby`,
-        desc: `Auto-generated lobby`,
-        game: 'valorant',
-        mode: 'Unrated',
-        rank: 'Gold',
-        roles: [],
-        requiredRoles: Array.from({ length: 5 }).map((_, i) => ({
-          role: i === 0 ? 'Leader' : 'Member',
-          status: 'filled', // All filled for match found
-          player: i === 0 ? 'Meelike God' : `Player ${i+1}`,
-          avatar: `User${i}`,
-          ready: false,
-          isLeader: i === 0,
-          isMe: i === 0,
-        })),
-        currentPlayers: 5,
-        maxPlayers: 5,
-        mic: true,
-        leader: 'Meelike God',
-        leaderRep: 100,
-        leaderAvatar: 'Felix',
-        tags: ['Quick Match'],
-        time: 'Now'
+      setSearchStep('analyzing');
+      
+      // 2. Run Match Engine Logic (Mocked but using real utility structure)
+      const currentUser = mockUsers[0]; // ProGamerTH
+      const mockRequest: MatchRequest = {
+        id: 'req-1',
+        userId: currentUser.id,
+        game: searchParams.game,
+        gameMode: searchParams.mode,
+        rank: 'diamond', // Assume user rank
+        voicePreference: 'discord',
+        playstyle: currentUser.profile.playstyle,
+        status: 'searching',
+        matchCriteria: DEFAULT_MATCH_CRITERIA,
+        createdAt: new Date(),
+        expiresAt: new Date()
       };
-      updateParty(matchParty);
-      router.push('/party');
-    }, 2000);
+
+      // Find best match among mock sessions
+      let bestMatch: { session: LFGSession; score: number } | null = null;
+      
+      // Try to find a real match from mock data
+      for (const session of mockLFGSessions) {
+         if (session.game === searchParams.game && session.status === 'matching') {
+            const score = calculateMatchScore(currentUser, mockRequest, session, DEFAULT_MATCH_CRITERIA);
+            if (score.isGoodMatch) {
+               if (!bestMatch || score.totalScore > bestMatch.score) {
+                 bestMatch = { session, score: score.totalScore };
+               }
+            }
+         }
+      }
+
+      // If no real match, create a fake one
+      if (!bestMatch) {
+         // Create a fake session for demo purposes
+         bestMatch = {
+            session: {
+              ...mockLFGSessions[0], 
+              id: 'generated-match',
+              game: searchParams.game,
+              gameMode: searchParams.mode,
+            },
+            score: 95
+         };
+      }
+
+      // 3. Found Match
+      setTimeout(() => {
+        setMatchResult(bestMatch);
+        setSearchStep('found');
+        setIsSearching(false);
+      }, 1500); // Analysis time
+    }, 1500); // Scanning time
+  };
+
+  const confirmMatch = () => {
+    if (matchResult) {
+       handleJoinRoom(matchResult.session);
+    }
   };
 
   return (
@@ -389,43 +444,129 @@ export default function LFGPage() {
           <div className="bg-[#13132b]/50 backdrop-blur-md border border-white/10 rounded-[2.5rem] p-8 md:p-12 text-center relative overflow-hidden group hover:border-purple-500/30 transition-colors duration-500">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-purple-600/20 rounded-full blur-[100px] pointer-events-none group-hover:bg-purple-600/30 transition-all duration-500"></div>
             
-            <div className="relative z-10">
-              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#1a1a2e] border border-white/10 flex items-center justify-center shadow-[0_0_60px_rgba(168,85,247,0.15)] relative">
-                 <div className="absolute inset-0 rounded-full border-2 border-purple-500/30 border-t-transparent animate-spin-slow"></div>
-                 <Zap className="w-10 h-10 text-purple-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
-              </div>
-
-              <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Quick Match</h2>
-              <p className="text-gray-400 mb-8 max-w-md mx-auto text-base font-light">
-                ระบบจะหาเพื่อนร่วมทีมที่เหมาะสมที่สุดให้คุณโดยอัตโนมัติ
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8 max-w-lg mx-auto">
-                <div className="relative">
-                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"><Gamepad2 size={16} /></div>
-                   <select className="w-full bg-[#09090b]/80 border border-white/10 text-white rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all appearance-none font-medium cursor-pointer hover:border-white/20">
-                     <option>RoV: Ranked</option>
-                     <option>Valorant: Unrated</option>
-                   </select>
+            {searchStep === 'idle' && (
+              <div className="relative z-10 animate-fadeIn">
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#1a1a2e] border border-white/10 flex items-center justify-center shadow-[0_0_60px_rgba(168,85,247,0.15)] relative">
+                   <div className="absolute inset-0 rounded-full border-2 border-purple-500/30 border-t-transparent animate-spin-slow"></div>
+                   <Zap className="w-10 h-10 text-purple-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
                 </div>
-                <div className="relative">
-                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"><Swords size={16} /></div>
-                   <select className="w-full bg-[#09090b]/80 border border-white/10 text-white rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all appearance-none font-medium cursor-pointer hover:border-white/20">
-                     <option>Any Role</option>
-                     <option>Carry / Duelist</option>
-                     <option>Support / Controller</option>
-                   </select>
+
+                <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Quick Match</h2>
+                <p className="text-gray-400 mb-8 max-w-md mx-auto text-base font-light">
+                  ระบบจะหาเพื่อนร่วมทีมที่เหมาะสมที่สุดให้คุณโดยอัตโนมัติ
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8 max-w-lg mx-auto">
+                  <div className="relative">
+                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"><Gamepad2 size={16} /></div>
+                     <select 
+                       value={`${searchParams.game}: ${searchParams.mode}`}
+                       onChange={(e) => {
+                         const [g, m] = e.target.value.split(': ');
+                         setSearchParams({...searchParams, game: g as GameId, mode: m});
+                       }}
+                       className="w-full bg-[#09090b]/80 border border-white/10 text-white rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all appearance-none font-medium cursor-pointer hover:border-white/20"
+                     >
+                       <option value="rov: Ranked">RoV: Ranked</option>
+                       <option value="valorant: Unrated">Valorant: Unrated</option>
+                       <option value="valorant: Competitive">Valorant: Competitive</option>
+                       <option value="mlbb: Ranked">MLBB: Ranked</option>
+                     </select>
+                  </div>
+                  <div className="relative">
+                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"><Swords size={16} /></div>
+                     <select 
+                       value={searchParams.role}
+                       onChange={(e) => setSearchParams({...searchParams, role: e.target.value})}
+                       className="w-full bg-[#09090b]/80 border border-white/10 text-white rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all appearance-none font-medium cursor-pointer hover:border-white/20"
+                     >
+                       <option>Any Role</option>
+                       <option>Carry / Duelist</option>
+                       <option>Support / Controller</option>
+                       <option>Tank / Initiator</option>
+                     </select>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleQuickMatch}
+                  className="w-full max-w-lg py-3.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold text-base rounded-xl shadow-xl shadow-purple-900/20 transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+                >
+                  เริ่มค้นหา (Start)
+                </button>
+              </div>
+            )}
+
+            {(searchStep === 'scanning' || searchStep === 'analyzing') && (
+              <div className="relative z-10 py-8 animate-fadeIn">
+                <div className="relative w-32 h-32 mx-auto mb-8">
+                  <div className="absolute inset-0 rounded-full border-4 border-purple-500/20 animate-ping"></div>
+                  <div className="absolute inset-0 rounded-full border-4 border-purple-500/40 animate-spin border-t-transparent"></div>
+                  <div className="absolute inset-2 rounded-full bg-[#13132b] flex items-center justify-center">
+                     <Zap className="w-12 h-12 text-purple-400 animate-pulse" />
+                  </div>
+                </div>
+                
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  {searchStep === 'scanning' ? 'กำลังค้นหาผู้เล่น...' : 'วิเคราะห์ความเข้ากันได้...'}
+                </h3>
+                <p className="text-gray-400 text-sm max-w-xs mx-auto">
+                  {searchStep === 'scanning' 
+                    ? `กำลังสแกนหาห้อง ${searchParams.game} ที่ว่างอยู่`
+                    : 'ตรวจสอบ Rank, Role, และ Reputation Score'
+                  }
+                </p>
+
+                <div className="mt-8 flex justify-center gap-2">
+                   <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce delay-0"></span>
+                   <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce delay-150"></span>
+                   <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce delay-300"></span>
                 </div>
               </div>
+            )}
 
-              <button
-                onClick={handleQuickMatch}
-                disabled={isSearching}
-                className="w-full max-w-lg py-3.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold text-base rounded-xl shadow-xl shadow-purple-900/20 transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
-              >
-                {isSearching ? 'กำลังค้นหา...' : 'เริ่มค้นหา (Start)'}
-              </button>
-            </div>
+            {searchStep === 'found' && matchResult && (
+              <div className="relative z-10 py-4 animate-slideUp">
+                 <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 text-green-400 shadow-[0_0_30px_rgba(34,197,94,0.3)]">
+                    <CheckCircle2 size={40} />
+                 </div>
+                 
+                 <h3 className="text-2xl font-bold text-white mb-2">พบห้องที่เหมาะสม!</h3>
+                 <div className="inline-block px-3 py-1 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-sm font-bold mb-6">
+                    Match Score: {matchResult.score}%
+                 </div>
+
+                 <div className="bg-[#0a0a16] border border-white/10 rounded-2xl p-4 mb-8 text-left max-w-md mx-auto">
+                    <div className="flex items-center gap-4 mb-3">
+                       <div className="w-12 h-12 rounded-full bg-gray-700 overflow-hidden">
+                          <img src={matchResult.session.host.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${matchResult.session.host.username}`} className="w-full h-full" />
+                       </div>
+                       <div>
+                          <div className="font-bold text-white">{matchResult.session.host.displayName}'s Party</div>
+                          <div className="text-xs text-gray-400">{matchResult.session.gameMode} • {matchResult.session.requiredRank || 'Unranked'}</div>
+                       </div>
+                    </div>
+                    <div className="flex gap-2">
+                       {matchResult.session.tags.map(tag => (
+                          <span key={tag} className="px-2 py-0.5 bg-white/5 rounded text-[10px] text-gray-400">{tag}</span>
+                       ))}
+                    </div>
+                 </div>
+
+                 <button
+                    onClick={confirmMatch}
+                    className="w-full max-w-md py-3.5 bg-green-600 hover:bg-green-500 text-white font-bold text-base rounded-xl shadow-lg transition-all transform hover:scale-[1.02]"
+                 >
+                    เข้าร่วมทันที (Join Now)
+                 </button>
+                 <button 
+                    onClick={() => setSearchStep('idle')}
+                    className="mt-4 text-gray-500 hover:text-white text-sm"
+                 >
+                    ค้นหาใหม่
+                 </button>
+              </div>
+            )}
           </div>
         </main>
       )}
@@ -496,5 +637,13 @@ export default function LFGPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function LFGPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading...</div>}>
+      <LFGContent />
+    </Suspense>
   );
 }
