@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { Flame, ChevronRight, Settings, Search, X, Heart, Star, RotateCcw, Gamepad2, CheckCircle2, MoreHorizontal, MessageCircle, Swords } from 'lucide-react';
-import { tinderProfiles, userProfileData } from '@/lib/mockData';
-import { TinderProfile } from '@/lib/types';
+import { mockTinderCards, mockUsers } from '@/lib/data/mock-data';
+import { TinderCard as TinderCardType, TinderProfile } from '@/lib/types/index';
+import { tinderProfiles, userProfileData } from '@/lib/data/legacy-data';
 
 interface TinderCardProps {
   profile: TinderProfile;

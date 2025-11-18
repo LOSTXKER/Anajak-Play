@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { X, Users, CheckCircle2, Shield, Star, Mic, Swords } from 'lucide-react';
-import { Party } from '@/lib/types';
+import { Party } from '@/lib/types/index';
 
 interface PartyJoinModalProps {
   party: Party;

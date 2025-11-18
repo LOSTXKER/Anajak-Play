@@ -1,7 +1,7 @@
 'use client';
 
 import { Users, Star, Shield, Mic, Volume2, UserPlus } from 'lucide-react';
-import { Party } from '@/lib/types';
+import { Party } from '@/lib/types/index';
 
 interface LobbyCardProps {
   party: Party;

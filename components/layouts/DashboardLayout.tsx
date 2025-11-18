@@ -1,14 +1,14 @@
 'use client';
 
 import { ReactNode, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import BottomNav from '@/components/BottomNav';
 import Navbar from '@/components/Navbar';
 import NotificationDropdown from '@/components/NotificationDropdown';
-import UserProfileModal from '@/components/UserProfileModal';
 import ChatSidebarOverlay from '@/components/ChatSidebarOverlay';
-import { notificationsData } from '@/lib/mockData';
-import { Notification } from '@/lib/types';
+import { notificationsData } from '@/lib/data/legacy-data';
+import { Notification } from '@/lib/types/index';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -25,8 +25,8 @@ export default function DashboardLayout({
   enableChat = false,
   notificationsFeed,
 }: DashboardLayoutProps) {
+  const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showProfileModal, setShowProfileModal] = useState(false);
   const [showChatSidebar, setShowChatSidebar] = useState(false);
   const notifications = notificationsFeed ?? notificationsData;
 
@@ -56,7 +56,7 @@ export default function DashboardLayout({
         )}
 
         <Navbar
-          onOpenProfile={() => setShowProfileModal(true)}
+          onOpenProfile={() => router.push('/profile')}
           onToggleNoti={
             enableNotifications
               ? () => setShowNotifications((prev) => !prev)
@@ -72,10 +72,6 @@ export default function DashboardLayout({
             notifications={notifications}
             onClose={() => setShowNotifications(false)}
           />
-        )}
-
-        {showProfileModal && (
-          <UserProfileModal onClose={() => setShowProfileModal(false)} />
         )}
 
         <main className={mainClassName}>{children}</main>

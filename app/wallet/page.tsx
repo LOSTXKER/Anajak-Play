@@ -2,7 +2,7 @@
 
 import { Wallet, TrendingUp, ArrowUpRight, ArrowDownLeft, Calendar, Plus, CreditCard, Smartphone } from 'lucide-react';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
-import { userProfileData } from '@/lib/mockData';
+import { userProfileData } from '@/lib/data/legacy-data';
 
 export default function WalletPage() {
   const transactions = [

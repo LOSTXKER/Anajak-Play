@@ -1,6 +1,6 @@
 'use client';
 
-import { Notification } from '@/lib/types';
+import { Notification } from '@/lib/types/index';
 
 interface NotificationDropdownProps {
   isOpen: boolean;

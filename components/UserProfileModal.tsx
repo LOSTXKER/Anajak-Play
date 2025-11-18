@@ -1,7 +1,8 @@
 'use client';
 
 import { X, Star, Edit3, Settings, LogOut, Trophy, Wallet, Plus } from 'lucide-react';
-import { userProfileData } from '@/lib/mockData';
+import { mockUsers } from '@/lib/data/mock-data';
+import { userProfileData } from '@/lib/data/legacy-data';
 
 interface UserProfileModalProps {
   onClose: () => void;
