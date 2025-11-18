@@ -36,6 +36,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isMobileRightSidebarOpen, setIsMobileRightSidebarOpen] = useState(false);
   const notifications = notificationsFeed ?? notificationsData;
 
   const unreadCount = useMemo(() => {
@@ -66,6 +67,7 @@ export default function DashboardLayout({
         notiOpen={showNotifications}
         unreadCount={enableNotifications ? unreadCount : 0}
         showSearch={showNavbarSearch}
+        onToggleMobileRightSidebar={showRightSidebar ? () => setIsMobileRightSidebarOpen(true) : undefined}
       />
 
       {enableNotifications && (
@@ -81,6 +83,23 @@ export default function DashboardLayout({
           isOpen={isChatOpen}
           onClose={() => setIsChatOpen(false)}
         />
+      )}
+
+      {/* Mobile Right Sidebar Drawer */}
+      {showRightSidebar && isMobileRightSidebarOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsMobileRightSidebarOpen(false)} />
+           <div className="absolute right-0 top-0 bottom-0 w-80 bg-[#0a0a16] border-l border-white/10 p-6 overflow-y-auto animate-in slide-in-from-right duration-300">
+               <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-bold text-white">Community</h3>
+                  <button onClick={() => setIsMobileRightSidebarOpen(false)} className="text-gray-400 hover:text-white">ปิด</button>
+               </div>
+               {/* Force display HomeSidebar content */}
+               <div className="[&>div]:block">
+                  <HomeSidebar />
+               </div>
+           </div>
+        </div>
       )}
 
       {/* Main Content Wrapper */}

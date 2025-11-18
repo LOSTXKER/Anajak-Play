@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { Bell, Search, Zap } from 'lucide-react';
+import { Bell, Search, Zap, Users, X } from 'lucide-react';
 import ProfileDropdown from './ProfileDropdown';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface NavbarProps {
   onOpenProfile?: () => void;
@@ -11,6 +11,7 @@ interface NavbarProps {
   notiOpen?: boolean;
   unreadCount?: number;
   showSearch?: boolean;
+  onToggleMobileRightSidebar?: () => void;
 }
 
 export default function Navbar({ 
@@ -18,10 +19,13 @@ export default function Navbar({
   onToggleNoti,
   notiOpen = false, 
   unreadCount = 0,
-  showSearch = true
+  showSearch = true,
+  onToggleMobileRightSidebar
 }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,7 +35,14 @@ export default function Navbar({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (showMobileSearch && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [showMobileSearch]);
+
   return (
+    <>
     <nav 
       className={`
         fixed top-0 z-50 w-full transition-all duration-300 border-b
@@ -90,7 +101,27 @@ export default function Navbar({
         )}
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-4 md:gap-6">
+        <div className="flex items-center gap-3 md:gap-6">
+
+          {/* Mobile Search Toggle */}
+          {showSearch && (
+            <button
+              onClick={() => setShowMobileSearch(true)}
+              className="lg:hidden p-2 text-gray-400 hover:text-white transition-colors"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+          )}
+
+          {/* Mobile Friends Toggle */}
+          {onToggleMobileRightSidebar && (
+            <button
+              onClick={onToggleMobileRightSidebar}
+              className="lg:hidden p-2 text-gray-400 hover:text-white transition-colors"
+            >
+              <Users className="w-5 h-5" />
+            </button>
+          )}
           
           {/* Notification */}
           <button 
@@ -116,5 +147,40 @@ export default function Navbar({
         </div>
       </div>
     </nav>
+
+    {/* Mobile Search Overlay */}
+    {showMobileSearch && (
+      <div className="fixed inset-0 z-[60] bg-[#0a0a16]/95 backdrop-blur-xl flex flex-col p-4 lg:hidden animate-in fade-in duration-200">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400" />
+            <input 
+              ref={searchInputRef}
+              type="text" 
+              placeholder="ค้นหา..." 
+              className="w-full bg-white/10 border border-white/10 rounded-full py-3 pl-12 pr-4 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
+            />
+          </div>
+          <button 
+            onClick={() => setShowMobileSearch(false)}
+            className="p-2 text-gray-400 hover:text-white"
+          >
+            ยกเลิก
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto">
+            <div className="text-sm text-gray-500 mb-4 font-bold">ประวัติการค้นหา</div>
+            <div className="space-y-3">
+                <div className="flex items-center gap-3 text-gray-300 p-2 hover:bg-white/5 rounded-lg cursor-pointer">
+                    <Search className="w-4 h-4 text-gray-500" /> RoV Rank
+                </div>
+                <div className="flex items-center gap-3 text-gray-300 p-2 hover:bg-white/5 rounded-lg cursor-pointer">
+                    <Search className="w-4 h-4 text-gray-500" /> Valorant Duo
+                </div>
+            </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

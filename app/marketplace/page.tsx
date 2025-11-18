@@ -12,6 +12,39 @@ export default function MarketplacePage() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedListing, setSelectedListing] = useState<MarketplaceListing | null>(null);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+  // Filter Panel Component
+  const FilterPanel = () => (
+    <div className="space-y-4">
+        <div>
+            <label className="text-xs text-gray-400 mb-2 block uppercase tracking-wider font-bold">เกม</label>
+            <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm text-gray-300 hover:text-white cursor-pointer">
+                    <input type="checkbox" className="rounded border-white/20 bg-white/5 text-purple-500 focus:ring-0" /> RoV
+                </label>
+                <label className="flex items-center gap-2 text-sm text-gray-300 hover:text-white cursor-pointer">
+                    <input type="checkbox" className="rounded border-white/20 bg-white/5 text-purple-500 focus:ring-0" /> Valorant
+                </label>
+                <label className="flex items-center gap-2 text-sm text-gray-300 hover:text-white cursor-pointer">
+                    <input type="checkbox" className="rounded border-white/20 bg-white/5 text-purple-500 focus:ring-0" /> Genshin Impact
+                </label>
+            </div>
+        </div>
+
+        <div className="h-[1px] bg-white/5"></div>
+
+        <div>
+            <label className="text-xs text-gray-400 mb-2 block uppercase tracking-wider font-bold">ช่วงราคา</label>
+            <div className="flex items-center gap-2">
+                <input type="number" placeholder="Min" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" />
+                <span className="text-gray-500">-</span>
+                <input type="number" placeholder="Max" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" />
+            </div>
+        </div>
+    </div>
+  );
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Extended mock data for demo purposes
@@ -152,58 +185,63 @@ export default function MarketplacePage() {
         {/* Main Content Area */}
         <div className="flex flex-col lg:flex-row gap-8">
             
-            {/* Sidebar Filters (Optional/Future) */}
+            {/* Sidebar Filters (Desktop) */}
             <div className="hidden lg:block w-64 space-y-6 shrink-0">
                 <div className="bg-[#111118] border border-white/5 rounded-2xl p-5 sticky top-24">
                     <h3 className="text-white font-bold mb-4 flex items-center gap-2">
                         <Filter className="w-4 h-4" /> ตัวกรอง
                     </h3>
-                    
-                    <div className="space-y-4">
-                        <div>
-                            <label className="text-xs text-gray-400 mb-2 block uppercase tracking-wider font-bold">เกม</label>
-                            <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm text-gray-300 hover:text-white cursor-pointer">
-                                    <input type="checkbox" className="rounded border-white/20 bg-white/5 text-purple-500 focus:ring-0" /> RoV
-                                </label>
-                                <label className="flex items-center gap-2 text-sm text-gray-300 hover:text-white cursor-pointer">
-                                    <input type="checkbox" className="rounded border-white/20 bg-white/5 text-purple-500 focus:ring-0" /> Valorant
-                                </label>
-                                <label className="flex items-center gap-2 text-sm text-gray-300 hover:text-white cursor-pointer">
-                                    <input type="checkbox" className="rounded border-white/20 bg-white/5 text-purple-500 focus:ring-0" /> Genshin Impact
-                                </label>
-                            </div>
-                        </div>
-
-                        <div className="h-[1px] bg-white/5"></div>
-
-                        <div>
-                            <label className="text-xs text-gray-400 mb-2 block uppercase tracking-wider font-bold">ช่วงราคา</label>
-                            <div className="flex items-center gap-2">
-                                <input type="number" placeholder="Min" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" />
-                                <span className="text-gray-500">-</span>
-                                <input type="number" placeholder="Max" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" />
-                            </div>
-                        </div>
-                    </div>
+                    <FilterPanel />
                 </div>
             </div>
 
+            {/* Mobile Filters Drawer */}
+            {showMobileFilters && (
+                <div className="fixed inset-0 z-50 lg:hidden">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowMobileFilters(false)}></div>
+                    <div className="absolute right-0 top-0 bottom-0 w-80 bg-[#111118] border-l border-white/10 p-6 animate-in slide-in-from-right">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                <Filter className="w-5 h-5" /> ตัวกรอง
+                            </h3>
+                            <button onClick={() => setShowMobileFilters(false)} className="text-gray-400 hover:text-white">
+                                ปิด
+                            </button>
+                        </div>
+                        <FilterPanel />
+                        <button 
+                            onClick={() => setShowMobileFilters(false)}
+                            className="w-full mt-8 py-3 bg-purple-600 text-white rounded-xl font-bold"
+                        >
+                            ดูผลลัพธ์
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Listings Grid */}
             <div className="flex-1">
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <h2 className="text-xl font-bold text-white flex items-center gap-2">
                         {activeCategory === 'all' ? <TrendingUp className="w-5 h-5 text-purple-400" /> : null}
                         รายการแนะนำ
                         <span className="text-sm font-normal text-gray-500 ml-2">({filteredListings.length})</span>
                     </h2>
                     
-                    <select className="bg-[#111118] border border-white/10 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-purple-500">
-                        <option>ล่าสุด</option>
-                        <option>ราคา: ต่ำ - สูง</option>
-                        <option>ราคา: สูง - ต่ำ</option>
-                        <option>เรตติ้งสูงสุด</option>
-                    </select>
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={() => setShowMobileFilters(true)}
+                            className="lg:hidden px-4 py-2 bg-[#111118] border border-white/10 rounded-lg text-white text-sm font-medium flex items-center gap-2"
+                        >
+                            <Filter size={16} /> Filter
+                        </button>
+                        <select className="bg-[#111118] border border-white/10 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-purple-500 w-full sm:w-auto">
+                            <option>ล่าสุด</option>
+                            <option>ราคา: ต่ำ - สูง</option>
+                            <option>ราคา: สูง - ต่ำ</option>
+                            <option>เรตติ้งสูงสุด</option>
+                        </select>
+                    </div>
                 </div>
 
                 {filteredListings.length > 0 ? (
