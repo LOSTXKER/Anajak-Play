@@ -11,7 +11,7 @@ import { ProfileDetailView } from '@/components/tinder/ProfileDetailView';
 import { Button } from '@/components/ui/Button';
 import { Card, CardBody } from '@/components/ui/Card';
 import { mockTinderCards, mockUsers } from '@/lib/data/mock-data';
-import { Settings, Heart, Sparkles, MessageCircle, UserPlus, Gamepad2, X, Star, RotateCcw, Zap } from 'lucide-react';
+import Image from 'next/image';
 import { User } from '@/lib/types/index';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -59,7 +59,7 @@ export default function TinderModePage() {
             </div>
             <h2 className="text-3xl font-black text-white mb-2">All Caught Up!</h2>
             <p className="text-gray-400 mb-8">
-                You've swiped through everyone in your area.<br/>Check back later for more gamers.
+                You&apos;ve swiped through everyone in your area.<br/>Check back later for more gamers.
             </p>
             <Button variant="gradient" onClick={() => setCurrentIndex(0)} className="px-8 py-6 text-lg rounded-full shadow-glow-purple">
               <RotateCcw className="mr-2" />
@@ -165,7 +165,7 @@ export default function TinderModePage() {
           <div className="relative z-10 w-full max-w-lg animate-scaleIn">
             <div className="text-center mb-8">
               <h2 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 drop-shadow-[0_0_25px_rgba(236,72,153,0.6)] italic tracking-tighter transform -rotate-3 animate-bounce">
-                IT'S A MATCH!
+                IT&apos;S A MATCH!
               </h2>
               <p className="text-white/90 mt-6 text-xl font-medium">
                 You and <span className="text-purple-400 font-bold border-b-2 border-purple-500">{matchedUser.displayName}</span> vibe together!
@@ -178,14 +178,24 @@ export default function TinderModePage() {
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-1 bg-gradient-to-r from-purple-500 to-cyan-500 blur-[2px]" />
 
               <div className="relative z-10 group">
-                 <div className="w-28 h-28 md:w-36 md:h-36 rounded-full border-4 border-purple-500 shadow-[0_0_40px_rgba(168,85,247,0.6)] overflow-hidden group-hover:scale-105 transition-transform">
-                    <img src={currentUser.avatar || '/avatars/default.jpg'} alt="Me" className="w-full h-full object-cover" />
+                 <div className="w-28 h-28 md:w-36 md:h-36 rounded-full border-4 border-purple-500 shadow-[0_0_40px_rgba(168,85,247,0.6)] overflow-hidden group-hover:scale-105 transition-transform relative">
+                    <Image 
+                      src={currentUser.avatar || '/avatars/default.jpg'} 
+                      alt="Me" 
+                      fill
+                      className="object-cover" 
+                    />
                  </div>
               </div>
               
               <div className="relative z-10 group">
-                 <div className="w-28 h-28 md:w-36 md:h-36 rounded-full border-4 border-cyan-500 shadow-[0_0_40px_rgba(6,182,212,0.6)] overflow-hidden group-hover:scale-105 transition-transform">
-                    <img src={matchedUser.avatar} alt={matchedUser.displayName} className="w-full h-full object-cover" />
+                 <div className="w-28 h-28 md:w-36 md:h-36 rounded-full border-4 border-cyan-500 shadow-[0_0_40px_rgba(6,182,212,0.6)] overflow-hidden group-hover:scale-105 transition-transform relative">
+                    <Image 
+                      src={matchedUser.avatar} 
+                      alt={matchedUser.displayName} 
+                      fill
+                      className="object-cover" 
+                    />
                  </div>
               </div>
             </div>

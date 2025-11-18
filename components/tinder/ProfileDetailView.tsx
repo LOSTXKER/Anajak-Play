@@ -52,7 +52,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({ card }) =>
         <div className="relative bg-black/20 rounded-xl p-4 border-l-4 border-purple-500">
             <Quote className="absolute top-2 right-2 text-white/5 w-8 h-8" />
             <p className="text-gray-300 italic text-sm relative z-10">
-                "{user.profile.quote || "Ready to play!"}"
+                &quot;{user.profile.quote || "Ready to play!"}&quot;
             </p>
         </div>
       </div>

@@ -8,7 +8,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Zap, Users, Gamepad2, Swords, ArrowRight, Plus, ArrowLeft, SlidersHorizontal, Loader2, CheckCircle2 } from 'lucide-react';
+import Image from 'next/image';
 import { LFGSession, GameId, RoleType, MatchRequest, RankTier } from '@/lib/types/index';
 import { LFGCard } from '@/components/lfg/LFGCard';
 import CreateLFGSession from '@/components/lfg/CreateLFGSession';
@@ -357,7 +357,13 @@ function LFGContent() {
                             : 'bg-[#18181b]/50 text-gray-400 border-white/5 hover:bg-white/5 hover:border-white/10'
                         }`}
                       >
-                        <img src={game.icon} className="w-3.5 h-3.5 rounded-sm opacity-90" alt="" />
+                        <Image 
+                          src={game.icon} 
+                          alt={game.name}
+                          width={14}
+                          height={14}
+                          className="rounded-sm opacity-90" 
+                        />
                         {game.name}
                       </button>
                     ))}
@@ -500,8 +506,13 @@ function LFGContent() {
 
                  <div className="bg-[#0a0a16] border border-white/10 rounded-2xl p-4 mb-8 text-left max-w-md mx-auto">
                     <div className="flex items-center gap-4 mb-3">
-                       <div className="w-12 h-12 rounded-full bg-gray-700 overflow-hidden">
-                          <img src={matchResult.session.host.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${matchResult.session.host.username}`} className="w-full h-full" />
+                       <div className="w-12 h-12 rounded-full bg-gray-700 overflow-hidden relative">
+                          <Image 
+                            src={matchResult.session.host.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${matchResult.session.host.username}`} 
+                            alt={matchResult.session.host.displayName}
+                            fill
+                            className="object-cover"
+                          />
                        </div>
                        <div>
                           <div className="font-bold text-white">{matchResult.session.host.displayName}'s Party</div>
