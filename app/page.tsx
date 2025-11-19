@@ -139,11 +139,11 @@ export default function LandingPage() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <Link 
-                    href="/login" 
+                    href="/dashboard" 
                     className="w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-2xl text-xl shadow-xl shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-105 transition-all flex items-center justify-center gap-2"
                 >
                     <Gamepad2 className="w-6 h-6" />
-                    เริ่มต้นใช้งานฟรี
+                    เข้าสู่ระบบ
                 </Link>
                 <Link 
                     href="/features" 
@@ -468,11 +468,11 @@ export default function LandingPage() {
                 สมัครสมาชิกวันนี้เพื่อเริ่มต้นใช้งานทุกฟีเจอร์ได้ฟรี! สร้างโปรไฟล์ หาเพื่อน และสนุกไปกับสังคมเกมเมอร์ที่ดีที่สุด
             </p>
             <Link 
-                href="/login" 
+                href="/dashboard" 
                 className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-2xl text-xl shadow-xl shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-105 transition-all"
             >
                 <Gamepad2 className="w-6 h-6" />
-                เริ่มต้นใช้งานฟรี
+                เข้าสู่ระบบทันที
             </Link>
         </div>
       </section>

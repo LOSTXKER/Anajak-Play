@@ -80,13 +80,13 @@ export default function LandingNavbar() {
         {/* Right Side: Login / CTA */}
         <div className="hidden md:flex items-center gap-4">
           <Link 
-            href="/login" 
+            href="/dashboard" 
             className="text-sm font-bold text-gray-300 hover:text-white transition-colors"
           >
             เข้าสู่ระบบ
           </Link>
           <Link 
-            href="/login" 
+            href="/dashboard" 
             className="px-6 py-2.5 bg-white text-black hover:bg-gray-100 font-bold rounded-full transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)] text-sm flex items-center gap-2"
           >
             เริ่มต้นใช้งาน <ArrowRight className="w-4 h-4" />
@@ -117,14 +117,14 @@ export default function LandingNavbar() {
                 ))}
                 <hr className="border-white/10 my-4" />
                 <Link 
-                  href="/login"
+                  href="/dashboard"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="text-xl font-bold text-gray-300"
                 >
                   เข้าสู่ระบบ
                 </Link>
                 <Link 
-                  href="/login"
+                  href="/dashboard"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="py-4 bg-white text-black text-center font-bold rounded-2xl text-lg mt-4"
                 >
