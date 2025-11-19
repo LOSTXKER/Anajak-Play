@@ -55,7 +55,7 @@ export default function Navbar({
       {/* Top Glow Line */}
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-purple-500/30 to-transparent opacity-50"></div>
 
-      <div className="w-full px-4 md:px-6 py-3 flex items-center justify-between relative">
+      <div className="w-full max-w-screen-2xl mx-auto px-4 md:px-6 lg:px-8 py-3 flex items-center justify-between relative">
         
         {/* Left: Brand */}
         <Link 

@@ -6,16 +6,20 @@ import TinderMode from '@/components/TinderMode';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import { LivePresenceTicker } from '@/components/home/LivePresenceTicker';
 import { UserProgressCard } from '@/components/home/UserProgressCard';
-import { mockLivePresenceEvents, mockPlatformStats } from '@/lib/data/mock-data';
+import { DynamicHomeCards } from '@/components/home/DynamicHomeCards';
+import { ActivityFeed } from '@/components/feed/ActivityFeed';
+import { mockLivePresenceEvents, mockPlatformStats, mockActivityFeed } from '@/lib/data/mock-data';
 import { useState } from 'react';
+import { useParty } from '@/lib/PartyContext';
 import { Users, Plus, ArrowRight, Zap } from 'lucide-react';
 
 export default function Home() {
   const router = useRouter();
   const [showTinderMode, setShowTinderMode] = useState(false);
+  const { openCreateModal } = useParty();
 
   const handleCreateParty = () => {
-    router.push('/lfg?create=true');
+    openCreateModal();
   };
 
   const handleTinderMode = () => {
@@ -33,7 +37,7 @@ export default function Home() {
       {showTinderMode && <TinderMode onExit={() => setShowTinderMode(false)} />}
 
       {/* Main Content */}
-      <div className="w-full">
+      <div className="w-full max-w-5xl mx-auto">
 
         {/* Live Presence Ticker (V5 Addition) */}
         <div className="mb-6">
@@ -41,29 +45,13 @@ export default function Home() {
         </div>
 
         {/* User Progress (Mobile Only) */}
-        <div className="lg:hidden">
+        <div className="lg:hidden mb-6">
           <UserProgressCard />
         </div>
         
-        {/* Hero Banner - Enhanced (Clean Version) */}
-        <div className="relative bg-gradient-to-br from-[#1a1a2e] to-[#13132b] rounded-[2rem] p-8 md:p-12 border border-white/10 overflow-hidden mb-10 shadow-xl shadow-black/20 group flex flex-col items-center text-center">
-          <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-l from-purple-600/10 to-transparent opacity-50 group-hover:opacity-70 transition-opacity"></div>
-          <div className="relative z-10 max-w-2xl">
-            <h1 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">
-              หาตี้ที่ <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">ใช่</span> ในแบบที่คุณ <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">ชอบ</span>
-            </h1>
-            <p className="text-gray-400 text-lg font-light leading-relaxed">
-              ระบบ LFG อัจฉริยะ คัดกรองด้วย Reputation System หมดปัญหาเจอไก่ เจอเกรียน เล่นเกมให้สนุกต้องที่ Anajak Play
-            </p>
-          </div>
-          
-          {/* Decorative Stats (Optional: Keep or Remove based on preference, keeping for vibe) */}
-          <div className="hidden md:flex absolute top-6 right-6 gap-3 opacity-70">
-            <div className="bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/5 text-[10px] text-gray-400 flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-              1,240 ออนไลน์
-            </div>
-          </div>
+        {/* Dynamic Home Cards (New V5) */}
+        <div className="mb-8">
+           <DynamicHomeCards />
         </div>
 
         {/* Quick Actions */}
@@ -114,19 +102,13 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Welcome Section */}
-        <div className="bg-[#181824]/50 backdrop-blur-sm rounded-3xl p-8 text-center border border-white/5">
-            <h2 className="text-2xl font-bold text-white mb-3">ยินดีต้อนรับสู่ Anajak Play</h2>
-            <p className="text-gray-400 max-w-lg mx-auto mb-8 font-light">
-              ชุมชนเกมเมอร์คุณภาพ ครบวงจรที่สุด หาเพื่อนเล่น จ้างโค้ช หรือซื้อขายไอเทม อย่างปลอดภัยและมั่นใจ
-            </p>
-            <button 
-              onClick={() => router.push('/lfg')}
-              className="px-10 py-3 bg-white text-black hover:bg-gray-200 rounded-xl font-bold transition-colors shadow-lg shadow-white/10"
-            >
-              เริ่มหาเพื่อนเล่น
-            </button>
+        {/* Activity Feed (New V5) */}
+        <div className="mb-10">
+           <div className="bg-[#13132b]/40 border border-white/5 rounded-3xl p-6 md:p-8">
+              <ActivityFeed initialActivities={mockActivityFeed} limit={5} />
+           </div>
         </div>
+
       </div>
     </DashboardLayout>
   );

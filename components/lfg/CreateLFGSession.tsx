@@ -19,6 +19,7 @@ import { motion } from 'framer-motion';
 interface CreateLFGSessionProps {
   onSessionCreated?: (sessionId: string, data: SessionFormData) => void;
   onCancel?: () => void;
+  initialData?: Partial<SessionFormData>;
 }
 
 interface SessionFormData {
@@ -74,7 +75,7 @@ const MOODS: { value: MoodStatus; label: string; emoji: string; desc: string }[]
   { value: 'chill', label: 'Relaxed', emoji: '🌊', desc: 'ผ่อนคลาย สบายๆ' },
 ];
 
-export default function CreateLFGSession({ onSessionCreated, onCancel }: CreateLFGSessionProps) {
+export default function CreateLFGSession({ onSessionCreated, onCancel, initialData }: CreateLFGSessionProps) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<SessionFormData>({
     game: '',
@@ -87,6 +88,7 @@ export default function CreateLFGSession({ onSessionCreated, onCancel }: CreateL
     verificationMethod: 'ready-check',
     discordRequired: false,
     gameApiLinked: false,
+    ...initialData
   });
 
   const [isCreating, setIsCreating] = useState(false);
@@ -102,6 +104,13 @@ export default function CreateLFGSession({ onSessionCreated, onCancel }: CreateL
     setIsCreating(true);
 
     try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock Success
+      onSessionCreated?.('mock-session-id', formData);
+      
+      /* 
       const response = await fetch('/api/lfg/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -115,6 +124,7 @@ export default function CreateLFGSession({ onSessionCreated, onCancel }: CreateL
       } else {
         alert(data.error || 'เกิดข้อผิดพลาดในการสร้าง Session');
       }
+      */
     } catch (error) {
       console.error('Error creating session:', error);
       alert('เกิดข้อผิดพลาดในการสร้าง Session');

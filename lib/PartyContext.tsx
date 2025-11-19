@@ -10,6 +10,10 @@ interface PartyContextType {
   leaveParty: () => void;
   toggleReady: () => void;
   updateParty: (updatedParty: Party) => void;
+  isCreateModalOpen: boolean;
+  openCreateModal: (initialData?: any) => void;
+  closeCreateModal: () => void;
+  createModalInitialData: any;
 }
 
 const PartyContext = createContext<PartyContextType | undefined>(undefined);
@@ -17,6 +21,17 @@ const PartyContext = createContext<PartyContextType | undefined>(undefined);
 export function PartyProvider({ children }: { children: ReactNode }) {
   const [activeParty, setActiveParty] = useState<Party | null>(null);
   const [myRole, setMyRole] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createModalInitialData, setCreateModalInitialData] = useState<any>(null);
+
+  const openCreateModal = (initialData?: any) => {
+    setCreateModalInitialData(initialData || null);
+    setIsCreateModalOpen(true);
+  };
+  const closeCreateModal = () => {
+    setIsCreateModalOpen(false);
+    setCreateModalInitialData(null);
+  };
 
   const joinParty = (party: Party, selectedRole: string) => {
     // หา slot ที่เลือก
@@ -87,7 +102,11 @@ export function PartyProvider({ children }: { children: ReactNode }) {
       joinParty, 
       leaveParty,
       toggleReady,
-      updateParty
+      updateParty,
+      isCreateModalOpen,
+      createModalInitialData,
+      openCreateModal,
+      closeCreateModal
     }}>
       {children}
     </PartyContext.Provider>

@@ -71,7 +71,7 @@ export default function TinderModePage() {
   }
   
   return (
-    <div className="h-[calc(100vh-80px)] w-full max-w-[1800px] mx-auto relative flex flex-col lg:flex-row overflow-hidden">
+    <div className="h-[calc(100vh-80px)] w-full max-w-screen-2xl mx-auto relative flex flex-col lg:flex-row overflow-hidden">
       {/* Background Ambient Effects */}
       <div className="fixed inset-0 bg-[#0a0a16] -z-50" />
       <div className="fixed top-[-20%] left-[-20%] w-[60%] h-[60%] bg-purple-900/20 blur-[150px] rounded-full pointer-events-none animate-pulse" />

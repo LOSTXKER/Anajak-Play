@@ -107,4 +107,14 @@
   .pause-on-hover:hover {
     animation-play-state: paused;
   }
+
+  /* Progress Bar Animation */
+  @keyframes progress-bar {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  .animate-progress-bar {
+    animation: progress-bar 5s linear infinite;
+  }
 }

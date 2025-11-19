@@ -278,7 +278,7 @@ export const mockLFGSessions: LFGSession[] = [
     host: mockUsers[2],
     game: 'valorant',
     gameMode: 'Competitive',
-    requiredRank: 'ascendant',
+    requiredRank: 'diamond',
     currentPlayers: [
       { userId: 'user-3', user: mockUsers[2], joinedAt: new Date(), isReady: true, isHost: true },
       { userId: 'user-1', user: mockUsers[0], joinedAt: new Date(), isReady: true, isHost: false }

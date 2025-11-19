@@ -69,10 +69,10 @@ export const tinderProfiles = [
 
 // Export legacy notifications
 export const notificationsData = [
-  { id: 1, type: 'invite' as const, text: "KiraGod ชวนคุณเล่น RoV: Ranked", time: "2m ago", read: false },
-  { id: 2, type: 'system' as const, text: "ยินดีต้อนรับสู่ Anajak Play! เริ่มหาตี้ได้เลย", time: "1h ago", read: false },
-  { id: 3, type: 'money' as const, text: "เติมเงินสำเร็จ +500 THB", time: "5h ago", read: true },
-  { id: 4, type: 'friend' as const, text: "NongMind ส่งคำขอเป็นเพื่อน", time: "1d ago", read: true },
+  { id: '1', userId: 'user1', type: 'friend-request' as const, title: "Friend Request", message: "KiraGod ชวนคุณเล่น RoV: Ranked", read: false, createdAt: new Date(Date.now() - 2 * 60 * 1000) },
+  { id: '2', userId: 'system', type: 'message' as const, title: "Welcome", message: "ยินดีต้อนรับสู่ Anajak Play! เริ่มหาตี้ได้เลย", read: false, createdAt: new Date(Date.now() - 60 * 60 * 1000) },
+  { id: '3', userId: 'user1', type: 'marketplace' as const, title: "Payment Success", message: "เติมเงินสำเร็จ +500 THB", read: true, createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000) },
+  { id: '4', userId: 'user2', type: 'friend-request' as const, title: "Friend Request", message: "NongMind ส่งคำขอเป็นเพื่อน", read: true, createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
 ];
 
 // Export legacy party data (to be deprecated)

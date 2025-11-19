@@ -11,6 +11,7 @@ import { Notification } from '@/lib/types/index';
 import ChatSidebarOverlay from '@/components/ChatSidebarOverlay';
 
 import { HomeSidebar } from '@/components/home/HomeSidebar';
+import CreatePartyModalWrapper from '@/components/lfg/CreatePartyModalWrapper';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -45,7 +46,7 @@ export default function DashboardLayout({
   }, [enableNotifications, notifications]);
 
   const mainClassName = [
-    'max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-8',
+    'max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8',
     contentClassName,
   ]
     .filter(Boolean)
@@ -53,6 +54,7 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen w-full bg-[#05050a] text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden">
+      <CreatePartyModalWrapper />
       <Sidebar onChatClick={() => setIsChatOpen(true)} />
       <BottomNav onChatClick={() => setIsChatOpen(true)} />
 

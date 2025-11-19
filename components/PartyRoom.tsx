@@ -97,7 +97,7 @@ export default function PartyRoom({ party, onLeave }: PartyRoomProps) {
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto animate-in fade-in zoom-in duration-300 px-4 md:px-6 pb-10">
+    <div className="max-w-screen-2xl mx-auto animate-in fade-in zoom-in duration-300 px-4 md:px-6 pb-10">
        
        {/* 1. Header Banner */}
        <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 bg-[#13132b] shadow-2xl mb-6 mt-6">

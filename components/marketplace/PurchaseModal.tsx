@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { MarketplaceListing } from '@/lib/types';
-import { Dialog } from '@/components/ui/Dialog'; // Assuming a Dialog component exists or I'll use a custom modal
 import { Shield, Wallet, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';

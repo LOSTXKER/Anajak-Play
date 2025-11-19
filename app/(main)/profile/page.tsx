@@ -15,11 +15,14 @@ import {
   Clock,
   Calendar
 } from 'lucide-react';
+import { MoodSelector } from '@/components/profile/MoodSelector';
+import { MoodStatus } from '@/lib/types/index';
 
 export default function ProfilePage() {
   // Simulate logged-in user (ProGamerTH)
-  const user = mockUsers[0];
+  const [user, setUser] = useState(mockUsers[0]);
   const [activeTab, setActiveTab] = useState<'overview' | 'history'>('overview');
+  const [isMoodSelectorOpen, setIsMoodSelectorOpen] = useState(false);
 
   const getReputationTier = (score: number) => {
     if (score >= 90) return { label: 'EXCELLENT', color: 'text-cyan-400', bg: 'bg-cyan-400/10', border: 'border-cyan-400/20' };
@@ -70,6 +73,29 @@ export default function ProfilePage() {
       tags: ['Stomp', 'Fast Game']
     }
   ];
+
+  const handleMoodSelect = (mood: MoodStatus) => {
+    setUser(prev => ({
+      ...prev,
+      profile: {
+        ...prev.profile,
+        currentMood: mood
+      }
+    }));
+  };
+
+  const getMoodDisplay = (mood?: MoodStatus) => {
+     switch(mood) {
+        case 'tryhard': return { icon: '🔥', label: 'Tryhard Mode', color: 'purple' };
+        case 'fun': return { icon: '😆', label: 'Just for Fun', color: 'yellow' };
+        case 'chill': return { icon: '☕', label: 'Chilling', color: 'blue' };
+        case 'competitive': return { icon: '⚔️', label: 'Competitive', color: 'red' };
+        case 'social': return { icon: '💬', label: 'Socialize', color: 'green' };
+        default: return { icon: '🎮', label: 'Ready to Play', color: 'gray' };
+     }
+  };
+
+  const moodInfo = getMoodDisplay(user.profile.currentMood);
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white pb-20 font-sans selection:bg-purple-500/30">
@@ -135,14 +161,19 @@ export default function ProfilePage() {
 
               {/* Mood & Stats Row */}
               <div className="flex flex-wrap gap-4 mb-6">
-                {/* Mood Status */}
-                <div className="px-4 py-2 bg-[#1a1a2e] border border-purple-500/30 rounded-xl flex items-center gap-3">
-                  <span className="text-xl">🔥</span>
-                  <div>
+                {/* Mood Status (Interactive) */}
+                <button 
+                   onClick={() => setIsMoodSelectorOpen(true)}
+                   className="px-4 py-2 bg-[#1a1a2e] border border-purple-500/30 rounded-xl flex items-center gap-3 hover:bg-[#202040] hover:border-purple-500/50 transition-all group"
+                >
+                  <span className="text-xl group-hover:scale-110 transition-transform">{moodInfo.icon}</span>
+                  <div className="text-left">
                     <div className="text-[10px] uppercase text-purple-400 font-bold tracking-wider">Mood Today</div>
-                    <div className="text-sm font-bold text-white">Tryhard Mode</div>
+                    <div className="text-sm font-bold text-white flex items-center gap-2">
+                       {moodInfo.label} <Edit size={12} className="text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
                   </div>
-                </div>
+                </button>
 
                 {/* Reputation Summary */}
                 <div className={`px-4 py-2 ${repTier.bg} border ${repTier.border} rounded-xl flex items-center gap-3`}>
@@ -445,6 +476,13 @@ export default function ProfilePage() {
 
         </div>
       </div>
+
+      <MoodSelector 
+         isOpen={isMoodSelectorOpen}
+         onClose={() => setIsMoodSelectorOpen(false)}
+         onSelect={handleMoodSelect}
+         currentMood={user.profile.currentMood}
+      />
     </div>
   );
 }

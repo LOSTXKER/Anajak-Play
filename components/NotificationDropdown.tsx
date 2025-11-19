@@ -8,6 +8,19 @@ interface NotificationDropdownProps {
   onClose: () => void;
 }
 
+function getTimeAgo(date: Date): string {
+  const now = Date.now();
+  const diffMs = now - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+  
+  if (diffMins < 1) return 'just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  return `${diffDays}d ago`;
+}
+
 export default function NotificationDropdown({ isOpen, notifications, onClose }: NotificationDropdownProps) {
    if (!isOpen) return null;
 
@@ -27,8 +40,8 @@ export default function NotificationDropdown({ isOpen, notifications, onClose }:
                   <div key={noti.id} className={`p-3 border-b border-white/5 hover:bg-white/5 cursor-pointer transition flex gap-3 ${!noti.read ? 'bg-purple-900/10' : ''}`}>
                      <div className={`w-2 h-2 mt-1.5 rounded-full flex-shrink-0 ${!noti.read ? 'bg-red-500' : 'bg-transparent'}`}></div>
                      <div>
-                        <div className="text-sm text-gray-200 leading-snug">{noti.text}</div>
-                        <div className="text-[10px] text-gray-500 mt-1">{noti.time}</div>
+                        <div className="text-sm text-gray-200 leading-snug">{noti.message}</div>
+                        <div className="text-[10px] text-gray-500 mt-1">{getTimeAgo(noti.createdAt)}</div>
                      </div>
                   </div>
                ))

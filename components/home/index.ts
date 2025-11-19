@@ -4,7 +4,6 @@
 
 export { SearchBar } from './SearchBar';
 export { FilterTiersSection } from './FilterTiersSection';
-export { PartiesGrid } from './PartiesGrid';
 export { HomeSidebar } from './HomeSidebar';
 export { GameFilterChips } from './GameFilterChips';
 export { LivePresenceTicker } from './LivePresenceTicker';

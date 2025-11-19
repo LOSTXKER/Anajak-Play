@@ -1,13 +1,13 @@
 'use client';
 
-import { ChevronDown, Filter, SlidersHorizontal } from 'lucide-react';
-import { FilterDefinition, GameFilterConfig } from '@/lib/types/index';
+import { ChevronDown, Filter as FilterIcon, SlidersHorizontal } from 'lucide-react';
+import { Filter, GameFilterConfig } from '@/lib/config/filterConfig';
 
 interface FilterPanelProps {
   selectedGame: string;
   onSelectGame: (gameKey: string) => void;
   gameOptions: Array<{ key: string; label: string }>;
-  globalFilters: FilterDefinition[];
+  globalFilters: Filter[];
   gameFilters?: GameFilterConfig;
   globalSelections: Record<string, string[]>;
   gameSelections: Record<string, string[]>;
@@ -38,7 +38,7 @@ function FilterChip({ active, label, onClick }: FilterChipProps) {
 }
 
 function renderFilterGroup(
-  filters: FilterDefinition[],
+  filters: Filter[],
   selections: Record<string, string[]>,
   layer: 'global' | 'game',
   onToggle: (layer: 'global' | 'game', filterId: string, value: string) => void
@@ -48,7 +48,6 @@ function renderFilterGroup(
       <div className="flex items-center justify-between mb-3">
         <div>
           <p className="text-sm font-semibold text-white">{filter.label}</p>
-          {filter.helperText && <p className="text-xs text-gray-400">{filter.helperText}</p>}
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
@@ -108,7 +107,7 @@ export default function LFGFilterPanel({
         <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-[#0c0c1f] to-[#121231] p-6 space-y-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-white">
-              <Filter className="w-5 h-5" />
+              <FilterIcon className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-lg font-bold">Global Filters</h3>

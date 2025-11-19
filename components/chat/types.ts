@@ -28,5 +28,6 @@ export interface Conversation {
   unread: number;
   type: ContactType;
   isPinned?: boolean;
+  isMe?: boolean;
 }
 

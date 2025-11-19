@@ -11,7 +11,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { LFGSession, GameId, RoleType, MatchRequest, RankTier } from '@/lib/types/index';
 import { LFGCard } from '@/components/lfg/LFGCard';
-import CreateLFGSession from '@/components/lfg/CreateLFGSession';
+// import CreateLFGSession from '@/components/lfg/CreateLFGSession';
 import { mockLFGSessions, mockUsers, gameConfig } from '@/lib/data/mock-data';
 import { useParty } from '@/lib/PartyContext';
 import { calculateMatchScore, DEFAULT_MATCH_CRITERIA } from '@/lib/utils/matchEngine';
@@ -32,7 +32,7 @@ const generateMockRooms = (): LFGSession[] => {
 function LFGContent() {
   const router = useRouter();
   const urlParams = useSearchParams();
-  const { updateParty, joinParty } = useParty();
+  const { updateParty, joinParty, openCreateModal } = useParty();
   const [viewMode, setViewMode] = useState<ViewMode>('gateway');
   const [selectedGame, setSelectedGame] = useState<GameId | 'all'>('all');
   
@@ -47,7 +47,7 @@ function LFGContent() {
   });
 
   const [rooms, setRooms] = useState<LFGSession[]>([]);
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  // const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Smart Filters State
   const [filterRank, setFilterRank] = useState<'all' | 'ranked' | 'casual'>('all');
@@ -60,7 +60,9 @@ function LFGContent() {
     // Check for create action in URL
     if (urlParams.get('create') === 'true') {
       setViewMode('lobby');
-      setShowCreateModal(true);
+      openCreateModal();
+      // Remove query param to avoid reopening on refresh? 
+      // For now just open.
     }
   }, [urlParams]);
 
@@ -103,42 +105,10 @@ function LFGContent() {
     router.push('/party');
   };
 
-  const handleSessionCreated = (sessionId: string, formData: any) => {
-    setShowCreateModal(false);
-    
-    // Create new Party Object
-    const newParty: any = {
-      id: Date.now(),
-      title: `My ${formData.game} Room`,
-      desc: `Join me for ${formData.gameMode}`,
-      game: formData.game,
-      mode: formData.gameMode,
-      rank: formData.rank,
-      roles: [],
-      requiredRoles: [
-        { role: 'Leader', status: 'filled', player: 'Meelike God', avatar: 'Felix', ready: true, isLeader: true, isMe: true },
-        ...Array.from({ length: formData.neededPlayers }).map(() => ({
-          role: formData.role || 'Member',
-          status: 'open',
-          ready: false,
-          isLeader: false,
-          isMe: false
-        }))
-      ],
-      currentPlayers: 1,
-      maxPlayers: 1 + formData.neededPlayers,
-      mic: formData.voiceOption !== 'no-voice',
-      leader: 'Meelike God',
-      leaderRep: 100,
-      leaderAvatar: 'Felix',
-      tags: [formData.mood || 'Fun'],
-      time: 'Now',
-      voiceChat: formData.voiceOption === 'discord' ? { type: 'discord', link: 'https://discord.gg/mock-link' } : undefined
-    };
-
-    updateParty(newParty);
-    router.push('/party');
-  };
+  // const handleSessionCreated = (sessionId: string, formData: any) => {
+  //   setShowCreateModal(false);
+  //   // ... moved to CreatePartyModalWrapper
+  // };
 
   const activeRooms = rooms.filter(room => {
     if (room.status === 'completed' || room.status === 'cancelled') return false;
@@ -515,7 +485,7 @@ function LFGContent() {
                           />
                        </div>
                        <div>
-                          <div className="font-bold text-white">{matchResult.session.host.displayName}'s Party</div>
+                          <div className="font-bold text-white">{matchResult.session.host.displayName}&apos;s Party</div>
                           <div className="text-xs text-gray-400">{matchResult.session.gameMode} • {matchResult.session.requiredRank || 'Unranked'}</div>
                        </div>
                     </div>
@@ -567,7 +537,7 @@ function LFGContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {/* Create New Room Card - Always First */}
             <button 
-               onClick={() => setShowCreateModal(true)}
+               onClick={() => openCreateModal()}
                className="group relative flex flex-col items-center justify-center min-h-[200px] rounded-2xl border-2 border-dashed border-white/10 hover:border-purple-500/50 bg-[#13132b]/20 hover:bg-[#13132b]/40 transition-all duration-300 hover:-translate-y-1"
             >
                <div className="w-16 h-16 bg-purple-600/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform border border-purple-500/20 group-hover:border-purple-500/50">

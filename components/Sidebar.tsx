@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, Settings, LogOut, ShoppingBag, MessageCircle, Flame } from 'lucide-react';
+import { Home, Users, Settings, LogOut, ShoppingBag, MessageCircle, Flame, Crown } from 'lucide-react';
 import { useParty } from '@/lib/PartyContext';
 
 interface SidebarProps {
@@ -16,6 +16,7 @@ export default function Sidebar({ onChatClick }: SidebarProps) {
   const navItems = [
     { icon: Home, label: 'หน้าแรก', href: '/', badge: null },
     { icon: Users, label: 'ปาร์ตี้', href: '/lfg', badge: activeParty ? 'active' : null, highlight: !!activeParty },
+    { icon: Crown, label: 'คอมมูนิตี้', href: '/community', badge: null },
     { icon: Flame, label: 'ปัดหาเพื่อน', href: '/tinder', badge: 'new' },
     { icon: ShoppingBag, label: 'ตลาด', href: '/marketplace', badge: null },
     { icon: MessageCircle, label: 'แชท', href: '#', isAction: true, badge: '3' },
