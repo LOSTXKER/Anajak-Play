@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ChatList from './chat/ChatList';
 import ChatArea from './chat/ChatArea';
 import { Conversation, Message } from './chat/types';
-import { CheckCircle2, Clock, Gamepad2, Gift, Shield, Star, Wallet } from 'lucide-react';
+import { CheckCircle2, Gamepad2, Shield, Star } from 'lucide-react';
 
 // Mock Data (Adapted to new types)
 const mockConversations: Conversation[] = [
@@ -114,13 +114,15 @@ export default function ChatSidebarOverlay({ isOpen, onClose }: ChatSidebarOverl
   return (
     <>
       {/* Backdrop */}
-      <div 
-        className="fixed inset-0 top-16 bg-black/50 backdrop-blur-sm z-40"
-        onClick={onClose}
-      />
+      {isOpen && (
+        <div 
+            className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm"
+            onClick={onClose}
+        />
+      )}
 
-      {/* Main Container */}
-      <div className="fixed top-16 right-0 h-[calc(100vh-4rem)] w-full md:w-[720px] lg:w-[1000px] bg-[#0a0a16] shadow-2xl z-50 flex animate-in slide-in-from-right duration-300 overflow-hidden border-l border-white/10">
+      {/* Main Container - Full screen height, on top of everything */}
+      <div className={`fixed top-0 right-0 h-screen w-full md:w-[720px] lg:w-[1000px] bg-[#0a0a16] shadow-2xl z-[101] flex transition-transform duration-300 overflow-hidden border-l border-white/10 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         
         {/* Left: Chat List */}
         <div className={`w-full md:w-80 bg-[#0e0e1b] flex flex-col ${selectedId ? 'hidden md:flex' : 'flex'}`}>
@@ -146,7 +148,7 @@ export default function ChatSidebarOverlay({ isOpen, onClose }: ChatSidebarOverl
         {/* Right: Profile (Optional/Hidden on smaller screens) */}
         {selectedId && (
             <div className="hidden lg:flex w-72 bg-[#0e0e1b] border-l border-white/5 flex-col overflow-y-auto custom-scrollbar p-4">
-                {/* Placeholder for Profile info - reusing some old static content for now but simplified */}
+                {/* Placeholder for Profile info */}
                  <div className="flex flex-col items-center mb-6 mt-4">
                     <div className="relative mb-3">
                       <img 

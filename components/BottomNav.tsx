@@ -14,7 +14,7 @@ export default function BottomNav({ onChatClick }: BottomNavProps) {
   const { activeParty } = useParty();
 
   const navItems = [
-    { icon: Home, label: 'หน้าแรก', href: '/' },
+    { icon: Home, label: 'หน้าแรก', href: '/dashboard' },
     { icon: Users, label: 'ปาร์ตี้', href: '/lfg', hasParty: activeParty },
     { icon: Crown, label: 'คอมมูนิตี้', href: '/community' },
     { icon: HeartHandshake, label: 'ปัดหาเพื่อน', href: '/tinder' },

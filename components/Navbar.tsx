@@ -1,17 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { Bell, Search, Zap, Users, X } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Bell, Zap, Users, Home, ShoppingBag, MessageCircle, HeartHandshake, Crown } from 'lucide-react';
 import ProfileDropdown from './ProfileDropdown';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { useParty } from '@/lib/PartyContext';
 
 interface NavbarProps {
   onOpenProfile?: () => void;
   onToggleNoti?: () => void;
   notiOpen?: boolean;
   unreadCount?: number;
-  showSearch?: boolean;
   onToggleMobileRightSidebar?: () => void;
+  onChatClick?: () => void;
 }
 
 export default function Navbar({ 
@@ -19,13 +21,21 @@ export default function Navbar({
   onToggleNoti,
   notiOpen = false, 
   unreadCount = 0,
-  showSearch = true,
-  onToggleMobileRightSidebar
+  onToggleMobileRightSidebar,
+  onChatClick
 }: NavbarProps) {
+  const pathname = usePathname();
+  const { activeParty } = useParty();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [showMobileSearch, setShowMobileSearch] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const navItems = [
+    { icon: Home, label: 'หน้าแรก', href: '/dashboard', badge: null },
+    { icon: Users, label: 'ปาร์ตี้', href: '/lfg', badge: activeParty ? 'active' : null, highlight: !!activeParty },
+    { icon: Crown, label: 'คอมมูนิตี้', href: '/community', badge: null },
+    { icon: HeartHandshake, label: 'ปัดหาเพื่อน', href: '/tinder', badge: 'new' },
+    { icon: ShoppingBag, label: 'ตลาด', href: '/marketplace', badge: null },
+    { icon: Zap, label: 'เติมเกม', href: '/topup', badge: 'hot' },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,14 +45,7 @@ export default function Navbar({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (showMobileSearch && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [showMobileSearch]);
-
   return (
-    <>
     <nav 
       className={`
         fixed top-0 z-50 w-full transition-all duration-300 border-b
@@ -59,8 +62,8 @@ export default function Navbar({
         
         {/* Left: Brand */}
         <Link 
-          href="/" 
-          className="flex items-center gap-3 cursor-pointer group"
+          href="/dashboard" 
+          className="flex items-center gap-3 cursor-pointer group mr-8"
         >
           <div className="relative w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl opacity-90 group-hover:opacity-100 blur-[1px]"></div>
@@ -77,41 +80,46 @@ export default function Navbar({
           </div>
         </Link>
 
-        {/* Center: Modern Search Bar */}
-        {showSearch && (
-          <div className="hidden lg:flex flex-1 max-w-md mx-12 relative group">
-            <div className={`
-              absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full opacity-0 transition-opacity duration-300 blur-sm
-              ${isSearchFocused ? 'opacity-30' : 'group-hover:opacity-20'}
-            `}></div>
-            <div className="relative w-full">
-              <input 
-                type="text" 
-                placeholder="ค้นหาเกม, ผู้เล่น, หรือปาร์ตี้..." 
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
-                className="w-full bg-[#13132b]/80 border border-white/10 rounded-full py-2.5 pl-11 pr-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:bg-[#0a0a16] focus:border-white/20 transition-all shadow-inner"
-              />
-              <Search className={`
-                absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors
-                ${isSearchFocused ? 'text-purple-400' : 'text-gray-500'}
-              `} />
-            </div>
-          </div>
-        )}
+        {/* Center: Navigation Items */}
+        <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            
+            const Content = (
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full transition-all">
+                <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-white'}`} />
+                <span className={`text-sm font-medium ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>
+                  {item.label}
+                </span>
+                {item.badge && item.badge !== 'active' && (
+                    <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full ml-1">
+                        {item.badge}
+                    </span>
+                )}
+                 {item.badge === 'active' && (
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse ml-1"></span>
+                )}
+              </div>
+            );
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`relative group hover:bg-white/5 rounded-full transition-all ${isActive ? 'bg-white/10' : ''}`}
+              >
+                {Content}
+                {isActive && (
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)] rounded-full"></div>
+                )}
+              </Link>
+            );
+          })}
+        </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-3 md:gap-6">
-
-          {/* Mobile Search Toggle */}
-          {showSearch && (
-            <button
-              onClick={() => setShowMobileSearch(true)}
-              className="lg:hidden p-2 text-gray-400 hover:text-white transition-colors"
-            >
-              <Search className="w-5 h-5" />
-            </button>
-          )}
+        <div className="flex items-center gap-3 md:gap-6 ml-auto">
 
           {/* Mobile Friends Toggle */}
           {onToggleMobileRightSidebar && (
@@ -122,6 +130,18 @@ export default function Navbar({
               <Users className="w-5 h-5" />
             </button>
           )}
+
+          {/* Chat Icon */}
+          <button 
+            className="hidden lg:block relative p-2.5 rounded-full transition-all duration-200 group hover:bg-white/5 text-gray-400 hover:text-white"
+            onClick={onChatClick}
+            title="แชท"
+          >
+            <MessageCircle className="w-5 h-5" />
+            {/* Example badge for chat */}
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-[#0a0a16] animate-pulse"></span>
+            <div className="absolute inset-0 rounded-full border border-white/0 group-hover:border-white/10 transition-colors"></div>
+          </button>
           
           {/* Notification */}
           <button 
@@ -147,40 +167,5 @@ export default function Navbar({
         </div>
       </div>
     </nav>
-
-    {/* Mobile Search Overlay */}
-    {showMobileSearch && (
-      <div className="fixed inset-0 z-[60] bg-[#0a0a16]/95 backdrop-blur-xl flex flex-col p-4 lg:hidden animate-in fade-in duration-200">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400" />
-            <input 
-              ref={searchInputRef}
-              type="text" 
-              placeholder="ค้นหา..." 
-              className="w-full bg-white/10 border border-white/10 rounded-full py-3 pl-12 pr-4 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
-            />
-          </div>
-          <button 
-            onClick={() => setShowMobileSearch(false)}
-            className="p-2 text-gray-400 hover:text-white"
-          >
-            ยกเลิก
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto">
-            <div className="text-sm text-gray-500 mb-4 font-bold">ประวัติการค้นหา</div>
-            <div className="space-y-3">
-                <div className="flex items-center gap-3 text-gray-300 p-2 hover:bg-white/5 rounded-lg cursor-pointer">
-                    <Search className="w-4 h-4 text-gray-500" /> RoV Rank
-                </div>
-                <div className="flex items-center gap-3 text-gray-300 p-2 hover:bg-white/5 rounded-lg cursor-pointer">
-                    <Search className="w-4 h-4 text-gray-500" /> Valorant Duo
-                </div>
-            </div>
-        </div>
-      </div>
-    )}
-    </>
   );
 }

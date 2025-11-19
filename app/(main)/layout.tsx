@@ -1,8 +1,6 @@
-/**
- * Root Layout for (main) group
- * Applies MainLayout to all main app pages
- */
+'use client';
 
+import { usePathname } from 'next/navigation';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 
 export default function GroupLayout({
@@ -10,5 +8,12 @@ export default function GroupLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <DashboardLayout>{children}</DashboardLayout>;
+  const pathname = usePathname();
+  const showRightSidebar = pathname === '/dashboard';
+
+  return (
+    <DashboardLayout showRightSidebar={showRightSidebar}>
+      {children}
+    </DashboardLayout>
+  );
 }

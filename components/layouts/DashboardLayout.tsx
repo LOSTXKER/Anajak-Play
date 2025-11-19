@@ -2,7 +2,6 @@
 
 import { ReactNode, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Sidebar from '@/components/Sidebar';
 import BottomNav from '@/components/BottomNav';
 import Navbar from '@/components/Navbar';
 import NotificationDropdown from '@/components/NotificationDropdown';
@@ -31,7 +30,7 @@ export default function DashboardLayout({
   enableChat = true,
   showRightSidebar = false,
   notificationsFeed,
-  showNavbarSearch = true,
+  showNavbarSearch = true, // unused now but kept for interface compatibility if needed elsewhere
   disableMainTopPadding = false,
 }: DashboardLayoutProps) {
   const router = useRouter();
@@ -53,9 +52,8 @@ export default function DashboardLayout({
     .join(' ');
 
   return (
-    <div className="min-h-screen w-full bg-[#05050a] text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden">
+    <div className="min-h-screen w-full bg-[#05050a] text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden relative z-0">
       <CreatePartyModalWrapper />
-      <Sidebar onChatClick={() => setIsChatOpen(true)} />
       <BottomNav onChatClick={() => setIsChatOpen(true)} />
 
       {/* Top Navbar (Full Width) */}
@@ -68,8 +66,8 @@ export default function DashboardLayout({
         }
         notiOpen={showNotifications}
         unreadCount={enableNotifications ? unreadCount : 0}
-        showSearch={showNavbarSearch}
         onToggleMobileRightSidebar={showRightSidebar ? () => setIsMobileRightSidebarOpen(true) : undefined}
+        onChatClick={() => setIsChatOpen(true)}
       />
 
       {enableNotifications && (
@@ -105,7 +103,7 @@ export default function DashboardLayout({
       )}
 
       {/* Main Content Wrapper */}
-      <div className={`lg:ml-20 pb-16 lg:pb-0 ${disableMainTopPadding ? '' : 'pt-20'}`}> 
+      <div className={`pb-16 lg:pb-0 relative z-0 ${disableMainTopPadding ? '' : 'pt-20'}`}> 
         <main className={mainClassName}>
           {showRightSidebar ? (
             <div className="flex flex-col lg:flex-row gap-8 items-start justify-start w-full">
