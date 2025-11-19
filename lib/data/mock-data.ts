@@ -587,6 +587,42 @@ export const gameConfig = {
     color: '#FFA500',
     ranks: ['unranked'],
     roles: ['flex']
+  },
+  lol: {
+    id: 'lol' as GameId,
+    name: 'LoL',
+    fullName: 'League of Legends',
+    icon: '/games/lol.png',
+    color: '#C8AA6E',
+    ranks: ['unranked', 'iron', 'bronze', 'silver', 'gold', 'platinum', 'emerald', 'diamond', 'master', 'grandmaster', 'challenger'],
+    roles: ['top', 'jungle', 'mid', 'adc', 'support']
+  },
+  apex: {
+    id: 'apex' as GameId,
+    name: 'Apex',
+    fullName: 'Apex Legends',
+    icon: '/games/apex.png',
+    color: '#DA292A',
+    ranks: ['unranked', 'bronze', 'silver', 'gold', 'platinum', 'diamond', 'master', 'predator'],
+    roles: ['carry', 'support', 'flex']
+  },
+  pubg: {
+    id: 'pubg' as GameId,
+    name: 'PUBG',
+    fullName: 'PUBG: Battlegrounds',
+    icon: '/games/pubg.png',
+    color: '#F2A900',
+    ranks: ['unranked', 'bronze', 'silver', 'gold', 'platinum', 'diamond', 'master'],
+    roles: ['carry', 'support', 'flex']
+  },
+  minecraft: {
+    id: 'minecraft' as GameId,
+    name: 'Minecraft',
+    fullName: 'Minecraft',
+    icon: '/games/minecraft.png',
+    color: '#528E25',
+    ranks: ['unranked'],
+    roles: ['flex']
   }
 };
 

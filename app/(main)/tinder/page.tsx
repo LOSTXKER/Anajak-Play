@@ -15,6 +15,10 @@ import Image from 'next/image';
 import { User } from '@/lib/types/index';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
+import { 
+  Sparkles, RotateCcw, Zap, Heart, Settings, X, Star, 
+  MessageCircle, Gamepad2, UserPlus 
+} from 'lucide-react';
 
 export default function TinderModePage() {
   const [cards] = useState(mockTinderCards);
@@ -191,7 +195,7 @@ export default function TinderModePage() {
               <div className="relative z-10 group">
                  <div className="w-28 h-28 md:w-36 md:h-36 rounded-full border-4 border-cyan-500 shadow-[0_0_40px_rgba(6,182,212,0.6)] overflow-hidden group-hover:scale-105 transition-transform relative">
                     <Image 
-                      src={matchedUser.avatar} 
+                      src={matchedUser.avatar || '/avatars/default.jpg'} 
                       alt={matchedUser.displayName} 
                       fill
                       className="object-cover" 

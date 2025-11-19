@@ -15,6 +15,10 @@ import { LFGCard } from '@/components/lfg/LFGCard';
 import { mockLFGSessions, mockUsers, gameConfig } from '@/lib/data/mock-data';
 import { useParty } from '@/lib/PartyContext';
 import { calculateMatchScore, DEFAULT_MATCH_CRITERIA } from '@/lib/utils/matchEngine';
+import { 
+  Zap, ArrowRight, Users, ArrowLeft, SlidersHorizontal, 
+  Gamepad2, Swords, CheckCircle2, Plus 
+} from 'lucide-react';
 
 // --- Types for Hybrid System ---
 type ViewMode = 'gateway' | 'match' | 'lobby';
@@ -565,23 +569,7 @@ function LFGContent() {
         </main>
       )}
 
-      {/* Create Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
-          <div className="w-full max-w-2xl relative animate-slideUp">
-            <button 
-              onClick={() => setShowCreateModal(false)}
-              className="absolute -top-12 right-0 text-white/50 hover:text-white flex items-center gap-2 transition-colors"
-            >
-              ปิด <div className="w-6 h-6 rounded border border-white/20 flex items-center justify-center text-[10px]">ESC</div>
-            </button>
-            <CreateLFGSession 
-              onSessionCreated={handleSessionCreated}
-              onCancel={() => setShowCreateModal(false)}
-            />
-          </div>
-        </div>
-      )}
+      {/* Create Modal removed - handled globally or by CreatePartyModalWrapper via useParty context */}
     </div>
   );
 }
