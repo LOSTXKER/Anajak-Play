@@ -4,7 +4,7 @@ import { GameId } from '@/lib/types/index';
 import { gameConfig } from '@/lib/data/mock-data';
 import { ActivityFeed } from '@/components/feed/ActivityFeed';
 import { mockActivityFeed } from '@/lib/data/mock-data';
-import { Users, ArrowRight, Swords, MessageSquare, Plus, Gamepad2, Flame, ShoppingBag, Zap } from 'lucide-react';
+import { Users, ArrowRight, Swords, MessageSquare, Plus, Gamepad2, HeartHandshake, ShoppingBag, Zap } from 'lucide-react';
 import Link from 'next/link';
 import CreatePartyButton from '@/components/community/CreatePartyButton';
 
@@ -154,7 +154,7 @@ export default function CommunityPage({ params }: { params: { gameId: string } }
                        <span className="text-xs font-bold text-gray-300 group-hover:text-white">หาปาร์ตี้</span>
                     </Link>
                     <Link href="/tinder" className="p-3 bg-white/5 hover:bg-pink-500/20 border border-white/5 hover:border-pink-500/50 rounded-xl flex flex-col items-center gap-2 transition-all group text-center">
-                       <Flame size={24} className="text-pink-400 group-hover:scale-110 transition-transform" />
+                       <HeartHandshake size={24} className="text-pink-400 group-hover:scale-110 transition-transform" />
                        <span className="text-xs font-bold text-gray-300 group-hover:text-white">ปัดหาเพื่อน</span>
                     </Link>
                     <Link href="/marketplace" className="p-3 bg-white/5 hover:bg-blue-500/20 border border-white/5 hover:border-blue-500/50 rounded-xl flex flex-col items-center gap-2 transition-all group text-center">

@@ -105,15 +105,14 @@ export default function DashboardLayout({
       )}
 
       {/* Main Content Wrapper */}
-      <div className={`lg:ml-20 pb-16 lg:pb-0 ${disableMainTopPadding ? '' : 'pt-20'}`}> {/* Added padding-top for mobile/desktop if needed, adjust based on Navbar height behavior */}
-
+      <div className={`lg:ml-20 pb-16 lg:pb-0 ${disableMainTopPadding ? '' : 'pt-20'}`}> 
         <main className={mainClassName}>
           {showRightSidebar ? (
-            <div className="flex flex-col lg:flex-row gap-8 h-full">
-              <div className="flex-1 min-w-0 h-full">
+            <div className="flex flex-col lg:flex-row gap-8 items-start justify-start w-full">
+              <div className="flex-1 min-w-0 w-full">
                 {children}
               </div>
-              <div className="h-full">
+              <div className="shrink-0 w-full lg:w-auto">
                 <HomeSidebar />
               </div>
             </div>

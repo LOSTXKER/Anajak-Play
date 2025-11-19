@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, User, ShoppingBag, MessageCircle, Flame, Crown } from 'lucide-react';
+import { Home, Users, User, ShoppingBag, MessageCircle, HeartHandshake, Crown, Zap } from 'lucide-react';
 import { useParty } from '@/lib/PartyContext';
 
 interface BottomNavProps {
@@ -17,8 +17,9 @@ export default function BottomNav({ onChatClick }: BottomNavProps) {
     { icon: Home, label: 'หน้าแรก', href: '/' },
     { icon: Users, label: 'ปาร์ตี้', href: '/lfg', hasParty: activeParty },
     { icon: Crown, label: 'คอมมูนิตี้', href: '/community' },
-    { icon: Flame, label: 'ปัดหาเพื่อน', href: '/tinder' },
+    { icon: HeartHandshake, label: 'ปัดหาเพื่อน', href: '/tinder' },
     { icon: ShoppingBag, label: 'ตลาด', href: '/marketplace' },
+    { icon: Zap, label: 'เติมเกม', href: '/topup' },
     { icon: MessageCircle, label: 'แชท', href: '#', isAction: true },
     { icon: User, label: 'โปรไฟล์', href: '/profile' },
   ];

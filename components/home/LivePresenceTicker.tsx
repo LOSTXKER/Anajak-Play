@@ -35,7 +35,7 @@ export const LivePresenceTicker: React.FC<LivePresenceTickerProps> = ({ events, 
             {stats.matchingNow} กำลังหาตี้
           </span>
         </div>
-        <Badge variant="outline" size="sm">
+        <Badge variant="outline" size="sm" suppressHydrationWarning>
           อัปเดต {stats.updatedAt.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
         </Badge>
       </div>
@@ -56,7 +56,7 @@ export const LivePresenceTicker: React.FC<LivePresenceTickerProps> = ({ events, 
               </span>
               <div className="text-sm text-text-secondary">
                 <p className="text-white font-medium leading-tight">{event.message}</p>
-                <p className="text-xs text-text-tertiary">
+                <p className="text-xs text-text-tertiary" suppressHydrationWarning>
                   {event.timestamp.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
@@ -74,7 +74,7 @@ export const LivePresenceTicker: React.FC<LivePresenceTickerProps> = ({ events, 
               </span>
               <div className="text-sm text-text-secondary">
                 <p className="text-white font-medium leading-tight">{event.message}</p>
-                <p className="text-xs text-text-tertiary">
+                <p className="text-xs text-text-tertiary" suppressHydrationWarning>
                   {event.timestamp.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
