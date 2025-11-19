@@ -1,11 +1,22 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Zap, Users, ShoppingBag, MessageCircle, Gamepad2, ArrowRight, Heart, Shield, Globe, Sparkles, Trophy, Search, Coins, Briefcase, Wallet, Star, CheckCircle } from 'lucide-react';
-import LandingNavbar from '@/components/landing/LandingNavbar';
+import Navbar from '@/components/Navbar';
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/lib/AuthContext';
 
 export default function LandingPage() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isLoading, isAuthenticated, router]);
+
   const carouselItems = [
     { 
       icon: Users, 
@@ -78,7 +89,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#05050a] text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden">
       
-      <LandingNavbar />
+      <Navbar />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
@@ -139,17 +150,17 @@ export default function LandingPage() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <Link 
-                    href="/dashboard" 
+                    href="/login" 
                     className="w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-2xl text-xl shadow-xl shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-105 transition-all flex items-center justify-center gap-2"
                 >
                     <Gamepad2 className="w-6 h-6" />
                     เข้าสู่ระบบ
                 </Link>
                 <Link 
-                    href="/features" 
-                    className="w-full sm:w-auto px-8 py-4 bg-[#13132b] text-white font-bold rounded-2xl text-lg border border-white/10 hover:bg-white/5 transition-all flex items-center justify-center gap-2"
+                    href="/dashboard" 
+                    className="w-full sm:w-auto px-8 py-5 bg-[#13132b] text-white font-bold rounded-2xl text-xl border border-white/10 hover:bg-white/5 transition-all flex items-center justify-center gap-2"
                 >
-                    ดูฟีเจอร์ทั้งหมด
+                    ทดลองใช้งาน (Guest)
                 </Link>
             </div>
         </div>
@@ -181,7 +192,7 @@ export default function LandingPage() {
                             ระบบห้องแชทพูดคุยและนัดแนะก่อนเริ่มเกม
                         </li>
                     </ul>
-                    <Link href="/features/lfg" className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl font-bold text-white transition-colors">
+                    <Link href="/lfg" className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl font-bold text-white transition-colors">
                         ลองใช้ระบบหาตี้ <ArrowRight size={16} />
                     </Link>
                 </div>
@@ -231,7 +242,7 @@ export default function LandingPage() {
                         ด้วยระบบ Anajak Escrow เงินของคุณจะถูกเก็บไว้ที่ระบบกลาง จนกว่าคุณจะได้รับของและกดยืนยัน ปลอดภัยทั้งคนซื้อและคนขาย
                     </p>
                     <div className="flex gap-4">
-                        <Link href="/features/marketplace" className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-white transition-colors">
+                        <Link href="/marketplace" className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-white transition-colors">
                             ดูสินค้าในตลาด <ArrowRight size={16} />
                         </Link>
                     </div>
@@ -281,7 +292,7 @@ export default function LandingPage() {
                     <p className="text-lg text-gray-400 leading-relaxed">
                         พูดคุย แลกเปลี่ยนเทคนิค และติดตามข่าวสารเกมจากเพื่อนๆ ในคอมมูนิตี้ที่หลากหลาย ไม่ว่าจะเป็น RoV, Valorant หรือ Genshin Impact
                     </p>
-                    <Link href="/features/community" className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-600 hover:bg-yellow-500 rounded-xl font-bold text-white transition-colors">
+                    <Link href="/community" className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-600 hover:bg-yellow-500 rounded-xl font-bold text-white transition-colors">
                         เข้าสู่คอมมูนิตี้ <ArrowRight size={16} />
                     </Link>
                 </div>
@@ -318,7 +329,7 @@ export default function LandingPage() {
                     <p className="text-lg text-gray-400 leading-relaxed">
                         วิธีใหม่ในการหาเพื่อนเล่นเกม! ระบบจะแนะนำคนที่เล่นเกมเดียวกัน และมีสไตล์การเล่นที่เข้ากัน ปัดขวาถ้าชอบ ปัดซ้ายถ้าไม่ใช่
                     </p>
-                    <Link href="/features/swipe" className="inline-flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 rounded-xl font-bold text-white transition-colors">
+                    <Link href="/tinder" className="inline-flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 rounded-xl font-bold text-white transition-colors">
                         ลองเล่น Swipe Mode <ArrowRight size={16} />
                     </Link>
                 </div>
@@ -354,7 +365,7 @@ export default function LandingPage() {
                     <p className="text-lg text-gray-400 leading-relaxed">
                         บริการเติมเกมมือถือและ PC ราคาถูกกว่าเติมเอง ปลอดภัย 100% ด้วยระบบอัตโนมัติ รับประกันเงินไม่หาย
                     </p>
-                    <Link href="/features/topup" className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-white transition-colors">
+                    <Link href="/topup" className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-white transition-colors">
                         ดูโปรโมชั่นเติมเกม <ArrowRight size={16} />
                     </Link>
                 </div>
@@ -399,7 +410,7 @@ export default function LandingPage() {
                     <p className="text-lg text-gray-400 leading-relaxed">
                         พื้นที่สำหรับ Pro Player ในการรับงานสอนเล่น (Coaching) หรือรับจ้างเล่น (Boosting) สร้างรายได้จากฝีมือของคุณ
                     </p>
-                    <Link href="/features/jobs" className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-500 rounded-xl font-bold text-white transition-colors">
+                    <Link href="/marketplace?category=jobs" className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-500 rounded-xl font-bold text-white transition-colors">
                         สมัครเป็น Pro Player <ArrowRight size={16} />
                     </Link>
                 </div>
@@ -468,7 +479,7 @@ export default function LandingPage() {
                 สมัครสมาชิกวันนี้เพื่อเริ่มต้นใช้งานทุกฟีเจอร์ได้ฟรี! สร้างโปรไฟล์ หาเพื่อน และสนุกไปกับสังคมเกมเมอร์ที่ดีที่สุด
             </p>
             <Link 
-                href="/dashboard" 
+                href="/login" 
                 className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-2xl text-xl shadow-xl shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-105 transition-all"
             >
                 <Gamepad2 className="w-6 h-6" />
@@ -498,10 +509,10 @@ export default function LandingPage() {
                 <div>
                     <h4 className="font-bold text-white mb-4">บริการของเรา</h4>
                     <ul className="space-y-2 text-gray-400">
-                        <li><Link href="/features/lfg" className="hover:text-purple-400 transition-colors">หาปาร์ตี้ (Party Finder)</Link></li>
-                        <li><Link href="/features/marketplace" className="hover:text-blue-400 transition-colors">ตลาดซื้อขาย (Marketplace)</Link></li>
-                        <li><Link href="/features/community" className="hover:text-yellow-400 transition-colors">คอมมูนิตี้ (Community)</Link></li>
-                        <li><Link href="/features/swipe" className="hover:text-pink-400 transition-colors">หาเพื่อน (Swipe Friends)</Link></li>
+                        <li><Link href="/lfg" className="hover:text-purple-400 transition-colors">หาปาร์ตี้ (Party Finder)</Link></li>
+                        <li><Link href="/marketplace" className="hover:text-blue-400 transition-colors">ตลาดซื้อขาย (Marketplace)</Link></li>
+                        <li><Link href="/community" className="hover:text-yellow-400 transition-colors">คอมมูนิตี้ (Community)</Link></li>
+                        <li><Link href="/tinder" className="hover:text-pink-400 transition-colors">หาเพื่อน (Swipe Friends)</Link></li>
                     </ul>
                 </div>
 

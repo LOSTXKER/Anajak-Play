@@ -6,6 +6,7 @@ import { Bell, Zap, Users, Home, ShoppingBag, MessageCircle, HeartHandshake, Cro
 import ProfileDropdown from './ProfileDropdown';
 import { useState, useEffect } from 'react';
 import { useParty } from '@/lib/PartyContext';
+import { useAuth } from '@/lib/AuthContext';
 
 interface NavbarProps {
   onOpenProfile?: () => void;
@@ -26,6 +27,7 @@ export default function Navbar({
 }: NavbarProps) {
   const pathname = usePathname();
   const { activeParty } = useParty();
+  const { isAuthenticated } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
 
   const navItems = [
@@ -163,7 +165,16 @@ export default function Navbar({
           <div className="h-6 w-[1px] bg-white/10 hidden sm:block"></div>
 
           {/* Profile */}
-          <ProfileDropdown onOpenProfile={onOpenProfile} />
+          {isAuthenticated ? (
+            <ProfileDropdown onOpenProfile={onOpenProfile} />
+          ) : (
+            <Link 
+              href="/login"
+              className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl shadow-lg shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-105 transition-all text-sm"
+            >
+              เข้าสู่ระบบ
+            </Link>
+          )}
         </div>
       </div>
     </nav>

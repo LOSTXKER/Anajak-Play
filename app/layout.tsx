@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Prompt, Sarabun, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { PartyProvider } from "@/lib/PartyContext";
+import { AuthProvider } from "@/lib/AuthContext";
 
 const headingFont = Prompt({
   subsets: ["latin", "thai"],
@@ -43,9 +44,11 @@ export default function RootLayout({
   return (
     <html lang="th">
       <body className={`${headingFont.variable} ${bodyFont.variable} ${monoFont.variable} font-body bg-dark-base text-text-primary`}>
-        <PartyProvider>
-          {children}
-        </PartyProvider>
+        <AuthProvider>
+          <PartyProvider>
+            {children}
+          </PartyProvider>
+        </AuthProvider>
       </body>
     </html>
   );

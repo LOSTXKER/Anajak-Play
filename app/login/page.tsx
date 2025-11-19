@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Zap, Lock, Mail, ArrowRight, Chrome, Facebook, Gamepad2 } from 'lucide-react';
+import { useAuth } from '@/lib/AuthContext';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const handleLogin = (e: React.FormEvent) => {
@@ -15,6 +17,7 @@ export default function LoginPage() {
     
     // Simulate login delay
     setTimeout(() => {
+      login();
       router.push('/dashboard');
     }, 1000);
   };
