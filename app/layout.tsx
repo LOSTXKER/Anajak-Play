@@ -3,6 +3,7 @@ import { Prompt, Sarabun, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { PartyProvider } from "@/lib/PartyContext";
 import { AuthProvider } from "@/lib/AuthContext";
+import AuthModal from "@/components/auth/AuthModal";
 
 const headingFont = Prompt({
   subsets: ["latin", "thai"],
@@ -47,6 +48,7 @@ export default function RootLayout({
         <AuthProvider>
           <PartyProvider>
             {children}
+            <AuthModal />
           </PartyProvider>
         </AuthProvider>
       </body>

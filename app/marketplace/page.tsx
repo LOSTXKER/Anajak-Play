@@ -1,15 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, TrendingUp, Shield, ShoppingBag, User, Swords, Gift, MonitorPlay, GraduationCap } from 'lucide-react';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import { ListingCard } from '@/components/marketplace/ListingCard';
 import { PurchaseModal } from '@/components/marketplace/PurchaseModal';
 import { mockMarketplaceListings } from '@/lib/data/mock-data';
 import { MarketplaceListing } from '@/lib/types';
+import { useAuth } from '@/lib/AuthContext';
+import { useSearchParams } from 'next/navigation';
 
 export default function MarketplacePage() {
+  const { isAuthenticated, openAuthModal } = useAuth();
+  const searchParams = useSearchParams();
   const [activeCategory, setActiveCategory] = useState<string>('all');
+
+  useEffect(() => {
+    const category = searchParams.get('category');
+    if (category) {
+      setActiveCategory(category);
+    }
+  }, [searchParams]);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedListing, setSelectedListing] = useState<MarketplaceListing | null>(null);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -101,17 +113,21 @@ export default function MarketplacePage() {
   });
 
   const handleBuy = (listing: MarketplaceListing) => {
+    if (!isAuthenticated) {
+      openAuthModal();
+      return;
+    }
     setSelectedListing(listing);
     setIsModalOpen(true);
   };
 
   const categories = [
     { id: 'all', label: 'ทั้งหมด', icon: ShoppingBag },
-    { id: 'coaching', label: 'Coaching', icon: GraduationCap },
-    { id: 'hire-play', label: 'จ้างเล่น', icon: Swords },
     { id: 'account-sale', label: 'ซื้อขายไอดี', icon: User },
     { id: 'item-sale', label: 'ไอเทม', icon: Gift },
-    { id: 'custom', label: 'งาน Custom', icon: MonitorPlay },
+    { id: 'hire-play', label: 'จ้างเล่น', icon: Swords },
+    { id: 'coaching', label: 'โค้ชเกม', icon: GraduationCap },
+    { id: 'custom', label: 'สินค้าอื่นๆ', icon: MonitorPlay },
   ];
 
   return (

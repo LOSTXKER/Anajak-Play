@@ -10,6 +10,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,7 +18,7 @@ export default function LoginPage() {
     
     // Simulate login delay
     setTimeout(() => {
-      login();
+      login(email || 'user@example.com');
       router.push('/dashboard');
     }, 1000);
   };
@@ -110,6 +111,8 @@ export default function LoginPage() {
                         type="email"
                         required
                         placeholder="name@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         className="w-full pl-11 pr-4 py-3.5 bg-[#13132b]/50 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 transition-all"
                      />
                   </div>

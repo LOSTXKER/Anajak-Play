@@ -8,6 +8,7 @@
 import React from 'react';
 import { Users, Mic, MicOff, Gamepad2, Star, Shield, Trophy, Activity, Clock, ArrowRight } from 'lucide-react';
 import { LFGSession } from '@/lib/types/index';
+import { useAuth } from '@/lib/AuthContext';
 
 interface LFGCardProps {
   session: LFGSession;
@@ -15,6 +16,7 @@ interface LFGCardProps {
 }
 
 export const LFGCard: React.FC<LFGCardProps> = ({ session, onJoin }) => {
+  const { isAuthenticated, openAuthModal } = useAuth();
   const timeAgo = Math.floor((Date.now() - session.createdAt.getTime()) / 60000);
   const currentPlayersCount = session.currentPlayers.length;
   const spotsLeft = session.maxPlayers - currentPlayersCount;
@@ -178,7 +180,13 @@ export const LFGCard: React.FC<LFGCardProps> = ({ session, onJoin }) => {
         </div>
 
         <button 
-          onClick={() => onJoin?.(session)}
+          onClick={() => {
+            if (!isAuthenticated) {
+              openAuthModal();
+            } else {
+              onJoin?.(session);
+            }
+          }}
           disabled={isActive || isReadyCheck || spotsLeft === 0}
           className={`
             h-8 px-4 rounded-lg text-xs font-bold flex items-center gap-1 transition-all

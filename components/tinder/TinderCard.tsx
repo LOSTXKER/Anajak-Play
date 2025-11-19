@@ -9,15 +9,16 @@ import React from 'react';
 import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { TinderCard as TinderCardType } from '@/lib/types/index';
 import { Badge } from '@/components/ui/Badge';
-import { Gamepad2, MapPin, Sparkles, Trophy, Swords, Shield, MessageCircle, Target } from 'lucide-react';
+import { Gamepad2, MapPin, Sparkles, Trophy, Swords, Shield, MessageCircle, Target, Lock } from 'lucide-react';
 
 interface TinderCardComponentProps {
   card: TinderCardType;
   onSwipe?: (direction: 'left' | 'right') => void;
   isFront?: boolean;
+  isGuest?: boolean;
 }
 
-export const TinderCardComponent: React.FC<TinderCardComponentProps> = ({ card, onSwipe, isFront = false }) => {
+export const TinderCardComponent: React.FC<TinderCardComponentProps> = ({ card, onSwipe, isFront = false, isGuest = false }) => {
   const { user } = card;
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-12, 12]);
@@ -51,26 +52,30 @@ export const TinderCardComponent: React.FC<TinderCardComponentProps> = ({ card, 
   const cardContent = (
     <div className="relative w-full h-full rounded-[32px] overflow-hidden bg-[#1a1a2e] shadow-2xl border border-white/10 select-none group">
       {/* Swipe Indicators */}
-      <motion.div 
-        style={{ opacity: likeOpacity, scale: likeScale }}
-        className="absolute top-10 right-10 z-40 border-[6px] border-green-500 rounded-2xl px-4 py-2 -rotate-12 bg-black/20 backdrop-blur-sm shadow-[0_0_30px_rgba(34,197,94,0.4)]"
-      >
-        <span className="text-green-500 font-black text-5xl tracking-widest drop-shadow-md">LIKE</span>
-      </motion.div>
-      
-      <motion.div 
-        style={{ opacity: nopeOpacity, scale: nopeScale }}
-        className="absolute top-10 left-10 z-40 border-[6px] border-red-500 rounded-2xl px-4 py-2 rotate-12 bg-black/20 backdrop-blur-sm shadow-[0_0_30px_rgba(239,68,68,0.4)]"
-      >
-        <span className="text-red-500 font-black text-5xl tracking-widest drop-shadow-md">NOPE</span>
-      </motion.div>
+      {!isGuest && (
+        <>
+          <motion.div 
+            style={{ opacity: likeOpacity, scale: likeScale }}
+            className="absolute top-10 right-10 z-40 border-[6px] border-green-500 rounded-2xl px-4 py-2 -rotate-12 bg-black/20 backdrop-blur-sm shadow-[0_0_30px_rgba(34,197,94,0.4)]"
+          >
+            <span className="text-green-500 font-black text-5xl tracking-widest drop-shadow-md">LIKE</span>
+          </motion.div>
+          
+          <motion.div 
+            style={{ opacity: nopeOpacity, scale: nopeScale }}
+            className="absolute top-10 left-10 z-40 border-[6px] border-red-500 rounded-2xl px-4 py-2 rotate-12 bg-black/20 backdrop-blur-sm shadow-[0_0_30px_rgba(239,68,68,0.4)]"
+          >
+            <span className="text-red-500 font-black text-5xl tracking-widest drop-shadow-md">NOPE</span>
+          </motion.div>
+        </>
+      )}
 
       {/* Main Image Layer */}
       <div className="absolute inset-0 bg-gray-900">
          <img 
             src={user.avatar && !user.avatar.startsWith('/') ? user.avatar : `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
             alt={user.displayName}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            className={`w-full h-full object-cover transition-transform duration-700 ${isGuest ? 'blur-xl scale-110' : 'group-hover:scale-105'}`}
             draggable={false}
          />
          {/* Cinematic Gradient Overlay */}
@@ -78,8 +83,21 @@ export const TinderCardComponent: React.FC<TinderCardComponentProps> = ({ card, 
          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a16] via-[#0a0a16]/80 to-transparent opacity-100" style={{ top: '45%' }} />
       </div>
 
+      {/* Guest Overlay */}
+      {isGuest && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px]">
+          <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-4 border border-white/20 shadow-xl">
+            <Lock className="w-8 h-8 text-white" />
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">กรุณาเข้าสู่ระบบ</h3>
+          <p className="text-gray-200 text-center px-8 drop-shadow-md">
+            เข้าสู่ระบบเพื่อดูโปรไฟล์และหาเพื่อนใหม่
+          </p>
+        </div>
+      )}
+
       {/* Top Info (Status & Compatibility) */}
-      <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-start z-20">
+      <div className={`absolute top-0 left-0 w-full p-6 flex justify-between items-start z-20 ${isGuest ? 'opacity-50 blur-sm' : ''}`}>
           <div className="flex flex-col gap-2">
              <div className={`px-3 py-1.5 rounded-full backdrop-blur-md border flex items-center gap-2 shadow-lg ${user.isOnline ? 'bg-green-500/20 border-green-500/30 text-green-400' : 'bg-gray-500/20 border-gray-500/30 text-gray-400'}`}>
                  <div className={`w-2 h-2 rounded-full ${user.isOnline ? 'bg-green-400 animate-pulse' : 'bg-gray-400'}`} />
@@ -98,12 +116,12 @@ export const TinderCardComponent: React.FC<TinderCardComponentProps> = ({ card, 
       </div>
 
       {/* Bottom Content Layer */}
-      <div className="absolute bottom-0 left-0 w-full p-6 z-30 flex flex-col gap-4 pb-24">
+      <div className={`absolute bottom-0 left-0 w-full p-6 z-30 flex flex-col gap-4 pb-24 ${isGuest ? 'opacity-50 blur-sm' : ''}`}>
           {/* Identity */}
           <div>
               <div className="flex items-end gap-3 mb-1">
                   <h2 className="text-4xl font-black text-white font-heading tracking-tight drop-shadow-lg">
-                      {user.displayName}
+                      {isGuest ? 'ไม่แสดงชื่อ' : user.displayName}
                   </h2>
                   <span className="text-xl text-gray-400 font-medium mb-1.5">
                       Lv.{user.level}
@@ -161,7 +179,7 @@ export const TinderCardComponent: React.FC<TinderCardComponentProps> = ({ card, 
           </div>
 
           {/* Hint Text (Only visible on non-interactive preview) */}
-          {!isFront && (
+          {!isFront && !isGuest && (
              <div className="absolute bottom-6 w-full text-center left-0">
                  <p className="text-xs text-white/30 uppercase tracking-widest">Next Profile</p>
              </div>
@@ -170,7 +188,7 @@ export const TinderCardComponent: React.FC<TinderCardComponentProps> = ({ card, 
     </div>
   );
 
-  if (isFront) {
+  if (isFront && !isGuest) {
       return (
         <motion.div
           style={{ x, rotate, scale, opacity, zIndex: 100 }}
@@ -191,10 +209,8 @@ export const TinderCardComponent: React.FC<TinderCardComponentProps> = ({ card, 
   }
 
   return (
-     <div className="absolute top-0 left-0 w-full h-full transform scale-[0.92] translate-y-6 opacity-60 -z-10 pointer-events-none blur-[1px]">
+     <div className={`absolute top-0 left-0 w-full h-full transform ${isFront ? '' : 'scale-[0.92] translate-y-6 opacity-60 -z-10 pointer-events-none blur-[1px]'}`}>
         {cardContent}
      </div>
   );
 };
-
-

@@ -14,6 +14,7 @@ import { LFGCard } from '@/components/lfg/LFGCard';
 // import CreateLFGSession from '@/components/lfg/CreateLFGSession';
 import { mockLFGSessions, mockUsers, gameConfig } from '@/lib/data/mock-data';
 import { useParty } from '@/lib/PartyContext';
+import { useAuth } from '@/lib/AuthContext';
 import { calculateMatchScore, DEFAULT_MATCH_CRITERIA } from '@/lib/utils/matchEngine';
 import { 
   Zap, ArrowRight, Users, ArrowLeft, SlidersHorizontal, 
@@ -37,6 +38,7 @@ function LFGContent() {
   const router = useRouter();
   const urlParams = useSearchParams();
   const { updateParty, joinParty, openCreateModal } = useParty();
+  const { isAuthenticated, openAuthModal } = useAuth();
   const [viewMode, setViewMode] = useState<ViewMode>('gateway');
   const [selectedGame, setSelectedGame] = useState<GameId | 'all'>('all');
   
@@ -136,6 +138,11 @@ function LFGContent() {
   const inGameRooms = activeRooms.filter(r => r.status === 'active');
 
   const handleQuickMatch = () => {
+    if (!isAuthenticated) {
+      openAuthModal();
+      return;
+    }
+
     setIsSearching(true);
     setSearchStep('scanning');
     setMatchResult(null);
@@ -541,7 +548,13 @@ function LFGContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {/* Create New Room Card - Always First */}
             <button 
-               onClick={() => openCreateModal()}
+               onClick={() => {
+                 if (!isAuthenticated) {
+                   openAuthModal();
+                 } else {
+                   openCreateModal();
+                 }
+               }}
                className="group relative flex flex-col items-center justify-center min-h-[200px] rounded-2xl border-2 border-dashed border-white/10 hover:border-purple-500/50 bg-[#13132b]/20 hover:bg-[#13132b]/40 transition-all duration-300 hover:-translate-y-1"
             >
                <div className="w-16 h-16 bg-purple-600/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform border border-purple-500/20 group-hover:border-purple-500/50">

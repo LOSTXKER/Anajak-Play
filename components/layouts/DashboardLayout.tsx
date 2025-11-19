@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useMemo, useState } from 'react';
+import { ReactNode, useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import BottomNav from '@/components/BottomNav';
 import Navbar from '@/components/Navbar';
@@ -8,6 +8,8 @@ import NotificationDropdown from '@/components/NotificationDropdown';
 import { notificationsData } from '@/lib/data/legacy-data';
 import { Notification } from '@/lib/types/index';
 import ChatSidebarOverlay from '@/components/ChatSidebarOverlay';
+import { useAuth } from '@/lib/AuthContext';
+import LoadingScreen from '@/components/LoadingScreen';
 
 import { HomeSidebar } from '@/components/home/HomeSidebar';
 import CreatePartyModalWrapper from '@/components/lfg/CreatePartyModalWrapper';
@@ -34,6 +36,7 @@ export default function DashboardLayout({
   disableMainTopPadding = false,
 }: DashboardLayoutProps) {
   const router = useRouter();
+  const { isAuthenticated, isLoading } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMobileRightSidebarOpen, setIsMobileRightSidebarOpen] = useState(false);
@@ -43,6 +46,10 @@ export default function DashboardLayout({
     if (!enableNotifications) return 0;
     return notifications.filter((notification) => !notification.read).length;
   }, [enableNotifications, notifications]);
+
+  if (isLoading) {
+    return <LoadingScreen />; // Show Loading while checking auth
+  }
 
   const mainClassName = [
     'max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8',

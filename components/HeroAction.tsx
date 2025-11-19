@@ -1,6 +1,7 @@
 'use client';
 
 import { Plus, HeartHandshake, Users, Zap, Search } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 interface HeroActionProps {
   onCreateClick?: () => void;
@@ -9,6 +10,49 @@ interface HeroActionProps {
 }
 
 export default function HeroAction({ onCreateClick, onTinderClick, onFindClick }: HeroActionProps) {
+  const content = [
+    {
+      text: "หาตี้ที่ ใช่",
+      desc: "ระบบหาปาร์ตี้เกมเมอร์ที่คัดคนคุณภาพด้วย Reputation System หมดปัญหาเจอไก่ เจอเกรียน เล่นให้สนุกกว่าเดิม"
+    },
+    {
+      text: "เพื่อนที่ รู้ใจ",
+      desc: "ระบบจับคู่เพื่อนเล่นเกมผ่าน Swipe Mode ค้นหาคนที่เคมีตรงกัน ชอบเกมเดียวกัน เล่นด้วยกันได้ยาวๆ"
+    },
+    {
+      text: "สังคมที่ อบอุ่น",
+      desc: "คอมมูนิตี้เกมเมอร์คุณภาพ พูดคุยแลกเปลี่ยนเทคนิค หาทีมซ้อม หรือแค่หาเพื่อนคุยเรื่องเกมที่ชอบ"
+    },
+    {
+      text: "เล่นเกมให้ สนุก",
+      desc: "ประสบการณ์การเล่นเกมที่ดีกว่าเดิม เมื่อได้เล่นกับคนที่ใช่ ในบรรยากาศที่เป็นกันเองและสร้างสรรค์"
+    }
+  ];
+  
+  const [text, setText] = useState('');
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentItem = content[phraseIndex];
+    const currentPhrase = currentItem.text;
+    const typeSpeed = isDeleting ? 50 : 100;
+    const delay = isDeleting ? 0 : 3000;
+
+    const timeout = setTimeout(() => {
+      if (!isDeleting && text === currentPhrase) {
+        setTimeout(() => setIsDeleting(true), delay);
+      } else if (isDeleting && text === '') {
+        setIsDeleting(false);
+        setPhraseIndex((prev) => (prev + 1) % content.length);
+      } else {
+        setText(currentPhrase.substring(0, isDeleting ? text.length - 1 : text.length + 1));
+      }
+    }, isDeleting && text === currentPhrase ? delay : typeSpeed);
+
+    return () => clearTimeout(timeout);
+  }, [text, isDeleting, phraseIndex]);
+
   return (
     <div className="relative overflow-hidden rounded-3xl p-1 p-[1px] mb-8 bg-gradient-to-r from-blue-500/50 to-purple-600/50">
       <div className="relative overflow-hidden rounded-[23px] bg-[#0f1016] p-6 md:p-10 h-full">
@@ -30,14 +74,14 @@ export default function HeroAction({ onCreateClick, onTinderClick, onFindClick }
               <span className="text-xs font-medium text-gray-300">LFG System V5 Live</span>
             </div>
             
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
-              หาตี้ที่ <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3A7BFF] to-[#A855F7]">ใช่</span> <br/>
-              ในแบบที่คุณ <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#A855F7] to-pink-500">ชอบ</span>
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight min-h-[3em] md:min-h-[2.5em]">
+              {text}
+              <span className="animate-pulse text-purple-400">|</span> <br/>
+              <span className="text-gray-300 text-2xl md:text-4xl">ในแบบที่คุณ</span> <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#A855F7] to-pink-500">ชอบ</span>
             </h2>
             
-            <p className="text-gray-400 mb-8 text-lg leading-relaxed">
-              ระบบหาปาร์ตี้เกมเมอร์ที่คัดคนคุณภาพด้วย Reputation System <br className="hidden md:block"/>
-              หมดปัญหาเจอไก่ เจอเกรียน เล่นให้สนุกกว่าเดิม
+            <p key={phraseIndex} className="text-gray-400 mb-8 text-lg leading-relaxed animate-in fade-in zoom-in duration-500 min-h-[3.5em]">
+              {content[phraseIndex].desc}
             </p>
             
             <div className="flex flex-wrap gap-4 justify-center md:justify-start">

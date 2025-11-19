@@ -9,18 +9,19 @@ import React, { useState } from 'react';
 import { TinderCardComponent } from '@/components/tinder/TinderCard';
 import { ProfileDetailView } from '@/components/tinder/ProfileDetailView';
 import { Button } from '@/components/ui/Button';
-import { Card, CardBody } from '@/components/ui/Card';
 import { mockTinderCards, mockUsers } from '@/lib/data/mock-data';
 import Image from 'next/image';
 import { User } from '@/lib/types/index';
+import { useAuth } from '@/lib/AuthContext';
 import Link from 'next/link';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, RotateCcw, Zap, Heart, Settings, X, Star, 
   MessageCircle, Gamepad2, UserPlus 
 } from 'lucide-react';
 
 export default function TinderModePage() {
+  const { isAuthenticated, openAuthModal } = useAuth();
   const [cards] = useState(mockTinderCards);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [matches, setMatches] = useState(0);
@@ -33,6 +34,11 @@ export default function TinderModePage() {
   const currentUser = mockUsers[0]; // Simulate logged in user
   
   const handleSwipe = (direction: 'left' | 'right') => {
+    if (!isAuthenticated) {
+        openAuthModal();
+        return;
+    }
+
     if (direction === 'right') {
       setMatches(prev => prev + 1);
       
@@ -108,6 +114,7 @@ export default function TinderModePage() {
                           <TinderCardComponent 
                               card={nextCard}
                               isFront={false}
+                              isGuest={!isAuthenticated}
                           />
                       </div>
                   )}
@@ -118,6 +125,7 @@ export default function TinderModePage() {
                               card={currentCard}
                               onSwipe={handleSwipe}
                               isFront={true}
+                              isGuest={!isAuthenticated}
                           />
                       </div>
                   )}
@@ -148,7 +156,22 @@ export default function TinderModePage() {
 
       {/* Right Side: Detailed Profile Info (60%) - Hidden on small mobile, or toggled */}
       <div className="hidden lg:flex flex-1 lg:flex-[0.6] h-full p-8 pl-4 items-center justify-center">
-          <div className="w-full h-[90%] max-w-3xl">
+          <div className="w-full h-[90%] max-w-3xl relative">
+              {!isAuthenticated && (
+                <div className="absolute inset-0 z-50 backdrop-blur-md bg-black/50 rounded-3xl flex items-center justify-center">
+                   <div className="text-center p-8 bg-[#13132b] border border-white/10 rounded-2xl shadow-2xl max-w-sm">
+                      <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                          <UserPlus className="text-white w-8 h-8" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-white mb-2">ดูโปรไฟล์ฉบับเต็ม</h3>
+                      <p className="text-gray-400 mb-6">เข้าสู่ระบบเพื่อดูสถิติเกม สไตล์การเล่น และความเข้ากันได้แบบละเอียด</p>
+                      <Button variant="gradient" className="w-full" onClick={openAuthModal}>
+                          เข้าสู่ระบบ / สมัครสมาชิก
+                      </Button>
+                   </div>
+                </div>
+              )}
+
               {currentCard ? (
                  <ProfileDetailView key={currentCard.user.id} card={currentCard} />
               ) : (
@@ -237,5 +260,3 @@ export default function TinderModePage() {
     </div>
   );
 }
-
-

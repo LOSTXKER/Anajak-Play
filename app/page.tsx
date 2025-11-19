@@ -4,18 +4,19 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Zap, Users, ShoppingBag, MessageCircle, Gamepad2, ArrowRight, Heart, Shield, Globe, Sparkles, Trophy, Search, Coins, Briefcase, Wallet, Star, CheckCircle } from 'lucide-react';
 import Navbar from '@/components/Navbar';
+import LandingLivePresence from '@/components/landing/LandingLivePresence';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 
 export default function LandingPage() {
-  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
+    if (!isLoading && user) {
       router.push('/dashboard');
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [user, isLoading, router]);
 
   const carouselItems = [
     { 
@@ -157,15 +158,17 @@ export default function LandingPage() {
                     เข้าสู่ระบบ
                 </Link>
                 <Link 
-                    href="/dashboard" 
-                    className="w-full sm:w-auto px-8 py-5 bg-[#13132b] text-white font-bold rounded-2xl text-xl border border-white/10 hover:bg-white/5 transition-all flex items-center justify-center gap-2"
+                    href="/lfg" 
+                    className="w-full sm:w-auto px-8 py-4 bg-[#13132b] text-white font-bold rounded-2xl text-lg border border-white/10 hover:bg-white/5 transition-all flex items-center justify-center gap-2"
                 >
-                    ทดลองใช้งาน (Guest)
+                    ดูฟีเจอร์ทั้งหมด
                 </Link>
             </div>
         </div>
       </section>
 
+      {/* Live Presence Ticker */}
+      <LandingLivePresence />
 
       {/* Feature 1: LFG */}
       <section className="py-24 bg-[#0a0a16] border-t border-white/5">
@@ -410,7 +413,7 @@ export default function LandingPage() {
                     <p className="text-lg text-gray-400 leading-relaxed">
                         พื้นที่สำหรับ Pro Player ในการรับงานสอนเล่น (Coaching) หรือรับจ้างเล่น (Boosting) สร้างรายได้จากฝีมือของคุณ
                     </p>
-                    <Link href="/marketplace?category=jobs" className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-500 rounded-xl font-bold text-white transition-colors">
+                    <Link href="#" className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-500 rounded-xl font-bold text-white transition-colors">
                         สมัครเป็น Pro Player <ArrowRight size={16} />
                     </Link>
                 </div>
